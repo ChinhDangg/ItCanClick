@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<Pane fx:id="actionPerformMenu" maxHeight="600.0" maxWidth="500.0" prefHeight="600.0" prefWidth="500.0" style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1px;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Menu.ActionPerformMenuController">
+   <children>
+      <Pane layoutX="200.0" layoutY="1.0">
+         <children>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="27.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+            <Label layoutX="32.0" layoutY="5.0" text="Action" />
+         </children>
+      </Pane>
+      <Pane layoutX="5.0" layoutY="118.0" prefHeight="244.0" prefWidth="491.0" style="-fx-border-color: black; -fx-border-width: 1px;">
+         <children>
+            <StackPane fx:id="mainImageViewContainer" prefHeight="242.0" prefWidth="489.0">
+               <children>
+                  <ImageView fx:id="mainImageView" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </StackPane>
+         </children>
+      </Pane>
+      <StackPane layoutX="7.0" layoutY="368.0">
+         <children>
+            <Pane prefHeight="165.0" prefWidth="487.0">
+               <children>
+                  <Pane layoutX="-1.0" prefHeight="165.0">
+                     <children>
+                        <Pane>
+                           <children>
+                              <Label layoutX="20.0" layoutY="-1.0" text="Extending the main action box:" />
+                              <Pane layoutX="41.0" layoutY="18.0">
+                                 <children>
+                                    <Pane layoutX="13.0">
+                                       <children>
+                                          <Pane fx:id="xMinusButton">
+                                             <children>
+
+                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                             </children>
+                                          </Pane>
+                                          <Pane layoutX="40.0" fx:id="xPlusButton">
+                                             <children>
+                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
+                                             </children>
+                                          </Pane>
+                                       </children>
+                                    </Pane>
+                                    <Label layoutY="6.0" text="X">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </Pane>
+                              <Pane layoutX="41.0" layoutY="50.0">
+                                 <children>
+                                    <Pane layoutX="13.0">
+                                       <children>
+                                          <Pane fx:id="yMinusButton">
+                                             <children>
+                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                             </children>
+                                          </Pane>
+                                          <Pane fx:id="yPlusButton" layoutX="40.0">
+                                             <children>
+                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
+                                             </children>
+                                          </Pane>
+                                       </children>
+                                    </Pane>
+                                    <Label layoutY="6.0" text="Y">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </Pane>
+                           </children>
+                        </Pane>
+                        <Pane layoutX="2.0" layoutY="85.0">
+                           <children>
+                              <Pane layoutX="1.0">
+                                 <children>
+                                    <Pane layoutX="80.0">
+                                       <children>
+                                          <Pane fx:id="waitBeforeMinusButton">
+                                             <children>
+                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                             </children>
+                                          </Pane>
+                                          <Pane fx:id="waitBeforePlusButton" layoutX="40.0">
+                                             <children>
+                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
+                                             </children>
+                                          </Pane>
+                                       </children>
+                                    </Pane>
+                                    <Label fx:id="waitBeforeTimeLabel" layoutX="157.0" layoutY="5.0" prefHeight="20.0" prefWidth="47.0" text="1s">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <Label layoutX="-1.0" layoutY="5.0" prefHeight="20.0" prefWidth="79.0" text="Wait before">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </Pane>
+                              <Pane layoutX="1.0" layoutY="32.0">
+                                 <children>
+                                    <Pane layoutX="80.0">
+                                       <children>
+                                          <Pane fx:id="waitAfterMinusButton">
+                                             <children>
+                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                             </children>
+                                          </Pane>
+                                          <Pane fx:id="waitAfterPlusButton" layoutX="40.0">
+                                             <children>
+                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
+                                             </children>
+                                          </Pane>
+                                       </children>
+                                    </Pane>
+                                    <Label fx:id="waitAfterTimeLabel" layoutX="157.0" layoutY="5.0" prefHeight="20.0" prefWidth="47.0" text="1s">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <Label layoutX="-1.0" layoutY="5.0" prefHeight="20.0" prefWidth="79.0" text="Wait after">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </Pane>
+                           </children>
+                        </Pane>
+                        <Pane layoutX="287.0">
+                           <children>
+                              <Label text="Extending the outside box:" />
+                              <Pane layoutX="32.0" layoutY="19.0">
+                                 <children>
+                                    <Pane fx:id="outsideBoxMinusButton">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                       </children>
+                                    </Pane>
+                                    <Pane fx:id="outsideBoxPlusButton" layoutX="40.0">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
+                                       </children>
+                                    </Pane>
+                                 </children>
+                              </Pane>
+                           </children>
+                        </Pane>
+                        <Pane layoutX="287.0" layoutY="60.0">
+                           <children>
+                              <Pane layoutX="32.0">
+                                 <children>
+                                    <Pane fx:id="zoomMinusButton">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                       </children>
+                                    </Pane>
+                                    <Pane fx:id="zoomPlusButton" layoutX="40.0">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
+                                       </children>
+                                    </Pane>
+                                 </children>
+                              </Pane>
+                              <Label layoutX="-3.0" layoutY="6.0" text="Zoom" />
+                              <Label fx:id="currentZoomLabel" layoutX="108.0" layoutY="6.0" text="1" />
+                           </children>
+                        </Pane>
+                        <Pane layoutX="272.0" layoutY="104.0">
+                           <children>
+                              <Pane>
+                                 <children>
+                                    <Pane fx:id="stopReadingConditionButton">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="25.0" stroke="BLACK" strokeType="INSIDE" width="44.0" />
+                                          <Label layoutX="9.0" layoutY="3.0" text="Stop" />
+                                       </children>
+                                    </Pane>
+                                    <Label layoutX="48.0" layoutY="4.0" text="Press F1" />
+                                 </children>
+                              </Pane>
+                              <Pane layoutX="102.0">
+                                 <children>
+                                    <Pane fx:id="startReadingConditionButton">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="25.0" stroke="BLACK" strokeType="INSIDE" width="44.0" />
+                                          <Label layoutX="9.0" layoutY="3.0" text="Start" />
+                                       </children>
+                                    </Pane>
+                                    <Label layoutX="48.0" layoutY="4.0" text="Press F2" />
+                                 </children>
+                              </Pane>
+                           </children>
+                        </Pane>
+                        <CheckBox fx:id="fitImageCheckBox" layoutX="311.0" layoutY="139.0" mnemonicParsing="false" selected="true" text="Fit Image" />
+                     </children>
+                  </Pane>
+               </children>
+            </Pane>
+         </children>
+      </StackPane>
+      <Pane layoutX="200.0" layoutY="574.0">
+         <children>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="27.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+            <Label fx:id="actionPerformIndicationLabel" layoutX="35.0" layoutY="5.0" text="Action" />
+         </children>
+      </Pane>
+      <StackPane fx:id="backButton" layoutX="14.0" layoutY="11.0">
+         <children>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="41.0" />
+            <Label text="Back" />
+         </children>
+      </StackPane>
+      <StackPane fx:id="saveButton" layoutX="445.0" layoutY="11.0">
+         <children>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="41.0" />
+            <Label text="Save" />
+         </children>
+      </StackPane>
+      <Pane layoutX="365.0" layoutY="59.0">
+         <children>
+            <CheckBox fx:id="progressiveSearchCheckBox" layoutX="1.0" mnemonicParsing="false" text="Progressive Search" />
+            <Pane fx:id="progressiveSearchButtonsPane" layoutY="20.0">
+               <children>
+                  <Pane>
+                     <children>
+                        <Pane fx:id="progressiveSearchMinusButton">
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                              <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                           </children>
+                        </Pane>
+                        <Pane fx:id="progressiveSearchPlusButton" layoutX="40.0">
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                              <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                              <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
+                           </children>
+                        </Pane>
+                     </children>
+                  </Pane>
+                  <Label fx:id="progressiveSearchTimeLabel" layoutX="77.0" layoutY="5.0" prefHeight="20.0" prefWidth="47.0" text="1s">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+      <Pane fx:id="registeredKeyPane" disable="true" layoutX="16.0" layoutY="61.0">
+         <children>
+            <Label text="Registered Key:" />
+            <Label fx:id="registeredKeyLabel" layoutX="86.0" text="Key" />
+         </children>
+      </Pane>
+   </children>
+</Pane>

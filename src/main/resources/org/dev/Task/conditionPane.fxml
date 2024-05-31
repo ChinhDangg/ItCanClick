@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Rectangle?>
+
+<StackPane fx:id="conditionStackPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Task.ConditionController">
+   <children>
+      <Pane>
+         <children>
+            <Pane prefHeight="131.0" prefWidth="198.0" style="-fx-border-color: black; -fx-border-width: 1px;">
+               <children>
+                  <StackPane prefHeight="131.0" prefWidth="198.0">
+                     <children>
+                        <ImageView fx:id="conditionImageView" fitHeight="131.0" fitWidth="198.0" pickOnBounds="true" preserveRatio="true" />
+                     </children>
+                  </StackPane>
+               </children>
+            </Pane>
+            <Pane layoutY="130.0" prefHeight="20.0" prefWidth="198.0" style="-fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 2px;">
+               <children>
+                  <Label fx:id="requirementStatusLabel" layoutX="50.0" layoutY="1.0" text="Required/Optional" />
+               </children>
+            </Pane>
+            <Pane layoutX="71.0" layoutY="149.0">
+               <children>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="50.0" />
+                  <Label fx:id="readingConditionLabel" layoutX="12.0" layoutY="1.0" text="Read" />
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+   </children>
+</StackPane>

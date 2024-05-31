@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="mainMenuStackPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Menu.ConditionMenuController">
+   <children>
+      <Pane fx:id="backgroundPane" opacity="0.5" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" />
+      <Pane maxHeight="600.0" maxWidth="500.0" prefHeight="600.0" prefWidth="500.0" style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1px;">
+         <children>
+            <Pane layoutX="200.0" layoutY="1.0">
+               <children>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="27.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                  <Label layoutX="24.0" layoutY="5.0" text="Condition" />
+               </children>
+            </Pane>
+            <ChoiceBox fx:id="readingTypeChoice" layoutX="208.0" layoutY="56.0" prefHeight="25.0" prefWidth="83.0" />
+            <Pane layoutX="5.0" layoutY="118.0" prefHeight="244.0" prefWidth="491.0" style="-fx-border-color: black; -fx-border-width: 1px;">
+               <children>
+                  <StackPane prefHeight="242.0" prefWidth="489.0">
+                     <children>
+                        <ImageView fx:id="mainImageView" pickOnBounds="true" preserveRatio="true" />
+                     </children>
+                  </StackPane>
+               </children>
+            </Pane>
+            <StackPane layoutX="7.0" layoutY="368.0">
+               <children>
+                  <Pane prefHeight="165.0" prefWidth="487.0">
+                     <children>
+                        <Pane fx:id="recheckAndAddTextPane" layoutX="15.0" layoutY="9.0">
+                           <children>
+                              <Pane>
+                                 <children>
+                                    <StackPane fx:id="recheckButton">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="44.0" stroke="BLACK" strokeType="INSIDE" width="91.0" />
+                                          <Label text="Recheck">
+                                             <font>
+                                                <Font size="14.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </StackPane>
+                                    <Label fx:id="recheckResultLabel" layoutX="108.0" layoutY="14.0" prefHeight="17.0" prefWidth="277.0" text="Result" />
+                                 </children>
+                              </Pane>
+                           </children>
+                        </Pane>
+                     </children>
+                  </Pane>
+               </children>
+            </StackPane>
+            <StackPane fx:id="startRegisteringButton" layoutX="152.0" layoutY="542.0">
+               <children>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="44.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                  <Label text="Start Registering">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </StackPane>
+            <StackPane layoutX="14.0" layoutY="558.0" visible="false">
+               <children>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="41.0" />
+                  <Label text="Back" />
+               </children>
+            </StackPane>
+            <StackPane layoutX="445.0" layoutY="11.0" visible="false">
+               <children>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="41.0" />
+                  <Label text="Save" />
+               </children>
+            </StackPane>
+         </children>
+      </Pane>
+   </children>
+</StackPane>
