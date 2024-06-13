@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -11,96 +13,132 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.Rectangle?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Task.ActionController">
+<Pane fx:id="mainActionPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Task.ActionController">
    <children>
       <VBox layoutX="3.0" layoutY="2.0" spacing="3.0">
          <children>
             <Pane>
                <children>
-                  <Pane layoutY="26.0" prefHeight="78.0" prefWidth="25.0">
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="16.0" layoutX="-1.0" stroke="BLACK" strokeType="INSIDE" width="518.0" />
+                  <Pane layoutY="18.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="78.0" stroke="BLACK" strokeType="INSIDE" width="25.0" />
-                        <Label alignment="CENTER" layoutX="-12.0" layoutY="28.0" prefHeight="22.0" prefWidth="50.0" rotate="-90.0" text="Action" />
+                        <Label fx:id="actionNameLabel" layoutX="56.0" text="Name of action" />
+                        <Pane fx:id="renameOptionPane" layoutY="17.0">
+                           <children>
+                              <StackPane fx:id="renameButton" layoutY="1.0">
+                                 <children>
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="22.0" stroke="BLACK" strokeType="INSIDE" width="52.0" />
+                                    <Label text="Rename" />
+                                 </children>
+                              </StackPane>
+                              <TextField fx:id="renameActionTextField" layoutX="53.0" prefHeight="25.0" prefWidth="149.0" />
+                           </children>
+                        </Pane>
                      </children>
                   </Pane>
-                  <StackPane fx:id="actionPane" layoutX="24.0">
+                  <HBox layoutX="204.0" layoutY="18.0" spacing="10.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="132.0" stroke="BLACK" strokeType="INSIDE" width="400.0" />
-                        <ImageView fx:id="actionImage" fitHeight="130.0" fitWidth="395.0" pickOnBounds="true" preserveRatio="true" />
+                        <CheckBox fx:id="requiredCheckBox" mnemonicParsing="false" selected="true" text="Required" />
+                        <CheckBox fx:id="previousDependentCheckBox" mnemonicParsing="false" text="Previous dependent" />
+                        <CheckBox fx:id="previousPassCheckBox" mnemonicParsing="false" text="Previous pass" />
                      </children>
-                  </StackPane>
+                  </HBox>
                </children>
             </Pane>
-            <Pane>
+            <StackPane>
                <children>
-                  <Pane layoutY="57.0" prefHeight="78.0" prefWidth="25.0">
+                  <Pane maxWidth="424.0" prefWidth="424.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="78.0" stroke="BLACK" strokeType="INSIDE" width="25.0" />
-                        <Label alignment="CENTER" layoutX="-12.0" layoutY="28.0" prefHeight="22.0" prefWidth="50.0" rotate="-90.0" text="Entry" />
-                     </children>
-                  </Pane>
-                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="190.0" layoutX="24.0" stroke="BLACK" strokeType="INSIDE" width="400.0" />
-                  <ScrollPane fitToHeight="true" hbarPolicy="NEVER" layoutX="26.0" layoutY="2.0" prefHeight="185.0" prefWidth="396.0" vbarPolicy="NEVER">
-                     <content>
-                        <HBox fx:id="entryConditionPane" spacing="6.0">
+                        <Pane>
                            <children>
-                              <Pane>
+                              <Pane layoutY="26.0" prefHeight="78.0" prefWidth="25.0">
                                  <children>
-                                    <Pane fx:id="entryAddButton" layoutY="9.0">
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="165.0" layoutX="1.0" stroke="BLACK" strokeType="INSIDE" width="195.0" />
-                                          <StackPane layoutX="83.0" layoutY="68.0">
-                                             <children>
-                                                <Circle fill="WHITE" radius="14.0" stroke="BLACK" strokeType="INSIDE" />
-                                                <Line endX="-78.99999237060547" endY="-1.1444091796875E-5" startX="-100.0" />
-                                                <Line endX="-78.99999237060547" endY="-1.1444091796875E-5" rotate="-90.0" startX="-100.0" />
-                                             </children>
-                                          </StackPane>
-                                       </children>
-                                    </Pane>
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="78.0" stroke="BLACK" strokeType="INSIDE" width="25.0" />
+                                    <Label alignment="CENTER" layoutX="-12.0" layoutY="28.0" prefHeight="22.0" prefWidth="50.0" rotate="-90.0" text="Action" />
                                  </children>
                               </Pane>
-                           </children>
-                        </HBox>
-                     </content>
-                  </ScrollPane>
-               </children>
-            </Pane>
-            <Pane>
-               <children>
-                  <Pane layoutY="57.0" prefHeight="78.0" prefWidth="25.0">
-                     <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="78.0" stroke="BLACK" strokeType="INSIDE" width="25.0" />
-                        <Label alignment="CENTER" layoutX="-12.0" layoutY="28.0" prefHeight="22.0" prefWidth="50.0" rotate="-90.0" text="Exit" />
-                     </children>
-                  </Pane>
-                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="190.0" layoutX="24.0" stroke="BLACK" strokeType="INSIDE" width="400.0" />
-                  <ScrollPane fitToHeight="true" hbarPolicy="NEVER" layoutX="26.0" layoutY="2.0" prefHeight="185.0" prefWidth="396.0" vbarPolicy="NEVER">
-                     <content>
-                        <HBox fx:id="exitConditionPane" spacing="6.0">
-                           <children>
-                              <Pane>
+                              <StackPane fx:id="actionPane" layoutX="24.0">
                                  <children>
-                                    <Pane fx:id="exitAddButton" layoutY="8.0">
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="165.0" layoutY="1.0" stroke="BLACK" strokeType="INSIDE" width="195.0" />
-                                          <StackPane layoutX="83.0" layoutY="68.0">
-                                             <children>
-                                                <Circle fill="WHITE" radius="14.0" stroke="BLACK" strokeType="INSIDE" />
-                                                <Line endX="-78.99999237060547" endY="-1.1444091796875E-5" startX="-100.0" />
-                                                <Line endX="-78.99999237060547" endY="-1.1444091796875E-5" rotate="-90.0" startX="-100.0" />
-                                             </children>
-                                          </StackPane>
-                                       </children>
-                                    </Pane>
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="132.0" stroke="BLACK" strokeType="INSIDE" width="400.0" />
+                                    <ImageView fx:id="actionImage" fitHeight="130.0" fitWidth="395.0" pickOnBounds="true" preserveRatio="true" />
+                                 </children>
+                              </StackPane>
+                           </children>
+                        </Pane>
+                        <Pane layoutY="135.3333396911621">
+                           <children>
+                              <Pane layoutY="57.0" prefHeight="78.0" prefWidth="25.0">
+                                 <children>
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="78.0" stroke="BLACK" strokeType="INSIDE" width="25.0" />
+                                    <Label alignment="CENTER" layoutX="-12.0" layoutY="28.0" prefHeight="22.0" prefWidth="50.0" rotate="-90.0" text="Entry" />
                                  </children>
                               </Pane>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="190.0" layoutX="24.0" stroke="BLACK" strokeType="INSIDE" width="400.0" />
+                              <ScrollPane fitToHeight="true" hbarPolicy="NEVER" layoutX="26.0" layoutY="2.0" prefHeight="185.0" prefWidth="396.0" vbarPolicy="NEVER">
+                                 <content>
+                                    <HBox fx:id="entryConditionPane" spacing="6.0">
+                                       <children>
+                                          <Pane>
+                                             <children>
+                                                <Pane fx:id="entryAddButton" layoutY="9.0">
+                                                   <children>
+                                                      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="165.0" layoutX="1.0" stroke="BLACK" strokeType="INSIDE" width="195.0" />
+                                                      <StackPane layoutX="83.0" layoutY="68.0">
+                                                         <children>
+                                                            <Circle fill="WHITE" radius="14.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Line endX="-78.99999237060547" endY="-1.1444091796875E-5" startX="-100.0" />
+                                                            <Line endX="-78.99999237060547" endY="-1.1444091796875E-5" rotate="-90.0" startX="-100.0" />
+                                                         </children>
+                                                      </StackPane>
+                                                   </children>
+                                                </Pane>
+                                             </children>
+                                          </Pane>
+                                       </children>
+                                    </HBox>
+                                 </content>
+                              </ScrollPane>
                            </children>
-                        </HBox>
-                     </content>
-                  </ScrollPane>
+                        </Pane>
+                        <Pane layoutY="328.6666679382324">
+                           <children>
+                              <Pane layoutY="57.0" prefHeight="78.0" prefWidth="25.0">
+                                 <children>
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="78.0" stroke="BLACK" strokeType="INSIDE" width="25.0" />
+                                    <Label alignment="CENTER" layoutX="-12.0" layoutY="28.0" prefHeight="22.0" prefWidth="50.0" rotate="-90.0" text="Exit" />
+                                 </children>
+                              </Pane>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="190.0" layoutX="24.0" stroke="BLACK" strokeType="INSIDE" width="400.0" />
+                              <ScrollPane fitToHeight="true" hbarPolicy="NEVER" layoutX="26.0" layoutY="2.0" prefHeight="185.0" prefWidth="396.0" vbarPolicy="NEVER">
+                                 <content>
+                                    <HBox fx:id="exitConditionPane" spacing="6.0">
+                                       <children>
+                                          <Pane>
+                                             <children>
+                                                <Pane fx:id="exitAddButton" layoutY="8.0">
+                                                   <children>
+                                                      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="165.0" layoutY="1.0" stroke="BLACK" strokeType="INSIDE" width="195.0" />
+                                                      <StackPane layoutX="83.0" layoutY="68.0">
+                                                         <children>
+                                                            <Circle fill="WHITE" radius="14.0" stroke="BLACK" strokeType="INSIDE" />
+                                                            <Line endX="-78.99999237060547" endY="-1.1444091796875E-5" startX="-100.0" />
+                                                            <Line endX="-78.99999237060547" endY="-1.1444091796875E-5" rotate="-90.0" startX="-100.0" />
+                                                         </children>
+                                                      </StackPane>
+                                                   </children>
+                                                </Pane>
+                                             </children>
+                                          </Pane>
+                                       </children>
+                                    </HBox>
+                                 </content>
+                              </ScrollPane>
+                           </children>
+                        </Pane>
+                     </children>
+                  </Pane>
                </children>
-            </Pane>
+            </StackPane>
          </children>
       </VBox>
    </children>

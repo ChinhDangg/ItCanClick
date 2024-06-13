@@ -5,6 +5,7 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -17,7 +18,7 @@ import org.dev.Task.Condition.Condition;
 import org.dev.Task.Condition.TextCondition;
 import org.dev.Task.ConditionController;
 import org.dev.Enum.ReadingCondition;
-import org.dev.Task.TaskController;
+import org.dev.Task.ActivityController;
 
 import java.awt.image.BufferedImage;
 import java.awt.*;
@@ -39,6 +40,8 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     private StackPane addTextButton, addReadTextImageButton, popTextButton;
     @FXML
     private TextField addTextTextField;
+    @FXML
+    private CheckBox notOptionCheckBox, requiredOptionCheckBox;
     private ConditionController conditionController;
 
     @Override
@@ -53,12 +56,12 @@ public class ConditionTextMenuController extends OptionsMenuController implement
 
     // ------------------------------------------------------
     @Override
-    public void loadMenu(TaskController taskController) {
-        if (taskController == null) {
+    public void loadMenu(ActivityController activityController) {
+        if (activityController == null) {
             System.out.println("Condition Controller is not set text menu- bug");
             return;
         }
-        this.conditionController = (ConditionController) taskController;
+        this.conditionController = (ConditionController) activityController;
         Condition condition = conditionController.getCondition();
         if (condition != null && condition.getChosenReadingCondition() == ReadingCondition.Text) {
             TextCondition textCondition = (TextCondition) conditionController.getCondition();
@@ -69,17 +72,19 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             registeredTextLabel.setText(getAllReadText(textCondition.getReadText()));
         }
         GlobalScreen.addNativeKeyListener(this);
-        showTextMenuPane(true);
+        showMenu(true);
     }
     public void resetTextMenu() {
         resetMenu();
         updateTextScaleValue(1);
+        notOptionCheckBox.setSelected(false);
+        requiredOptionCheckBox.setSelected(true);
         readingResultLabel.setText(initialReadingResult);
         registeredTextLabel.setText("None");
         addTextTextField.setText("");
         readTexts = new ArrayList<>();
     }
-    public void showTextMenuPane(boolean show) {
+    public void showMenu(boolean show) {
         textMenuPane.setVisible(show);
         visible = show;
     }
@@ -104,7 +109,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
         if (visible) {
             System.out.println("Backed to main menu");
             stopAllListeners();
-            showTextMenuPane(false);
+            showMenu(false);
         }
     }
 
@@ -168,7 +173,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             }
         }
     }
-    public String readTextFromSaved(Rectangle boundingBox, double scale) throws AWTException, TesseractException {
+    public String readTextFromCurrentScreen(Rectangle boundingBox, double scale) throws AWTException, TesseractException {
         BufferedImage image = captureCurrentScreen(boundingBox);
         if (scale != 1.00)
              image = getScaledImage(image, scale);

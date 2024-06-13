@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ConditionController implements Initializable, TaskController {
+public class ConditionController implements Initializable, ActivityController {
 
     @FXML
     private StackPane conditionStackPane;

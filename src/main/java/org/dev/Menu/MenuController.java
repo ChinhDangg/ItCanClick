@@ -6,7 +6,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import org.dev.Task.TaskController;
+import org.dev.Task.ActivityController;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -31,5 +31,5 @@ public abstract class MenuController implements Initializable {
     protected abstract void loadTypeChoices();
     protected abstract void closeMenuController(MouseEvent event);
     protected abstract void startRegistering(MouseEvent event);
-    public abstract void loadMenu(TaskController taskController);
+    public abstract void loadMenu(ActivityController activityController);
 }

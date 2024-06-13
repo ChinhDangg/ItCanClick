@@ -1,6 +1,6 @@
 package org.dev.Enum;
 
-public enum Actions {
+public enum ActionTypes {
     MouseClick,
     KeyClick,
     KeyPress,

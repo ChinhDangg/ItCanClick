@@ -12,7 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import org.dev.Task.TaskController;
+import org.dev.Task.ActivityController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -236,15 +236,12 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
     protected Pane backButton, saveButton;
     protected abstract void save(MouseEvent event);
     protected abstract void backToPreviousMenu(MouseEvent event);
-    protected abstract void loadMenu(TaskController controller);
-    @FXML
-    protected CheckBox notOptionCheckBox, requiredOptionCheckBox;
+    protected abstract void loadMenu(ActivityController controller);
+    protected abstract void showMenu(boolean show);
     protected void resetMenu() {
         updateZoomValue(1);
         displayMainImageView(null);
         resetImageWidthHeight();
-        notOptionCheckBox.setSelected(false);
-        requiredOptionCheckBox.setSelected(true);
         fitImageCheckBox.setSelected(true);
     }
 }

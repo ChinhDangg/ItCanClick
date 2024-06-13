@@ -7,17 +7,16 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import org.dev.App;
-import org.dev.Enum.Actions;
+import org.dev.Enum.ActionTypes;
 import org.dev.Task.ActionController;
-import org.dev.Task.TaskController;
-
+import org.dev.Task.ActivityController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class ActionMenuController extends MenuController implements Initializable {
     @FXML
-    private ChoiceBox<Actions> actionTypeChoice;
+    private ChoiceBox<ActionTypes> actionTypeChoice;
     private ActionController actionController;
 
     @Override
@@ -27,21 +26,26 @@ public class ActionMenuController extends MenuController implements Initializabl
 
     protected void loadTypeChoices() {
         System.out.println("Loading Action types");
-        actionTypeChoice.getItems().addAll(Actions.values());
-        actionTypeChoice.setValue(Actions.MouseClick);
+        actionTypeChoice.getItems().addAll(ActionTypes.values());
+        actionTypeChoice.setValue(ActionTypes.MouseClick);
     }
     protected void closeMenuController(MouseEvent event) {
         App.closeActionMenuPane();
+        if (actionPerformMenuController != null && actionPerformMenuController.visible) {
+            actionPerformMenuController.backToPreviousMenu(event);
+            actionPerformMenuController.resetMenu();
+        }
+
     }
     protected void startRegistering(MouseEvent event) {
         System.out.println("Click on start registering");
         if (actionPerformMenuController == null)
             loadActionPerformMenu();
-
-
+        actionController.setChosenActionPerform(actionTypeChoice.getValue());
+        actionPerformMenuController.loadMenu(actionController);
     }
-    public void loadMenu(TaskController taskController) {
-        this.actionController = (ActionController) taskController;
+    public void loadMenu(ActivityController activityController) {
+        this.actionController = (ActionController) activityController;
     }
 
     private ActionPerformMenuController actionPerformMenuController;

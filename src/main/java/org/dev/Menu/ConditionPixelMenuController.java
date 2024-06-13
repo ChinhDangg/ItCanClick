@@ -11,7 +11,7 @@ import org.dev.Task.Condition.Condition;
 import org.dev.Task.Condition.PixelCondition;
 import org.dev.Task.ConditionController;
 import org.dev.Enum.ReadingCondition;
-import org.dev.Task.TaskController;
+import org.dev.Task.ActivityController;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -25,6 +25,8 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     private Pane pixelMenuPane;
     @FXML
     private CheckBox showHideLineCheckBox, blackWhiteLineCheckBox;
+    @FXML
+    private CheckBox notOptionCheckBox, requiredOptionCheckBox;
     private ConditionController conditionController;
 
     @Override
@@ -40,12 +42,12 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
 
     // ------------------------------------------------------
     @Override
-    public void loadMenu(TaskController taskController) {
-        if (taskController == null) {
+    public void loadMenu(ActivityController activityController) {
+        if (activityController == null) {
             System.out.println("Condition Controller is not set pixel menu - bug");
             return;
         }
-        this.conditionController = (ConditionController) taskController;
+        this.conditionController = (ConditionController) activityController;
         Condition condition = conditionController.getCondition();
         if (condition != null && condition.getChosenReadingCondition() == ReadingCondition.Pixel) {
             PixelCondition pixelCondition = (PixelCondition) conditionController.getCondition();
@@ -54,14 +56,16 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             displayMainImageView(pixelCondition.getDisplayImage());
         }
         GlobalScreen.addNativeKeyListener(this);
-        showPixelMenuPane(true);
+        showMenu(true);
     }
     public void resetPixelMenu() {
         resetMenu();
+        notOptionCheckBox.setSelected(false);
+        requiredOptionCheckBox.setSelected(true);
         showHideLineCheckBox.setSelected(true);
         blackWhiteLineCheckBox.setSelected(true);
     }
-    public void showPixelMenuPane(boolean show) {
+    public void showMenu(boolean show) {
         pixelMenuPane.setVisible(show);
         visible = show;
     }
@@ -87,7 +91,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
         if (visible) {
             System.out.println("Backed to main menu");
             stopAllListeners();
-            showPixelMenuPane(false);
+            showMenu(false);
         }
     }
 

@@ -14,7 +14,7 @@ import org.dev.Task.Condition.PixelCondition;
 import org.dev.Task.Condition.TextCondition;
 import org.dev.Task.ConditionController;
 import org.dev.Enum.ReadingCondition;
-import org.dev.Task.TaskController;
+import org.dev.Task.ActivityController;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -68,8 +68,8 @@ public class ConditionMenuController extends MenuController implements Initializ
             pixelMenuController.loadMenu(conditionController);
         }
     }
-    public void loadMenu(TaskController taskController) {
-        this.conditionController = (ConditionController) taskController;
+    public void loadMenu(ActivityController activityController) {
+        this.conditionController = (ConditionController) activityController;
         boolean controllerSet = conditionController.isSet();
         recheckAndAddTextPane.setVisible(controllerSet);
         updateRecheckResultLabel(false, null);
@@ -90,7 +90,7 @@ public class ConditionMenuController extends MenuController implements Initializ
             ReadingCondition readingType = conditionController.getCondition().getChosenReadingCondition();
             if (readingType == ReadingCondition.Text) {
                 TextCondition condition = (TextCondition) conditionController.getCondition();
-                String currentReadText = textMenuController.readTextFromSaved(
+                String currentReadText = textMenuController.readTextFromCurrentScreen(
                         condition.getMainImageBoundingBox(), condition.getCurrentTextScale());
                 updateRecheckResultLabel(recheckReadText(condition.getReadText(), currentReadText), currentReadText);
             }

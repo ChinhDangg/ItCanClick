@@ -4,15 +4,19 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
+import lombok.Setter;
 import org.dev.App;
+import org.dev.Enum.ActionTypes;
 import org.dev.Task.Action.Action;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -20,7 +24,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ActionController implements Initializable, TaskController {
+public class ActionController implements Initializable, ActivityController {
+    @FXML
+    private Pane mainActionPane;
+    @FXML
+    private Label actionNameLabel;
+    @FXML
+    private Pane renameOptionPane;
+    @FXML
+    private StackPane renameButton;
+    @FXML
+    private TextField renameActionTextField;
+    @FXML
+    private CheckBox requiredCheckBox, previousDependentCheckBox, previousPassCheckBox;
     @FXML
     private ImageView actionImage;
     @FXML
@@ -29,16 +45,14 @@ public class ActionController implements Initializable, TaskController {
     private HBox entryConditionPane, exitConditionPane;
     @FXML
     private Pane entryAddButton, exitAddButton;
-    @Getter
-    private boolean isSet;
 
     @Getter
+    private boolean isSet;
+    @Getter
     private Action action;
-    public void registerActionPerform(Action action, BufferedImage displayImage) {
-        isSet = true;
-        this.action = action;
-        actionImage.setImage(SwingFXUtils.toFXImage(displayImage, null));
-    }
+    @Getter
+    @Setter
+    private ActionTypes chosenActionPerform;
 
     private final List<ConditionController> entryConditionControllers = new ArrayList<>();
     private final List<ConditionController> exitConditionControllers = new ArrayList<>();
@@ -52,6 +66,41 @@ public class ActionController implements Initializable, TaskController {
         actionPane.setOnMouseClicked(this::openActionMenuPane);
         entryAddButton.setOnMouseClicked(this::entryAddNewCondition);
         exitAddButton.setOnMouseClicked(this::exitAddNewCondition);
+        actionNameLabel.setOnMouseClicked(this::showRenameActionOption);
+        renameButton.setOnMouseClicked(this::changeActionName);
+        renameOptionPane.setVisible(false);
+    }
+
+    private boolean actionNameVisible = false;
+    private void showRenameActionOption(MouseEvent event) {
+        if (!actionNameVisible)
+            renameActionTextField.setText(actionNameLabel.getText());
+        actionNameVisible = !actionNameVisible;
+        renameOptionPane.setVisible(actionNameVisible);
+    }
+    private void changeActionName(MouseEvent event) {
+        String newName = renameActionTextField.getText().replace("\n", "");
+        if (!newName.isBlank()) {
+            renameActionTextField.setText("");
+            actionNameLabel.setText(newName);
+            renameOptionPane.setVisible(false);
+        }
+    }
+    public void disablePreviousOptions() {
+        previousDependentCheckBox.setSelected(false);
+        previousPassCheckBox.setSelected(false);
+        previousDependentCheckBox.setVisible(false);
+        previousPassCheckBox.setVisible(false);
+    }
+    public void enablePreviousOptions() {
+        previousDependentCheckBox.setVisible(true);
+        previousPassCheckBox.setVisible(true);
+    }
+
+    public void registerActionPerform(Action action, BufferedImage displayImage) {
+        isSet = true;
+        this.action = action;
+        actionImage.setImage(SwingFXUtils.toFXImage(displayImage, null));
     }
 
     private void openActionMenuPane(MouseEvent event) { App.openActionMenuPane(this); }
@@ -93,5 +142,9 @@ public class ActionController implements Initializable, TaskController {
                 exitConditionPane.getChildren().add(numberOfCondition, pane);
             }
         } catch (IOException e) { System.out.println("Fail loading and adding condition panes"); }
+    }
+
+    public void performAction() {
+
     }
 }

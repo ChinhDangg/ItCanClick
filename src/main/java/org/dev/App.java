@@ -30,15 +30,14 @@ import java.io.IOException;
 public class App extends Application {
 
     public static void main(String[] args) {
-//        try {
-//            GlobalScreen.registerNativeHook();
-//        } catch (NativeHookException ex) {
-//            System.err.println("There was a problem registering the native hook.");
-//            System.err.println(ex.getMessage());
-//            System.exit(1);
-//        }
-//        launch();
-        System.out.println(KeyEvent.VK_ALT);
+        try {
+            GlobalScreen.registerNativeHook();
+        } catch (NativeHookException ex) {
+            System.err.println("There was a problem registering the native hook.");
+            System.err.println(ex.getMessage());
+            System.exit(1);
+        }
+        launch();
     }
 
     public static Pane actionMenuPane;
@@ -52,22 +51,23 @@ public class App extends Application {
         loadConditionMenuPane();
         loadActionMenuPane();
 
-        FXMLLoader loader1 = new FXMLLoader(getClass().getResource("Task/actionPane.fxml"));
-        Pane actionPane = loader1.load();
-        //ActionController actionController = loader1.getController();
+//        VBox vBox = new VBox(actionPane); //will be a task controller to hold all action controllers
+//        Scale scale = new Scale(1.5, 1.5, 0, 0);
+//        vBox.getTransforms().add(scale);
 
-        VBox vBox = new VBox(actionPane); //will be a task controller to hold all action controllers
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Task/taskPane.fxml"));
+        VBox taskPane = loader.load();
         Scale scale = new Scale(1.5, 1.5, 0, 0);
-        vBox.getTransforms().add(scale);
+        taskPane.getTransforms().add(scale);
 
-        Group group = new Group(vBox);
+        Group group = new Group(taskPane);
         StackPane stackPane = new StackPane(group);
         stackPane.setAlignment(Pos.TOP_CENTER);
 
-        ScrollPane scrollPane = new ScrollPane(stackPane);
-        scrollPane.fitToWidthProperty().set(true);
+//        ScrollPane scrollPane = new ScrollPane(stackPane);
+//        scrollPane.fitToWidthProperty().set(true);
 
-        primaryCenterStackPane = new StackPane(scrollPane);
+        primaryCenterStackPane = new StackPane(stackPane);
 
         BorderPane primary = new FXMLLoader(getClass().getResource("primary.fxml")).load();
         primary.setCenter(primaryCenterStackPane);
