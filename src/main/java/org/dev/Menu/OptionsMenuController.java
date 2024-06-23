@@ -12,7 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import org.dev.Task.ActivityController;
+import org.dev.Operation.ActivityController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -166,10 +166,10 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
         }
         return null;
     }
-    public BufferedImage captureCurrentScreen(Rectangle rectangle) throws AWTException {
+    public static BufferedImage captureCurrentScreen(Rectangle rectangle) throws AWTException {
         return new Robot().createScreenCapture(rectangle);
     }
-    protected BufferedImage getScaledImage(BufferedImage image, double scaleValue) {
+    protected static BufferedImage getScaledImage(BufferedImage image, double scaleValue) {
         int w = (int) ((double) image.getWidth() * scaleValue);
         int h = (int) ((double) image.getHeight() * scaleValue);
         BufferedImage tempImage = new BufferedImage(w, h, image.getType());

@@ -1,14 +1,21 @@
-package org.dev.Task;
+package org.dev.Operation;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import lombok.Getter;
+import lombok.Setter;
+import org.dev.App;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -17,19 +24,47 @@ import java.util.ResourceBundle;
 
 public class TaskController implements Initializable {
     @FXML
+    private Group mainTaskGroup;
+    @FXML
     private VBox taskVBox;
     @FXML
-    private StackPane removeActionButton, moveActionUpButton, moveActionDownButton, addNewActionButton;
+    private Label taskNameLabel;
+    @FXML
+    private Group renameOptionGroup, backButton;
+    @FXML
+    private TextField renameTextField;
+    @FXML
+    private StackPane renameButton, removeActionButton, moveActionUpButton, moveActionDownButton, addNewActionButton;
     private final List<ActionController> actionList = new ArrayList<>();
-    private List<ActionController> getListOfActions() { return new ArrayList<>(actionList);}
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        taskNameLabel.setOnMouseClicked(this::toggleRenameTaskPane);
+        renameButton.setOnMouseClicked(this::changeTaskName);
+        renameOptionGroup.setVisible(false);
         addNewActionButton.setOnMouseClicked(this::addNewAction);
         removeActionButton.setOnMouseClicked(this::removeSelectedActionPane);
         moveActionDownButton.setOnMouseClicked(this::moveActionDown);
         moveActionUpButton.setOnMouseClicked(this::moveActionUp);
+        backButton.setOnMouseClicked(this::backToPrevious);
+    }
 
+    public boolean isSet() { return (!actionList.isEmpty() && actionList.getFirst().isSet()); }
+    public Node getTaskPane() { return mainTaskGroup; }
+    public String getTaskName() { return taskNameLabel.getText(); }
+    private void backToPrevious(MouseEvent event) { App.backToPrevious(mainTaskGroup); }
+
+    private void toggleRenameTaskPane(MouseEvent event) {
+        renameTextField.setText(taskNameLabel.getText());
+        renameOptionGroup.setVisible(!renameOptionGroup.isVisible());
+    }
+    private void changeTaskName(MouseEvent event) {
+        String name = renameTextField.getText();
+        name = name.replace("\n", "");
+        if (name.isBlank())
+            return;
+        taskNameLabel.setText(name);
+        renameOptionGroup.setVisible(false);
     }
 
     private void addNewAction(MouseEvent event) {
@@ -42,7 +77,7 @@ public class TaskController implements Initializable {
             Pane actionPane = loader.load();
             actionPane.setOnMouseClicked(this::selectTheActionPane);
             ActionController actionController = loader.getController();
-            int numberOfActions = taskVBox.getChildren().size()-1;
+            int numberOfActions = taskVBox.getChildren().size();
             if (numberOfActions == 0)
                 actionController.disablePreviousOptions();
             taskVBox.getChildren().add(numberOfActions, actionPane);
@@ -77,17 +112,16 @@ public class TaskController implements Initializable {
     private void setSelected(Pane actionPane) { actionPane.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); }
     private void setUnSelected(Pane actionPane) { actionPane.setStyle(""); }
     private void moveActionUp(MouseEvent event) {
-        runTask();
         if (currentSelectedActionPane == null)
             return;
         ObservableList<Node> children = taskVBox.getChildren();
-        int numberOfActions = children.size()-1;
+        int numberOfActions = children.size();
         if (numberOfActions < 2)
             return;
         int selectedActionPaneIndex = children.indexOf(currentSelectedActionPane);
         int changeIndex = selectedActionPaneIndex+1;
         if (changeIndex == numberOfActions)
-            return;;
+            return;
         actionList.add(changeIndex, actionList.remove(selectedActionPaneIndex));
         changeActionPreviousOptions(changeIndex);
         children.remove(currentSelectedActionPane);
@@ -97,7 +131,7 @@ public class TaskController implements Initializable {
         if (currentSelectedActionPane == null)
             return;
         ObservableList<Node> children = taskVBox.getChildren();
-        int numberOfActions = children.size()-1;
+        int numberOfActions = children.size();
         if (numberOfActions < 2)
             return;
         int selectedActionPaneIndex = children.indexOf(currentSelectedActionPane);
@@ -116,9 +150,24 @@ public class TaskController implements Initializable {
         }
     }
 
-    public void runTask() {
+    public boolean runTask() {
+        System.out.println(STR."Start running task: \{taskNameLabel.getText()}");
+        boolean pass = false;
         for (ActionController actionController : actionList) {
-
+            String actionName = actionController.getActionNameLabel().getText();
+            if (pass && actionController.isPreviousPass()) {
+                System.out.println(STR."Skipping action '\{actionName}' as previous is passed");
+                continue;
+            }
+            System.out.println(STR."Performing action: \{actionName}");
+            pass = actionController.performAction();
+            if (!actionController.isRequired())
+                pass = true;
+            else if (!pass) { // action is required but failed
+                System.out.println(STR."Fail performing action: \{actionName}");
+                return false;
+            }
         }
+        return true;
     }
 }

@@ -13,7 +13,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.Rectangle?>
 
-<Pane fx:id="mainActionPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Task.ActionController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Operation.ActionController">
    <children>
       <VBox layoutX="3.0" layoutY="2.0" spacing="3.0">
          <children>
@@ -36,10 +36,9 @@
                         </Pane>
                      </children>
                   </Pane>
-                  <HBox layoutX="204.0" layoutY="18.0" spacing="10.0">
+                  <HBox layoutX="309.0" layoutY="18.0" spacing="10.0">
                      <children>
                         <CheckBox fx:id="requiredCheckBox" mnemonicParsing="false" selected="true" text="Required" />
-                        <CheckBox fx:id="previousDependentCheckBox" mnemonicParsing="false" text="Previous dependent" />
                         <CheckBox fx:id="previousPassCheckBox" mnemonicParsing="false" text="Previous pass" />
                      </children>
                   </HBox>

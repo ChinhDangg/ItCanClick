@@ -1,8 +1,9 @@
-package org.dev.Task.Condition;
+package org.dev.Operation.Condition;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.Enum.ReadingCondition;
+import org.dev.Menu.ConditionPixelMenuController;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -21,5 +22,16 @@ public class PixelCondition extends Condition {
     @Override
     public BufferedImage getMainDisplayImage() {
         return displayImage;
+    }
+
+    @Override
+    public boolean checkCondition() {
+        try {
+            boolean pass = ConditionPixelMenuController.checkPixelFromCurrentScreen(mainImageBoundingBox, mainImage);
+            return !not && pass;
+        } catch (Exception e) {
+            System.out.println("Fail checking pixel condition");
+        }
+        return false;
     }
 }

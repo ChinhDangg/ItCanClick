@@ -14,18 +14,15 @@ import javafx.scene.layout.StackPane;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
-import org.dev.Task.Condition.Condition;
-import org.dev.Task.Condition.TextCondition;
-import org.dev.Task.ConditionController;
 import org.dev.Enum.ReadingCondition;
-import org.dev.Task.ActivityController;
-
-import java.awt.image.BufferedImage;
+import org.dev.Operation.ActivityController;
+import org.dev.Operation.Condition.Condition;
+import org.dev.Operation.Condition.TextCondition;
+import org.dev.Operation.ConditionController;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class ConditionTextMenuController extends OptionsMenuController implements Initializable {
     @FXML
@@ -82,7 +79,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
         readingResultLabel.setText(initialReadingResult);
         registeredTextLabel.setText("None");
         addTextTextField.setText("");
-        readTexts = new ArrayList<>();
+        readTexts = new HashSet<>();
     }
     public void showMenu(boolean show) {
         textMenuPane.setVisible(show);
@@ -155,7 +152,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             return zoomedImage;
         return (imageWithEdges == null) ? currentMainImage : imageWithEdges;
     }
-    public String readTextFromImage(BufferedImage image) throws TesseractException {
+    public static String readTextFromImage(BufferedImage image) throws TesseractException {
         System.out.println("Read texts from an image");
         ITesseract tesseract = new Tesseract();
         // deprecated but usable to remove warning variable or just import all languages in tessdata
@@ -173,7 +170,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             }
         }
     }
-    public String readTextFromCurrentScreen(Rectangle boundingBox, double scale) throws AWTException, TesseractException {
+    public static String readTextFromCurrentScreen(Rectangle boundingBox, double scale) throws AWTException, TesseractException {
         BufferedImage image = captureCurrentScreen(boundingBox);
         if (scale != 1.00)
              image = getScaledImage(image, scale);
@@ -181,11 +178,11 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     }
 
     // ------------------------------------------------------
-    private List<String> readTexts = new ArrayList<>();
+    private Set<String> readTexts = new LinkedHashSet<>();
     private void addText(MouseEvent event) {
         System.out.println("Add text");
         String newText = addTextTextField.getText();
-        if (!newText.isEmpty()) {
+        if (!newText.isBlank()) {
             newText = newText.replace("\n", "");
             addNewReadingText(newText);
             updateRegisteredTextLabel();
@@ -194,7 +191,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
         else
             System.out.println("No text entered");
     }
-    public String getAllReadText(List<String> texts) {
+    public String getAllReadText(Set<String> texts) {
         StringBuilder builder = new StringBuilder();
         for (String s : texts)
             builder.append(s).append(" | ");
@@ -219,7 +216,10 @@ public class ConditionTextMenuController extends OptionsMenuController implement
         if (index <= 0)
             System.out.println("No text found to remove");
         else {
-            readTexts.remove(readTexts.size() - 1);
+            String lastElement = null;
+            for (String readText : readTexts)
+                lastElement = readText;
+            readTexts.remove(lastElement);
             updateRegisteredTextLabel();
             System.out.println("Recent text removed");
         }

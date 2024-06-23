@@ -3,11 +3,12 @@ package org.dev;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -16,12 +17,10 @@ import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import org.dev.Menu.ActionMenuController;
 import org.dev.Menu.ConditionMenuController;
-import org.dev.Task.ActionController;
-import org.dev.Task.ConditionController;
+import org.dev.Operation.ActionController;
+import org.dev.Operation.ConditionController;
+import org.dev.Operation.TaskController;
 
-import java.awt.*;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 /**
@@ -51,23 +50,19 @@ public class App extends Application {
         loadConditionMenuPane();
         loadActionMenuPane();
 
-//        VBox vBox = new VBox(actionPane); //will be a task controller to hold all action controllers
-//        Scale scale = new Scale(1.5, 1.5, 0, 0);
-//        vBox.getTransforms().add(scale);
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Task/taskPane.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Operation/operationPane.fxml"));
         VBox taskPane = loader.load();
         Scale scale = new Scale(1.5, 1.5, 0, 0);
         taskPane.getTransforms().add(scale);
 
         Group group = new Group(taskPane);
-        StackPane stackPane = new StackPane(group);
-        stackPane.setAlignment(Pos.TOP_CENTER);
 
 //        ScrollPane scrollPane = new ScrollPane(stackPane);
 //        scrollPane.fitToWidthProperty().set(true);
 
-        primaryCenterStackPane = new StackPane(stackPane);
+        primaryCenterStackPane = new StackPane();
+        primaryCenterStackPane.getChildren().add(group);
+        primaryCenterStackPane.setAlignment(Pos.TOP_CENTER);
 
         BorderPane primary = new FXMLLoader(getClass().getResource("primary.fxml")).load();
         primary.setCenter(primaryCenterStackPane);
@@ -75,6 +70,15 @@ public class App extends Application {
         Scene scene = new Scene(primary);
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static void displayNewNode(Node node) {
+        primaryCenterStackPane.getChildren().getFirst().setVisible(false);
+        primaryCenterStackPane.getChildren().add(node);
+    }
+    public static void backToPrevious(Node node) {
+        primaryCenterStackPane.getChildren().remove(node);
+        primaryCenterStackPane.getChildren().getFirst().setVisible(true);
     }
 
     public static void openConditionMenuPane(ConditionController conditionController) {

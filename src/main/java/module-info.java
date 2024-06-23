@@ -8,13 +8,13 @@ module org.dev {
 
     exports org.dev;
     exports org.dev.Enum;
-    exports org.dev.Task.Condition;
+    exports org.dev.Operation.Condition;
     exports org.dev.Menu;
 
     opens org.dev to javafx.fxml;
     opens org.dev.Menu to javafx.fxml;
-    exports org.dev.Task;
-    opens org.dev.Task to javafx.fxml;
-    exports org.dev.Task.Action;
-    opens org.dev.Task.Action to javafx.fxml;
+    exports org.dev.Operation;
+    opens org.dev.Operation to javafx.fxml;
+    exports org.dev.Operation.Action;
+    opens org.dev.Operation.Action to javafx.fxml;
 }

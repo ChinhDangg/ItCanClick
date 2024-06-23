@@ -10,9 +10,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import org.dev.Enum.ActionTypes;
-import org.dev.Task.Action.*;
-import org.dev.Task.ActionController;
-import org.dev.Task.ActivityController;
+import org.dev.Operation.Action.*;
+import org.dev.Operation.ActionController;
+import org.dev.Operation.ActivityController;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
@@ -38,6 +38,8 @@ public class ActionPerformMenuController extends OptionsMenuController {
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
         startRegisterKeyButton.setOnMouseClicked(this::startRegisteringKey);
+        attemptMinusButton.setOnMouseClicked(this::decreaseNumberOfAttempt);
+        attemptPlusButton.setOnMouseClicked(this::increaseNumberOfAttempt);
         progressiveSearchCheckBox.setOnAction(this::toggleProgressiveSearchCheckBox);
         progressiveSearchMinusButton.setOnMouseClicked(this::decreaseProgressiveSearchTime);
         progressiveSearchPlusButton.setOnMouseClicked(this::increaseProgressiveSearchTime);
@@ -81,8 +83,8 @@ public class ActionPerformMenuController extends OptionsMenuController {
                 System.out.println("Fail saving action");
                 return;
         }
-        newAction.setActionOptions(progressiveSearchCheckBox.isSelected(), waitBeforeTime, waitAfterTime, actionTypes,
-                currentMainImage, currentDisplayImage, mainImageBoundingBox, registeredKey);
+        newAction.setActionOptions(attempt, progressiveSearchCheckBox.isSelected(), progressiveSearchTime, waitBeforeTime,
+                waitAfterTime, actionTypes, currentMainImage, currentDisplayImage, mainImageBoundingBox, registeredKey);
         actionController.registerActionPerform(newAction, currentDisplayImage);
     }
     protected void backToPreviousMenu(MouseEvent event) {
@@ -109,6 +111,24 @@ public class ActionPerformMenuController extends OptionsMenuController {
         showMenu(true);
     }
 
+    // ------------------------------------------------------
+    private int attempt = 1;
+    @FXML
+    private Label attemptNumberLabel;
+    @FXML
+    private Pane attemptMinusButton, attemptPlusButton;
+    private void increaseNumberOfAttempt(MouseEvent event) {
+        attempt = Math.min(attempt + 1, 10);
+        updateAttemptLabel();
+    }
+    private void decreaseNumberOfAttempt(MouseEvent event) {
+        attempt = Math.max(attempt - 1, 1);
+        updateAttemptLabel();
+    }
+    private void updateAttemptLabel() {
+        attemptNumberLabel.setText(Integer.toString(attempt));
+    }
+
     private final int timeStep = 500;
     // ------------------------------------------------------
     private void toggleProgressiveSearchCheckBox(javafx.event.ActionEvent event) {
@@ -124,7 +144,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         updateProgressiveSearchTimeLabel();
     }
     private void updateProgressiveSearchTimeLabel() {
-        progressiveSearchTimeLabel.setText(convertMilliToSecond(progressiveSearchTime)+"s");
+        progressiveSearchTimeLabel.setText(STR."\{convertMilliToSecond(progressiveSearchTime)}s");
     }
     private double convertMilliToSecond(int milli) {
         return (double) milli / 1000.0;
@@ -141,7 +161,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         updateWaitBeforeTimeLabel();
     }
     private void updateWaitBeforeTimeLabel() {
-        waitBeforeTimeLabel.setText(convertMilliToSecond(waitBeforeTime) +"s");
+        waitBeforeTimeLabel.setText(STR."\{convertMilliToSecond(waitBeforeTime)}s");
     }
 
     // ------------------------------------------------------

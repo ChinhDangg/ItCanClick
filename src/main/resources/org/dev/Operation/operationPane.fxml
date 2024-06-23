@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Operation.OperationController">
+   <children>
+      <VBox>
+         <children>
+            <StackPane>
+               <children>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="36.0" stroke="BLACK" strokeType="INSIDE" width="227.0" />
+                  <Label fx:id="operationNameLabel" text="Operation Name" />
+               </children>
+            </StackPane>
+            <StackPane>
+               <children>
+                  <Group fx:id="renameOptionGroup">
+                     <children>
+                        <StackPane fx:id="renameButton" layoutY="1.0">
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="22.0" stroke="BLACK" strokeType="INSIDE" width="52.0" />
+                              <Label text="Rename" />
+                           </children>
+                        </StackPane>
+                        <TextField fx:id="renameTextField" layoutX="53.0" prefHeight="25.0" prefWidth="174.0" />
+                     </children>
+                  </Group>
+               </children>
+            </StackPane>
+            <HBox spacing="5.0">
+               <children>
+                  <StackPane fx:id="removeTaskButton">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="22.0" stroke="BLACK" strokeType="INSIDE" width="76.0" />
+                        <Label text="Remove Task" />
+                     </children>
+                  </StackPane>
+                  <StackPane fx:id="moveTaskUpButton">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="22.0" stroke="BLACK" strokeType="INSIDE" width="85.0" />
+                        <Label text="Move Task Up" />
+                     </children>
+                  </StackPane>
+                  <StackPane fx:id="moveTaskDownButton">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="22.0" stroke="BLACK" strokeType="INSIDE" width="99.0" />
+                        <Label text="Move Task Down" />
+                     </children>
+                  </StackPane>
+               </children>
+               <VBox.margin>
+                  <Insets left="5.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+      <ScrollPane hbarPolicy="NEVER" prefHeight="500.0" prefWidth="520.0" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" vbarPolicy="NEVER">
+         <content>
+            <VBox spacing="10.0">
+               <children>
+                  <VBox fx:id="operationVBox" spacing="20.0" />
+                  <StackPane prefHeight="30.0" prefWidth="518.0">
+                     <children>
+                        <Group>
+                           <children>
+                              <HBox fx:id="addTaskButton" spacing="5.0">
+                                 <children>
+                                    <StackPane>
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                                          <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                          <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                       </children>
+                                    </StackPane>
+                                    <StackPane>
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="69.0" />
+                                          <Label text="Add Task" />
+                                       </children>
+                                    </StackPane>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </Group>
+                     </children>
+                  </StackPane>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </children>
+</VBox>

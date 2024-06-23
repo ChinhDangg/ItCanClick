@@ -1,4 +1,4 @@
-package org.dev.Task.Condition;
+package org.dev.Operation.Condition;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.Enum.ReadingCondition;
@@ -22,8 +22,8 @@ public abstract class Condition {
         this.not = not;
         this.required = required;
     }
-
     public BufferedImage getMainDisplayImage() {
         return mainImage;
     }
+    public abstract boolean checkCondition();
 }

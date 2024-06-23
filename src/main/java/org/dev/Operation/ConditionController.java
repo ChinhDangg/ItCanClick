@@ -1,4 +1,4 @@
-package org.dev.Task;
+package org.dev.Operation;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
@@ -10,7 +10,7 @@ import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import org.dev.App;
 import org.dev.Enum.ConditionRequirement;
-import org.dev.Task.Condition.Condition;
+import org.dev.Operation.Condition.Condition;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -37,6 +37,8 @@ public class ConditionController implements Initializable, ActivityController {
     }
 
     public void registerReadingCondition(Condition condition, BufferedImage image) {
+        if (condition == null || image == null)
+            return;
         isSet = true;
         this.condition = condition;
         readingConditionLabel.setText(condition.getChosenReadingCondition().name());
@@ -44,7 +46,6 @@ public class ConditionController implements Initializable, ActivityController {
         requirementStatusLabel.setText(condition.isRequired() ?
                 ConditionRequirement.Required.name() : ConditionRequirement.Optional.name());
     }
-    private void openConditionOptionPane(MouseEvent event) {
-        App.openConditionMenuPane(this);
-    }
+    private void openConditionOptionPane(MouseEvent event) { App.openConditionMenuPane(this); }
+
 }

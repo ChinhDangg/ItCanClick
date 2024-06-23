@@ -10,16 +10,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import org.dev.App;
-import org.dev.Task.Condition.PixelCondition;
-import org.dev.Task.Condition.TextCondition;
-import org.dev.Task.ConditionController;
 import org.dev.Enum.ReadingCondition;
-import org.dev.Task.ActivityController;
-
-import java.awt.image.BufferedImage;
+import org.dev.Operation.ActivityController;
+import org.dev.Operation.Condition.Condition;
+import org.dev.Operation.ConditionController;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class ConditionMenuController extends MenuController implements Initializable {
@@ -87,38 +83,20 @@ public class ConditionMenuController extends MenuController implements Initializ
             return;
         }
         try {
-            ReadingCondition readingType = conditionController.getCondition().getChosenReadingCondition();
-            if (readingType == ReadingCondition.Text) {
-                TextCondition condition = (TextCondition) conditionController.getCondition();
-                String currentReadText = textMenuController.readTextFromCurrentScreen(
-                        condition.getMainImageBoundingBox(), condition.getCurrentTextScale());
-                updateRecheckResultLabel(recheckReadText(condition.getReadText(), currentReadText), currentReadText);
-            }
-            else if (readingType == ReadingCondition.Pixel) {
-                PixelCondition condition = (PixelCondition) conditionController.getCondition();
-                BufferedImage recent = pixelMenuController.captureCurrentScreen(condition.getMainImageBoundingBox());
-                BufferedImage saved = condition.getMainImage();
-                boolean checked = pixelMenuController.checkPixelFromTwoImages(recent, saved);
-                updateRecheckResultLabel(checked, "All");
-            }
+            Condition condition = conditionController.getCondition();
+            boolean checkedCondition = condition.checkCondition();
+            updateRecheckResultLabel(checkedCondition, condition.getChosenReadingCondition().name());
         } catch(Exception e) {
             System.out.println("Fail rechecking");
         }
-    }
-    private boolean recheckReadText(List<String> readTexts, String text) {
-        text = text.replace("\n", "");
-        for (String s : readTexts)
-            if (s.equals(text))
-                return true;
-        return false;
     }
     private void updateRecheckResultLabel(boolean pass, String newReadText) {
         if (newReadText == null)
             recheckResultLabel.setText("Result");
         else if (pass)
-            recheckResultLabel.setText("Pass: " + newReadText);
+            recheckResultLabel.setText(STR."Pass reading \{newReadText}");
         else
-            recheckResultLabel.setText("Fail: " + newReadText);
+            recheckResultLabel.setText(STR."Fail reading \{newReadText}");
     }
 
     private ConditionTextMenuController textMenuController;

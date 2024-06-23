@@ -7,11 +7,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import org.dev.Task.Condition.Condition;
-import org.dev.Task.Condition.PixelCondition;
-import org.dev.Task.ConditionController;
+import org.dev.Operation.Condition.Condition;
+import org.dev.Operation.Condition.PixelCondition;
+import org.dev.Operation.ConditionController;
 import org.dev.Enum.ReadingCondition;
-import org.dev.Task.ActivityController;
+import org.dev.Operation.ActivityController;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -120,7 +120,8 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     }
 
     // ------------------------------------------------------
-    public boolean checkPixelFromTwoImages(BufferedImage img1, BufferedImage img2) {
+    public static boolean checkPixelFromCurrentScreen(Rectangle boundingBox, BufferedImage img2) throws AWTException {
+        BufferedImage img1 = captureCurrentScreen(boundingBox);
         if (img1.getWidth() != img2.getWidth() || img1.getHeight() != img2.getHeight())
             return false;
         DataBuffer db1 = img1.getRaster().getDataBuffer();

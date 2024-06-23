@@ -1,4 +1,4 @@
-package org.dev.Task.Action;
+package org.dev.Operation.Action;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,9 +14,10 @@ public abstract class Action {
     protected BufferedImage mainImage;
     protected BufferedImage displayImage;
     protected Rectangle mainImageBoundingBox;
+    protected int attempt;
     protected int keyCode;
     protected boolean progressiveSearch;
-    protected int waitBeforeTime, waitAfterTime;
+    protected int progressiveSearchTime, waitBeforeTime, waitAfterTime;
 
     public abstract void performAction();
 
@@ -37,10 +38,12 @@ public abstract class Action {
         robot.keyPress(eventKey);
     }
 
-    public void setActionOptions(boolean progressive, int beforeTime, int afterTime, ActionTypes actionTypes,
+    public void setActionOptions(int attempt, boolean progressive, int progressiveSearchTime, int beforeTime, int afterTime, ActionTypes actionTypes,
                                  BufferedImage mainImage, BufferedImage displayImage, Rectangle boundingBox,
                                  int keyCode) {
+        this.attempt = attempt;
         progressiveSearch = progressive;
+        this.progressiveSearchTime = progressiveSearchTime;
         waitBeforeTime = beforeTime;
         waitAfterTime = afterTime;
         chosenActionPerform = actionTypes;
