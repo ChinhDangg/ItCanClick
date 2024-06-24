@@ -43,6 +43,7 @@ public class MinimizedTaskController implements Initializable {
         previousPassCheckBox.setSelected(false);
         previousPassCheckBox.setVisible(true);
     }
+    public String getTaskName() { return taskNameLabel.getText(); }
 
     public void openTask(MouseEvent event) {
         loadNewTaskPane();

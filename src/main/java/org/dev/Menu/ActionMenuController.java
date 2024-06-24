@@ -1,9 +1,11 @@
 package org.dev.Menu;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import org.dev.App;
@@ -46,6 +48,8 @@ public class ActionMenuController extends MenuController implements Initializabl
     }
     public void loadMenu(ActivityController activityController) {
         this.actionController = (ActionController) activityController;
+        if (actionController.isSet())
+            mainImageView.setImage(SwingFXUtils.toFXImage(actionController.getAction().getDisplayImage(), null));
     }
 
     private ActionPerformMenuController actionPerformMenuController;

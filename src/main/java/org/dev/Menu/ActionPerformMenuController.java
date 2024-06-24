@@ -110,6 +110,12 @@ public class ActionPerformMenuController extends OptionsMenuController {
         registeredKeyPane.setVisible(actionTypes != ActionTypes.MouseClick);
         showMenu(true);
     }
+    private void loadPresetAction() {
+        if (!actionController.isSet())
+            return;
+        Action action = actionController.getAction();
+
+    }
 
     // ------------------------------------------------------
     private int attempt = 1;

@@ -109,6 +109,7 @@ public class OperationController implements Initializable {
         updateTaskIndex(changeIndex);
     }
     private void moveTaskUp(MouseEvent event) {
+        runOperation();
         if (currentSelectedTaskPane == null)
             return;
         ObservableList<Node> children = operationVBox.getChildren();
@@ -153,5 +154,25 @@ public class OperationController implements Initializable {
     private void updateTaskIndex(int start) {
         for (int j = start; j < taskList.size(); j++)
             taskList.get(j).setTaskIndex(j+1);
+    }
+
+    public boolean runOperation() {
+        System.out.println(STR."Start running operation: \{operationNameLabel.getText()}");
+        boolean pass = false;
+        for (MinimizedTaskController taskController : taskList) {
+            String taskName = taskController.getTaskName();
+            if (pass && taskController.isPreviousPass()) {
+                System.out.println(STR."Skipping task \{taskName} as previous is passed");
+                continue;
+            }
+            pass = taskController.runTask();
+            if (!taskController.isRequired())
+                pass = true;
+            else if (!pass) { // task is required but failed
+                System.out.println(STR."Fail performing task: \{taskName}");
+                return false;
+            }
+        }
+        return true;
     }
 }
