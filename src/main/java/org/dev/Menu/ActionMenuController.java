@@ -33,10 +33,8 @@ public class ActionMenuController extends MenuController implements Initializabl
     }
     protected void closeMenuController(MouseEvent event) {
         App.closeActionMenuPane();
-        if (actionPerformMenuController != null && actionPerformMenuController.visible) {
+        if (actionPerformMenuController != null && actionPerformMenuController.visible)
             actionPerformMenuController.backToPreviousMenu(event);
-            actionPerformMenuController.resetMenu();
-        }
 
     }
     protected void startRegistering(MouseEvent event) {
@@ -50,6 +48,8 @@ public class ActionMenuController extends MenuController implements Initializabl
         this.actionController = (ActionController) activityController;
         if (actionController.isSet())
             mainImageView.setImage(SwingFXUtils.toFXImage(actionController.getAction().getDisplayImage(), null));
+        else
+            mainImageView.setImage(null);
     }
 
     private ActionPerformMenuController actionPerformMenuController;

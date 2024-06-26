@@ -15,6 +15,7 @@ import org.dev.Operation.ActionController;
 import org.dev.Operation.ActivityController;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -94,6 +95,15 @@ public class ActionPerformMenuController extends OptionsMenuController {
             showMenu(false);
         }
     }
+    @Override
+    protected void resetMenu() {
+        super.resetMenu();
+        progressiveSearchCheckBox.setSelected(false);
+        updateProgressiveSearchTimeLabel(1000);
+        updateWaitBeforeTimeLabel(1000);
+        updateWaitAfterTimeLabel(1000);
+        updateAttemptLabel(1);
+    }
     protected void showMenu(boolean show) {
         actionPerformMenu.setVisible(show);
         visible = show;
@@ -108,13 +118,29 @@ public class ActionPerformMenuController extends OptionsMenuController {
         ActionTypes actionTypes = actionController.getChosenActionPerform();
         actionPerformIndicationLabel.setText(actionTypes.name());
         registeredKeyPane.setVisible(actionTypes != ActionTypes.MouseClick);
+        if (!loadPresetAction())
+            resetMenu();
         showMenu(true);
     }
-    private void loadPresetAction() {
+    private boolean loadPresetAction() {
         if (!actionController.isSet())
-            return;
+            return false;
         Action action = actionController.getAction();
-
+        ActionTypes actionTypes = actionController.getChosenActionPerform();
+        if (action.getChosenActionPerform() != actionTypes)
+            return false;
+        if (actionTypes != ActionTypes.MouseClick)
+            updateRegisteredKeyLabel(action.getKeyCode());
+        updateAttemptLabel(action.getAttempt());
+        progressiveSearchCheckBox.setSelected(action.isProgressiveSearch());
+        updateProgressiveSearchTimeLabel(action.getProgressiveSearchTime());
+        updateWaitBeforeTimeLabel(action.getWaitBeforeTime());
+        updateWaitAfterTimeLabel(action.getWaitAfterTime());
+        currentDisplayImage = action.getDisplayImage();
+        displayMainImageView(currentDisplayImage);
+        currentMainImage = action.getMainImage();
+        mainImageBoundingBox = action.getMainImageBoundingBox();
+        return true;
     }
 
     // ------------------------------------------------------
@@ -124,14 +150,13 @@ public class ActionPerformMenuController extends OptionsMenuController {
     @FXML
     private Pane attemptMinusButton, attemptPlusButton;
     private void increaseNumberOfAttempt(MouseEvent event) {
-        attempt = Math.min(attempt + 1, 10);
-        updateAttemptLabel();
+        updateAttemptLabel(Math.min(attempt + 1, 10));
     }
     private void decreaseNumberOfAttempt(MouseEvent event) {
-        attempt = Math.max(attempt - 1, 1);
-        updateAttemptLabel();
+        updateAttemptLabel(Math.max(attempt - 1, 1));
     }
-    private void updateAttemptLabel() {
+    private void updateAttemptLabel(int newAttempt) {
+        attempt = newAttempt;
         attemptNumberLabel.setText(Integer.toString(attempt));
     }
 
@@ -142,46 +167,41 @@ public class ActionPerformMenuController extends OptionsMenuController {
     }
     private int progressiveSearchTime = 1000;
     private void increaseProgressiveSearchTime(MouseEvent event) {
-        progressiveSearchTime += timeStep;
-        updateProgressiveSearchTimeLabel();
+        updateProgressiveSearchTimeLabel(progressiveSearchTime + timeStep);
     }
     private void decreaseProgressiveSearchTime(MouseEvent event) {
-        progressiveSearchTime = Math.max(progressiveSearchTime-timeStep, 0);
-        updateProgressiveSearchTimeLabel();
+        updateProgressiveSearchTimeLabel(Math.max(progressiveSearchTime - timeStep, 0));
     }
-    private void updateProgressiveSearchTimeLabel() {
+    private void updateProgressiveSearchTimeLabel(int newProgressiveTime) {
+        progressiveSearchTime = newProgressiveTime;
         progressiveSearchTimeLabel.setText(STR."\{convertMilliToSecond(progressiveSearchTime)}s");
     }
-    private double convertMilliToSecond(int milli) {
-        return (double) milli / 1000.0;
-    }
+    private double convertMilliToSecond(int milli) { return (double) milli / 1000.0; }
 
     // ------------------------------------------------------
     private int waitBeforeTime = 1000;
     private void increaseWaitBeforeTime(MouseEvent event) {
-        waitBeforeTime += timeStep;
-        updateWaitBeforeTimeLabel();
+        updateWaitBeforeTimeLabel(waitBeforeTime + timeStep);
     }
     private void decreaseWaitBeforeTime(MouseEvent event) {
-        waitBeforeTime = Math.max(waitBeforeTime-timeStep, 0);
-        updateWaitBeforeTimeLabel();
+        updateWaitBeforeTimeLabel(Math.max(waitBeforeTime-timeStep, 0));
     }
-    private void updateWaitBeforeTimeLabel() {
+    private void updateWaitBeforeTimeLabel(int newWaitBeforeTime) {
+        waitBeforeTime = newWaitBeforeTime;
         waitBeforeTimeLabel.setText(STR."\{convertMilliToSecond(waitBeforeTime)}s");
     }
 
     // ------------------------------------------------------
     private int waitAfterTime = 1000;
     private void increaseWaitAfterTime(MouseEvent event) {
-        waitAfterTime += timeStep;
-        updateWaitAfterTime();
+        updateWaitAfterTimeLabel(waitAfterTime + timeStep);
     }
     private void decreaseWaitAfterTime(MouseEvent event) {
-        waitAfterTime = Math.max(waitAfterTime-timeStep, 0);
-        updateWaitAfterTime();
+        updateWaitAfterTimeLabel(Math.max(waitAfterTime-timeStep, 0));
     }
-    private void updateWaitAfterTime() {
-        waitAfterTimeLabel.setText(convertMilliToSecond(waitAfterTime) +"s");
+    private void updateWaitAfterTimeLabel(int newWaitAfterTime) {
+        waitAfterTime = newWaitAfterTime;
+        waitAfterTimeLabel.setText(STR."\{convertMilliToSecond(waitAfterTime)}s");
     }
 
     // ------------------------------------------------------
@@ -199,13 +219,13 @@ public class ActionPerformMenuController extends OptionsMenuController {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == mouseTimer) {
             Point p = MouseInfo.getPointerInfo().getLocation();
-            if (!p.equals(previousMousePoint)) {
-                previousMousePoint = p;
-                try {
-                    displayMainImageView(getDisplayImage(p.x, p.y));
-                } catch (Exception ex) {
-                    System.out.println("Error at mose displaying captured image at pixel menu");
-                }
+            if (p.equals(previousMousePoint))
+                return;
+            previousMousePoint = p;
+            try {
+                displayMainImageView(getDisplayImage(p.x, p.y));
+            } catch (Exception ex) {
+                System.out.println("Error at mose displaying captured image at pixel menu");
             }
         }
     }
@@ -222,26 +242,30 @@ public class ActionPerformMenuController extends OptionsMenuController {
     protected void stopMouseMotion(MouseEvent event) {
         stopMouseMotionListening();
         if (keyIsListening) {
-            GlobalScreen.removeNativeKeyListener(this);
             registeredKeyLabelPane.setDisable(true);
+            keyIsListening = false;
         }
     }
     private int registeredKey = -1;
     public void nativeKeyReleased(NativeKeyEvent e) {
-        System.out.println("Key Pressed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+        System.out.println(STR."Key Pressed: \{NativeKeyEvent.getKeyText(e.getKeyCode())}");
+        int nativeKeyCode = e.getKeyCode();
         if (keyIsListening) {
-            int keyEvent = mapNativeKeyToKeyEvent(e.getKeyCode());
+            int keyEvent = mapNativeKeyToKeyEvent(nativeKeyCode);
             if (keyEvent == -1) {
                 System.out.println("Key is not supported, please try another key");
                 return;
             }
-            registeredKey = keyEvent;
-            Platform.runLater(() -> registeredKeyLabel.setText(NativeKeyEvent.getKeyText(e.getKeyCode())));
+            updateRegisteredKeyLabel(keyEvent);
         }
         if (e.getKeyCode() == NativeKeyEvent.VC_F2)
             startMouseMotionListening();
         else if (e.getKeyCode() == NativeKeyEvent.VC_F1)
             stopMouseMotionListening();
+    }
+    private void updateRegisteredKeyLabel(int keyEvent) {
+        registeredKey = keyEvent;
+        Platform.runLater(() -> registeredKeyLabel.setText(KeyEvent.getKeyText(registeredKey)));
     }
     private int mapNativeKeyToKeyEvent(int nativeKey) {
         if (nativeKey > 1 && nativeKey < 12) // 0-9
