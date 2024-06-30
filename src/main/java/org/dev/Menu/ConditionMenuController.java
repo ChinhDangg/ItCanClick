@@ -1,5 +1,9 @@
 package org.dev.Menu;
 
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,17 +26,13 @@ public class ConditionMenuController extends MenuController implements Initializ
     @FXML
     private ChoiceBox<ReadingCondition> readingTypeChoice;
     @FXML
-    private StackPane recheckButton;
-    @FXML
-    private Pane recheckAndAddTextPane;
-    @FXML
-    private Label recheckResultLabel;
+    private StackPane removeButton;
     private ConditionController conditionController;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
-        recheckButton.setOnMouseClicked(this:: recheck);
+        removeButton.setOnMouseClicked(this::removeSelectedCondition);
     }
 
     protected void loadTypeChoices() {
@@ -42,14 +42,12 @@ public class ConditionMenuController extends MenuController implements Initializ
     }
     protected void closeMenuController(MouseEvent event) {
         App.closeConditionMenuPane();
-        if (textMenuController != null && textMenuController.visible) {
+        if (textMenuController != null && textMenuController.visible)
             textMenuController.backToPreviousMenu(event);
-            textMenuController.resetTextMenu();
-        }
-        else if (pixelMenuController != null && pixelMenuController.visible) {
+        else if (pixelMenuController != null && pixelMenuController.visible)
             pixelMenuController.backToPreviousMenu(event);
-            pixelMenuController.resetPixelMenu();
-        }
+        GlobalScreen.removeNativeKeyListener(this);
+        isKeyListening = false;
     }
     protected void startRegistering(MouseEvent event) {
         System.out.println("Click on start registering");
@@ -65,19 +63,23 @@ public class ConditionMenuController extends MenuController implements Initializ
         }
     }
     public void loadMenu(ActivityController activityController) {
+        if (!isKeyListening) {
+            isKeyListening = true;
+            GlobalScreen.addNativeKeyListener(this);
+        }
         this.conditionController = (ConditionController) activityController;
         boolean controllerSet = conditionController.isSet();
-        recheckAndAddTextPane.setVisible(controllerSet);
+        recheckPane.setVisible(controllerSet);
         updateRecheckResultLabel(false, null);
         if (controllerSet)
-            mainImageView.setImage(SwingFXUtils.toFXImage(
-                    conditionController.getCondition().getMainDisplayImage(), null));
+            mainImageView.setImage(SwingFXUtils.toFXImage(conditionController.getCondition().getMainDisplayImage(), null));
         else
             mainImageView.setImage(null);
     }
 
-    private void recheck(MouseEvent event) {
-        System.out.println("Recheck");
+    // ------------------------------------------------------
+    protected void recheck() {
+        System.out.println("Rechecking condition");
         if (!conditionController.isSet()) {
             System.out.println("Condition Controller is not set - bug");
             return;
@@ -85,11 +87,12 @@ public class ConditionMenuController extends MenuController implements Initializ
         try {
             Condition condition = conditionController.getCondition();
             boolean checkedCondition = condition.checkCondition();
-            updateRecheckResultLabel(checkedCondition, condition.getChosenReadingCondition().name());
+            Platform.runLater(() -> updateRecheckResultLabel(checkedCondition, condition.getChosenReadingCondition().name()));
         } catch(Exception e) {
-            System.out.println("Fail rechecking");
+            System.out.println("Fail rechecking condition");
         }
     }
+    protected void recheck(MouseEvent event) { recheck(); }
     private void updateRecheckResultLabel(boolean pass, String newReadText) {
         if (newReadText == null)
             recheckResultLabel.setText("Result");
@@ -97,6 +100,11 @@ public class ConditionMenuController extends MenuController implements Initializ
             recheckResultLabel.setText(STR."Pass reading \{newReadText}");
         else
             recheckResultLabel.setText(STR."Fail reading \{newReadText}");
+    }
+    public void nativeKeyReleased(NativeKeyEvent e) {
+        int nativeKeyCode = e.getKeyCode();
+        if (nativeKeyCode == NativeKeyEvent.VC_F2)
+            recheck();
     }
 
     private ConditionTextMenuController textMenuController;
@@ -122,5 +130,9 @@ public class ConditionMenuController extends MenuController implements Initializ
         }
     }
 
-    private ReadingCondition getCurrentReadingTypeChoice() { return readingTypeChoice.getValue(); }
+    private void removeSelectedCondition(MouseEvent event) {
+        conditionController.removeThisConditionFromParent();
+        closeMenuController(event);
+        System.out.println("Removed selected condition from action");
+    }
 }

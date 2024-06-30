@@ -242,6 +242,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
         updateZoomValue(1);
         displayMainImageView(null);
         resetImageWidthHeight();
+        outsideBoxWidth = 10;
         fitImageCheckBox.setSelected(true);
     }
 }

@@ -29,33 +29,21 @@
                   </StackPane>
                </children>
             </Pane>
-            <StackPane layoutX="7.0" layoutY="368.0">
+            <Pane fx:id="recheckPane" layoutX="5.0" layoutY="370.0">
                <children>
-                  <Pane prefHeight="165.0" prefWidth="487.0">
+                  <StackPane fx:id="recheckButton">
                      <children>
-                        <Pane fx:id="recheckAndAddTextPane" layoutX="15.0" layoutY="9.0">
-                           <children>
-                              <Pane>
-                                 <children>
-                                    <StackPane fx:id="recheckButton">
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="44.0" stroke="BLACK" strokeType="INSIDE" width="91.0" />
-                                          <Label text="Recheck">
-                                             <font>
-                                                <Font size="14.0" />
-                                             </font>
-                                          </Label>
-                                       </children>
-                                    </StackPane>
-                                    <Label fx:id="recheckResultLabel" layoutX="108.0" layoutY="14.0" prefHeight="17.0" prefWidth="277.0" text="Result" />
-                                 </children>
-                              </Pane>
-                           </children>
-                        </Pane>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="44.0" stroke="BLACK" strokeType="INSIDE" width="91.0" />
+                        <Label text="Recheck">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
                      </children>
-                  </Pane>
+                  </StackPane>
+                  <Label fx:id="recheckResultLabel" layoutX="108.0" layoutY="14.0" prefHeight="17.0" prefWidth="277.0" text="Result" />
                </children>
-            </StackPane>
+            </Pane>
             <StackPane fx:id="startRegisteringButton" layoutX="152.0" layoutY="542.0">
                <children>
                   <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="44.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
@@ -66,16 +54,16 @@
                   </Label>
                </children>
             </StackPane>
-            <StackPane layoutX="14.0" layoutY="558.0" visible="false">
+            <StackPane fx:id="backButton" layoutX="14.0" layoutY="558.0">
                <children>
                   <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="41.0" />
                   <Label text="Back" />
                </children>
             </StackPane>
-            <StackPane layoutX="445.0" layoutY="11.0" visible="false">
+            <StackPane fx:id="removeButton" layoutX="7.0" layoutY="7.0">
                <children>
-                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="41.0" />
-                  <Label text="Save" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="52.0" />
+                  <Label text="Remove" />
                </children>
             </StackPane>
          </children>

@@ -28,7 +28,10 @@ public class TextCondition extends Condition {
         try {
             String text = ConditionTextMenuController.readTextFromCurrentScreen(mainImageBoundingBox, getCurrentTextScale());
             text = text.replace("\n", "");
-            return !not && readText.contains(text);
+            boolean pass = readText.contains(text);
+            if (not)
+                return !pass;
+            return pass;
         } catch (Exception e) {
             System.out.println("Fail checking text condition");
         }

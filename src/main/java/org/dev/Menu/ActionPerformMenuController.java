@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import org.dev.App;
 import org.dev.Enum.ActionTypes;
 import org.dev.Operation.Action.*;
 import org.dev.Operation.ActionController;
@@ -61,38 +62,31 @@ public class ActionPerformMenuController extends OptionsMenuController {
             return;
         }
         ActionTypes actionTypes = actionController.getChosenActionPerform();
-        if (actionTypes != ActionTypes.MouseClick)
-            if (registeredKey == -1) {
-                System.out.println("A key have not been registered");
-                return;
-            }
-        Action newAction;
-        switch(actionTypes) {
-            case MouseClick:
-                newAction = new ActionMouseClick();
-                break;
-            case KeyClick:
-                newAction = new ActionKeyClick();
-                break;
-            case KeyPress:
-                newAction = new ActionKeyPress();
-                break;
-            case KeyPressMouseClick:
-                newAction = new ActionKeyPressMouseClick();
-                break;
-            default:
-                System.out.println("Fail saving action");
-                return;
+        if (actionTypes.isKeyAction() && registeredKey == -1) {
+            System.out.println("A key have not been registered");
+            return;
         }
+        Action newAction = getCorrespondAction(actionTypes);
         newAction.setActionOptions(attempt, progressiveSearchCheckBox.isSelected(), progressiveSearchTime, waitBeforeTime,
                 waitAfterTime, actionTypes, currentMainImage, currentDisplayImage, mainImageBoundingBox, registeredKey);
         actionController.registerActionPerform(newAction, currentDisplayImage);
     }
+    private Action getCorrespondAction(ActionTypes actionTypes) {
+        return switch (actionTypes) {
+            case MouseClick -> new ActionMouseClick();
+            case MouseDoubleClick -> new ActionMouseDoubleClick();
+            case KeyClick -> new ActionKeyClick();
+            case KeyPress -> new ActionKeyPress();
+            case KeyPressMouseClick -> new ActionKeyPressMouseClick();
+        };
+    }
+
     protected void backToPreviousMenu(MouseEvent event) {
         if (visible) {
             System.out.println("Backed");
             stopAllListeners();
             showMenu(false);
+            App.actionMenuController.loadMenu(actionController);
         }
     }
     @Override
@@ -117,7 +111,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         actionController = (ActionController) activityController;
         ActionTypes actionTypes = actionController.getChosenActionPerform();
         actionPerformIndicationLabel.setText(actionTypes.name());
-        registeredKeyPane.setVisible(actionTypes != ActionTypes.MouseClick);
+        registeredKeyPane.setVisible(actionTypes.isKeyAction());
         if (!loadPresetAction())
             resetMenu();
         showMenu(true);
@@ -129,7 +123,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         ActionTypes actionTypes = actionController.getChosenActionPerform();
         if (action.getChosenActionPerform() != actionTypes)
             return false;
-        if (actionTypes != ActionTypes.MouseClick)
+        if (actionTypes.isKeyAction())
             updateRegisteredKeyLabel(action.getKeyCode());
         updateAttemptLabel(action.getAttempt());
         progressiveSearchCheckBox.setSelected(action.isProgressiveSearch());
@@ -236,12 +230,14 @@ public class ActionPerformMenuController extends OptionsMenuController {
     private boolean keyIsListening = false;
     private void startRegisteringKey(MouseEvent event) {
         keyIsListening = true;
+        GlobalScreen.addNativeKeyListener(this);
         registeredKeyLabelPane.setDisable(false);
     }
     @Override
     protected void stopMouseMotion(MouseEvent event) {
         stopMouseMotionListening();
         if (keyIsListening) {
+            GlobalScreen.removeNativeKeyListener(this);
             registeredKeyLabelPane.setDisable(true);
             keyIsListening = false;
         }
@@ -258,9 +254,9 @@ public class ActionPerformMenuController extends OptionsMenuController {
             }
             updateRegisteredKeyLabel(keyEvent);
         }
-        if (e.getKeyCode() == NativeKeyEvent.VC_F2)
+        if (nativeKeyCode == NativeKeyEvent.VC_F2)
             startMouseMotionListening();
-        else if (e.getKeyCode() == NativeKeyEvent.VC_F1)
+        else if (nativeKeyCode == NativeKeyEvent.VC_F1)
             stopMouseMotionListening();
     }
     private void updateRegisteredKeyLabel(int keyEvent) {
@@ -271,8 +267,8 @@ public class ActionPerformMenuController extends OptionsMenuController {
         if (nativeKey > 1 && nativeKey < 12) // 0-9
             return NativeKeyEvent.getKeyText(nativeKey).charAt(0);
         else if ((nativeKey > 15 && nativeKey < 26) || (nativeKey > 29 && nativeKey < 39) ||
-                (nativeKey > 43 && nativeKey < 51)) // a - z
-            return NativeKeyEvent.getKeyText(nativeKey).toLowerCase().charAt(0);
+                (nativeKey > 43 && nativeKey < 51)) // A-Z
+            return NativeKeyEvent.getKeyText(nativeKey).charAt(0);
         return -1;
     }
 }

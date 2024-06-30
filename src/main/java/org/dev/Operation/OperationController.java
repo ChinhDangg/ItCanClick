@@ -61,12 +61,13 @@ public class OperationController implements Initializable {
         renameOptionGroup.setVisible(false);
     }
 
+    // ------------------------------------------------------
     private void addNewMinimizedTask(MouseEvent event) {
         try {
-//            if (!minimizedTaskControllers.isEmpty() && !minimizedTaskControllers.getFirst().isSet()) {
-//                System.out.println("Recent minimized task is not set");
-//                return;
-//            }
+            if (!taskList.isEmpty() && !taskList.getFirst().isSet()) {
+                System.out.println("Recent minimized task is not set");
+                return;
+            }
             FXMLLoader loader = new FXMLLoader(getClass().getResource("minimizedTaskPane.fxml"));
             StackPane taskPane = loader.load();
             taskPane.getChildren().getFirst().setOnMouseClicked(this::selectTheTaskPane);
@@ -82,6 +83,7 @@ public class OperationController implements Initializable {
         }
     }
 
+    // ------------------------------------------------------
     private Pane currentSelectedTaskPane = null;
     private void selectTheTaskPane(MouseEvent event) {
         try {
@@ -96,6 +98,7 @@ public class OperationController implements Initializable {
     private void setSelected(Pane taskPane) { taskPane.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); }
     private void setUnselected(Pane taskPane) { taskPane.setStyle(""); }
 
+    // ------------------------------------------------------
     private void removeSelectedTaskPane(MouseEvent event) {
         if (currentSelectedTaskPane == null)
             return;
@@ -109,7 +112,7 @@ public class OperationController implements Initializable {
         updateTaskIndex(changeIndex);
     }
     private void moveTaskUp(MouseEvent event) {
-        runOperation();
+        startOperation();
         if (currentSelectedTaskPane == null)
             return;
         ObservableList<Node> children = operationVBox.getChildren();
@@ -156,7 +159,12 @@ public class OperationController implements Initializable {
             taskList.get(j).setTaskIndex(j+1);
     }
 
-    public boolean runOperation() {
+    // ------------------------------------------------------
+    public void startOperation() {
+        Thread thread = new Thread(this::runOperation);
+        thread.start();
+    }
+    private void runOperation() {
         System.out.println(STR."Start running operation: \{operationNameLabel.getText()}");
         boolean pass = false;
         for (MinimizedTaskController taskController : taskList) {
@@ -170,9 +178,8 @@ public class OperationController implements Initializable {
                 pass = true;
             else if (!pass) { // task is required but failed
                 System.out.println(STR."Fail performing task: \{taskName}");
-                return false;
+                break;
             }
         }
-        return true;
     }
 }

@@ -12,8 +12,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import lombok.Getter;
-import lombok.Setter;
+import javafx.scene.transform.Scale;
 import org.dev.App;
 
 import java.io.IOException;
@@ -26,7 +25,7 @@ public class TaskController implements Initializable {
     @FXML
     private Group mainTaskGroup;
     @FXML
-    private VBox taskVBox;
+    private VBox mainTaskOuterVBox, taskVBox;
     @FXML
     private Label taskNameLabel;
     @FXML
@@ -36,6 +35,8 @@ public class TaskController implements Initializable {
     @FXML
     private StackPane renameButton, removeActionButton, moveActionUpButton, moveActionDownButton, addNewActionButton;
     private final List<ActionController> actionList = new ArrayList<>();
+
+    private double currentGlobalScale = 1;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -50,7 +51,13 @@ public class TaskController implements Initializable {
     }
 
     public boolean isSet() { return (!actionList.isEmpty() && actionList.getFirst().isSet()); }
-    public Node getTaskPane() { return mainTaskGroup; }
+    public Node getTaskPane() {
+        if (currentGlobalScale != App.currentGlobalScale) {
+            currentGlobalScale = App.currentGlobalScale;
+            mainTaskOuterVBox.getTransforms().add(new Scale(currentGlobalScale, currentGlobalScale, 0, 0));
+        }
+        return mainTaskGroup;
+    }
     public String getTaskName() { return taskNameLabel.getText(); }
     private void backToPrevious(MouseEvent event) { App.backToPrevious(mainTaskGroup); }
 

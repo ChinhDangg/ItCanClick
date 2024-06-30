@@ -44,6 +44,7 @@ public class App extends Application {
     public static StackPane primaryCenterStackPane;
     public static ActionMenuController actionMenuController;
     public static ConditionMenuController conditionMenuController;
+    public static double currentGlobalScale = 1.5;
 
     @Override
     public void start(Stage stage) throws IOException {

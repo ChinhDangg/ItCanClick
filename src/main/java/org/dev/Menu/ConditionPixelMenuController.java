@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import org.dev.App;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Condition.PixelCondition;
 import org.dev.Operation.ConditionController;
@@ -26,7 +27,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     @FXML
     private CheckBox showHideLineCheckBox, blackWhiteLineCheckBox;
     @FXML
-    private CheckBox notOptionCheckBox, requiredOptionCheckBox;
+    private CheckBox notOptionCheckBox, requiredOptionCheckBox, globalSearchCheckBox;
     private ConditionController conditionController;
 
     @Override
@@ -55,10 +56,12 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             currentMainImage = pixelCondition.getMainImage();
             displayMainImageView(pixelCondition.getDisplayImage());
         }
+        else
+            resetPixelMenu();
         GlobalScreen.addNativeKeyListener(this);
         showMenu(true);
     }
-    public void resetPixelMenu() {
+    private void resetPixelMenu() {
         resetMenu();
         notOptionCheckBox.setSelected(false);
         requiredOptionCheckBox.setSelected(true);
@@ -84,7 +87,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
         }
         conditionController.registerReadingCondition(new PixelCondition(ReadingCondition.Pixel, currentMainImage,
                 mainImageBoundingBox, notOptionCheckBox.isSelected(), requiredOptionCheckBox.isSelected(),
-                currentDisplayImage), currentDisplayImage);
+                currentDisplayImage, globalSearchCheckBox.isSelected()), currentDisplayImage);
     }
     @Override
     protected void backToPreviousMenu(MouseEvent event) {
@@ -92,6 +95,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             System.out.println("Backed to main menu");
             stopAllListeners();
             showMenu(false);
+            App.conditionMenuController.loadMenu(conditionController);
         }
     }
 
@@ -117,23 +121,6 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
         g.fillRect(0, 0, width, height);
         g.dispose();
         return temp;
-    }
-
-    // ------------------------------------------------------
-    public static boolean checkPixelFromCurrentScreen(Rectangle boundingBox, BufferedImage img2) throws AWTException {
-        BufferedImage img1 = captureCurrentScreen(boundingBox);
-        if (img1.getWidth() != img2.getWidth() || img1.getHeight() != img2.getHeight())
-            return false;
-        DataBuffer db1 = img1.getRaster().getDataBuffer();
-        DataBuffer db2 = img2.getRaster().getDataBuffer();
-        int size1 = db1.getSize();
-        int size2 = db2.getSize();
-        if (size1 != size2)
-            return false;
-        for (int i = 0; i < size1; i++)
-            if (db1.getElem(i) != db2.getElem(i))
-                return false;
-        return true;
     }
 
     // ------------------------------------------------------

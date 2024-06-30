@@ -54,17 +54,8 @@ public class ActionController implements Initializable, ActivityController {
     @Getter
     @Setter
     private ActionTypes chosenActionPerform;
-
     private final List<ConditionController> entryConditionControllers = new ArrayList<>();
     private final List<ConditionController> exitConditionControllers = new ArrayList<>();
-
-    public List<ConditionController> getEntryConditionControllers() {
-        return new ArrayList<>(entryConditionControllers);
-    }
-
-    public List<ConditionController> getExitConditionControllers() {
-        return new ArrayList<>(exitConditionControllers);
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -115,11 +106,9 @@ public class ActionController implements Initializable, ActivityController {
     private void openActionMenuPane(MouseEvent event) {
         App.openActionMenuPane(this);
     }
-
     private FXMLLoader getConditionPaneLoader() {
         return new FXMLLoader(getClass().getResource("conditionPane.fxml"));
     }
-
     public int getNumberOfCondition(HBox conditionBox) {
         return conditionBox.getChildren().size();
     }
@@ -162,27 +151,22 @@ public class ActionController implements Initializable, ActivityController {
         }
     }
 
+    // ------------------------------------------------------
     public boolean performAction() {
-        try {
-            if (action == null) {
-                System.out.println("Bug, no action is found");
-                return false;
-            }
-            if (action.isProgressiveSearch())
-                return performActionWithProgressiveSearch();
-            return performActionWithAttempt();
-        } catch (Exception e) {
-            System.out.println("Fail performing overall action in action controller");
+        if (action == null) {
+            System.out.println("Bug, no action is found");
+            return false;
         }
-        return false;
+        if (action.isProgressiveSearch())
+            return performActionWithProgressiveSearch();
+        return performActionWithAttempt();
     }
     private boolean performActionWithAttempt() {
         String actionName = actionNameLabel.getText();
         try {
             int count = action.getAttempt();
             boolean entryPassed = false;
-            while (count >= 0) {
-                count--;
+            while (count > 0) {
                 Thread.sleep(action.getWaitBeforeTime());
                 if (checkAllConditions(entryConditionControllers)) {
                     System.out.println(STR."Found entry with \{actionName}");
@@ -199,6 +183,9 @@ public class ActionController implements Initializable, ActivityController {
                     System.out.println(STR."Found exit with \{actionName}");
                     return true;
                 }
+                else
+                    System.out.println("Can't find exit");
+                count--;
             }
         } catch (Exception e) {
             System.out.println("Fail performing action with number of attempts");
@@ -211,6 +198,7 @@ public class ActionController implements Initializable, ActivityController {
             long startTime = System.currentTimeMillis();
             int duration = action.getProgressiveSearchTime();
             boolean entryPassed = false;
+            System.out.println("Starting progressive search");
             while (System.currentTimeMillis() - startTime < duration) {
                 if (checkAllConditions(entryConditionControllers)) {
                     action.performAction();

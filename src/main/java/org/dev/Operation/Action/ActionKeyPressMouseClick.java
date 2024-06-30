@@ -2,6 +2,7 @@ package org.dev.Operation.Action;
 
 import java.awt.AWTException;
 import java.awt.Robot;
+import java.awt.event.KeyEvent;
 
 public class ActionKeyPressMouseClick extends Action {
     @Override
@@ -19,5 +20,6 @@ public class ActionKeyPressMouseClick extends Action {
         performMouseClick(mainImageBoundingBox);
         robot.delay(70 + (int) (Math.random() * 50));
         robot.keyRelease(eventKey);
+        System.out.println(STR."Key released: \{KeyEvent.getKeyText(eventKey)}");
     }
 }

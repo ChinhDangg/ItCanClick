@@ -21,7 +21,11 @@
             </Pane>
             <Pane layoutY="130.0" prefHeight="20.0" prefWidth="198.0" style="-fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 2px;">
                <children>
-                  <Label fx:id="requirementStatusLabel" layoutX="50.0" layoutY="1.0" text="Required/Optional" />
+                  <StackPane layoutX="1.0" layoutY="1.0" prefHeight="17.0" prefWidth="197.0">
+                     <children>
+                        <Label fx:id="requirementStatusLabel" text="Required/Optional" />
+                     </children>
+                  </StackPane>
                </children>
             </Pane>
             <Pane layoutX="71.0" layoutY="149.0">

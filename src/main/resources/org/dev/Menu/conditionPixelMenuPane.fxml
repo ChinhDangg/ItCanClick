@@ -5,6 +5,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
@@ -188,10 +189,15 @@
             <Label text="Save" />
          </children>
       </StackPane>
-      <Pane layoutX="399.0" layoutY="59.0">
+      <Pane layoutX="385.0" layoutY="46.0">
          <children>
-            <CheckBox fx:id="notOptionCheckBox" mnemonicParsing="false" text="NOT" />
-            <CheckBox fx:id="requiredOptionCheckBox" layoutY="26.0" mnemonicParsing="false" selected="true" text="Required" />
+            <VBox spacing="5.0">
+               <children>
+                  <CheckBox fx:id="notOptionCheckBox" mnemonicParsing="false" text="NOT" />
+                  <CheckBox fx:id="requiredOptionCheckBox" mnemonicParsing="false" selected="true" text="Required" />
+                  <CheckBox fx:id="globalSearchCheckBox" mnemonicParsing="false" text="Global Search" />
+               </children>
+            </VBox>
          </children>
       </Pane>
    </children>

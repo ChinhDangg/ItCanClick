@@ -3,9 +3,11 @@ package org.dev.Operation;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import org.dev.App;
@@ -46,6 +48,15 @@ public class ConditionController implements Initializable, ActivityController {
         requirementStatusLabel.setText(condition.isRequired() ?
                 ConditionRequirement.Required.name() : ConditionRequirement.Optional.name());
     }
+
     private void openConditionOptionPane(MouseEvent event) { App.openConditionMenuPane(this); }
 
+    public void removeThisConditionFromParent() {
+        try {
+            HBox parent = (HBox) conditionStackPane.getParent();
+            parent.getChildren().remove(conditionStackPane);
+        } catch (Exception e) {
+            System.out.println("Fail removing condition pane from parent");
+        }
+    }
 }

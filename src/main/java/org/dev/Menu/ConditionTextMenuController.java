@@ -14,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
+import org.dev.App;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Operation.ActivityController;
 import org.dev.Operation.Condition.Condition;
@@ -68,10 +69,12 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             displayMainImageView(currentMainImage);
             registeredTextLabel.setText(getAllReadText(textCondition.getReadText()));
         }
+        else
+            resetTextMenu();
         GlobalScreen.addNativeKeyListener(this);
         showMenu(true);
     }
-    public void resetTextMenu() {
+    private void resetTextMenu() {
         resetMenu();
         updateTextScaleValue(1);
         notOptionCheckBox.setSelected(false);
@@ -107,6 +110,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             System.out.println("Backed to main menu");
             stopAllListeners();
             showMenu(false);
+            App.conditionMenuController.loadMenu(conditionController);
         }
     }
 
