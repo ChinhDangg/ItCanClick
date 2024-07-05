@@ -3,22 +3,30 @@ package org.dev.Operation.Action;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.Enum.ActionTypes;
+
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.Base64;
 
 @Getter
-public abstract class Action {
+public abstract class Action implements Serializable {
+    @Setter
+    protected String actionName;
     @Setter
     protected ActionTypes chosenActionPerform;
-    protected BufferedImage mainImage;
-    protected BufferedImage displayImage;
+    protected transient BufferedImage mainImage;
+    protected transient BufferedImage displayImage;
     protected Rectangle mainImageBoundingBox;
     protected int attempt;
     protected int keyCode;
     protected boolean progressiveSearch;
     protected int progressiveSearchTime, waitBeforeTime, waitAfterTime;
+    @Setter
+    protected boolean required, previousPass;
 
     public abstract void performAction();
 
@@ -31,7 +39,7 @@ public abstract class Action {
         robot.mousePress(InputEvent.BUTTON1_DOWN_MASK); // left mouse
         robot.delay(50 + (int) (Math.random() * 100));
         robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-        System.out.println(STR."Mouse clicked at (\{randomX}, \{randomY})");
+        System.out.println("Mouse clicked at (" + randomX + ", " + randomY + ")");
     }
 
     protected void performMouseDoubleClick(Rectangle box) throws AWTException {
@@ -47,14 +55,14 @@ public abstract class Action {
         robot.mousePress(InputEvent.BUTTON1_DOWN_MASK); // left mouse
         robot.delay(50 + (int) (Math.random() * 100));
         robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-        System.out.println(STR."Mouse double clicks at (\{randomX}, \{randomY})");
+        System.out.println("Mouse clicked at (" + randomX + ", " + randomY + ")");
     }
 
     protected void performKeyPress(Robot robot, int eventKey) throws AWTException {
         if (robot == null)
             throw new NullPointerException();
         robot.keyPress(eventKey);
-        System.out.println(STR."Key pressed \{KeyEvent.getKeyText(eventKey)}");
+        System.out.println("Key pressed " + KeyEvent.getKeyText(eventKey));
     }
 
     public void setActionOptions(int attempt, boolean progressive, int progressiveSearchTime, int beforeTime, int afterTime, ActionTypes actionTypes,
@@ -70,5 +78,51 @@ public abstract class Action {
         this.displayImage = displayImage;
         mainImageBoundingBox = boundingBox;
         this.keyCode = keyCode;
+    }
+
+    @Serial
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+
+        // Serialize mainImage
+        if (mainImage != null) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(mainImage, "png", baos);
+            byte[] imageBytes = baos.toByteArray();
+            out.writeObject(Base64.getEncoder().encodeToString(imageBytes));
+        } else {
+            out.writeObject(null);
+        }
+
+        // Serialize displayImage
+        if (displayImage != null) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(displayImage, "png", baos);
+            byte[] imageBytes = baos.toByteArray();
+            out.writeObject(Base64.getEncoder().encodeToString(imageBytes));
+        } else {
+            out.writeObject(null);
+        }
+    }
+
+    @Serial
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+
+        // Deserialize mainImage
+        String mainImageString = (String) in.readObject();
+        if (mainImageString != null) {
+            byte[] imageBytes = Base64.getDecoder().decode(mainImageString);
+            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
+            mainImage = ImageIO.read(bais);
+        }
+
+        // Deserialize displayImage
+        String displayImageString = (String) in.readObject();
+        if (displayImageString != null) {
+            byte[] imageBytes = Base64.getDecoder().decode(displayImageString);
+            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
+            displayImage = ImageIO.read(bais);
+        }
     }
 }

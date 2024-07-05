@@ -1,5 +1,6 @@
 package org.dev.Operation;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -7,6 +8,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import lombok.Getter;
 import org.dev.App;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -22,6 +24,8 @@ public class MinimizedTaskController implements Initializable {
     private CheckBox requiredCheckBox, previousPassCheckBox;
     @FXML
     private StackPane repeatMinusButton, repeatPlusButton;
+
+    @Getter
     private TaskController taskController;
 
     @Override
@@ -29,6 +33,8 @@ public class MinimizedTaskController implements Initializable {
         taskNameAreaStackPane.setOnMouseClicked(this::openTask);
         repeatMinusButton.setOnMouseClicked(this::decreaseRepeatNumber);
         repeatPlusButton.setOnMouseClicked(this::increaseRepeatNumber);
+        requiredCheckBox.setOnAction(this::toggleRequiredCheckBox);
+        previousPassCheckBox.setOnAction(this::togglePreviousPassOption);
     }
 
     public boolean isSet() { return (taskController != null && taskController.isSet()); }
@@ -44,6 +50,13 @@ public class MinimizedTaskController implements Initializable {
         previousPassCheckBox.setVisible(true);
     }
     public String getTaskName() { return taskNameLabel.getText(); }
+
+    private void toggleRequiredCheckBox(ActionEvent event) {
+        taskController.getTask().setRequired(requiredCheckBox.isSelected());
+    }
+    private void togglePreviousPassOption(ActionEvent event) {
+        taskController.getTask().setPreviousPass(requiredCheckBox.isSelected());
+    }
 
     public void openTask(MouseEvent event) {
         loadNewTaskPane();

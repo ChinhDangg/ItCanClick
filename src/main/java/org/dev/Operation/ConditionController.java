@@ -15,6 +15,7 @@ import org.dev.Enum.ConditionRequirement;
 import org.dev.Operation.Condition.Condition;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class ConditionController implements Initializable, ActivityController {
@@ -40,7 +41,7 @@ public class ConditionController implements Initializable, ActivityController {
 
     public void registerReadingCondition(Condition condition, BufferedImage image) {
         if (condition == null || image == null)
-            return;
+            throw new NullPointerException("Condition or image is null");
         isSet = true;
         this.condition = condition;
         readingConditionLabel.setText(condition.getChosenReadingCondition().name());

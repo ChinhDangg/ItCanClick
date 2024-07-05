@@ -13,11 +13,9 @@ import org.dev.Operation.Condition.PixelCondition;
 import org.dev.Operation.ConditionController;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Operation.ActivityController;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -159,13 +157,14 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == mouseTimer) {
             Point p = MouseInfo.getPointerInfo().getLocation();
-            if (!p.equals(previousMousePoint)) {
-                previousMousePoint = p;
-                try {
-                    displayMainImageView(getDisplayImageForReadingPixel(p.x, p.y));
-                } catch (Exception ex) {
-                    System.out.println("Error at mose displaying captured image at pixel menu");
-                }
+            if (p.equals(previousMousePoint)) {
+                return;
+            }
+            previousMousePoint = p;
+            try {
+                displayMainImageView(getDisplayImageForReadingPixel(p.x, p.y));
+            } catch (Exception ex) {
+                System.out.println("Error at mose displaying captured image at pixel menu");
             }
         }
     }
@@ -178,4 +177,15 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             stopMouseMotionListening();
     }
 
+    @Override
+    protected void stopMouseMotionListening() {
+        super.stopMouseMotionListening();
+        try {
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            BufferedImage entire = new Robot().createScreenCapture(new Rectangle(0, 0, screenSize.width-1, screenSize.height-1));
+            currentMainImage = entire.getSubimage(mainImageBoundingBox.x, mainImageBoundingBox.y, mainImageBoundingBox.width, mainImageBoundingBox.height);
+        } catch (Exception e) {
+            System.out.println("Fail assigning captured pixel image to main image");
+        }
+    }
 }

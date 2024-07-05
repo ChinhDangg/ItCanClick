@@ -13,7 +13,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
+import lombok.Getter;
 import org.dev.App;
+import org.dev.Operation.Data.ActionData;
+import org.dev.Operation.Data.TaskData;
+import org.dev.Operation.Task.Task;
 
 import java.io.IOException;
 import java.net.URL;
@@ -37,6 +41,9 @@ public class TaskController implements Initializable {
     private final List<ActionController> actionList = new ArrayList<>();
 
     private double currentGlobalScale = 1;
+
+    @Getter
+    private final Task task = new Task();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -72,6 +79,7 @@ public class TaskController implements Initializable {
             return;
         taskNameLabel.setText(name);
         renameOptionGroup.setVisible(false);
+        task.setTaskName(name);
     }
 
     private void addNewAction(MouseEvent event) {
@@ -158,23 +166,33 @@ public class TaskController implements Initializable {
     }
 
     public boolean runTask() {
-        System.out.println(STR."Start running task: \{taskNameLabel.getText()}");
+        System.out.println("Start running task: " + taskNameLabel.getText());
         boolean pass = false;
         for (ActionController actionController : actionList) {
             String actionName = actionController.getActionNameLabel().getText();
             if (pass && actionController.isPreviousPass()) {
-                System.out.println(STR."Skipping action '\{actionName}' as previous is passed");
+                System.out.println("Skipping action " + actionName + " as previous is passed");
                 continue;
             }
-            System.out.println(STR."Performing action: \{actionName}");
+            System.out.println("Performing action: " + actionName);
             pass = actionController.performAction();
             if (!actionController.isRequired())
                 pass = true;
             else if (!pass) { // action is required but failed
-                System.out.println(STR."Fail performing action: \{actionName}");
+                System.out.println("Fail performing action: " + actionName);
                 return false;
             }
         }
         return true;
+    }
+
+    public TaskData getTaskData() {
+        TaskData taskData = new TaskData();
+        taskData.setTask(task);
+        List<ActionData> actionData = new ArrayList<>();
+        for (ActionController actionController : actionList)
+            actionData.add(actionController.getActionData());
+        taskData.setActionData(actionData);
+        return taskData;
     }
 }

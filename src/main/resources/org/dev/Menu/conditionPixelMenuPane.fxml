@@ -195,7 +195,7 @@
                <children>
                   <CheckBox fx:id="notOptionCheckBox" mnemonicParsing="false" text="NOT" />
                   <CheckBox fx:id="requiredOptionCheckBox" mnemonicParsing="false" selected="true" text="Required" />
-                  <CheckBox fx:id="globalSearchCheckBox" mnemonicParsing="false" text="Global Search" />
+                  <CheckBox fx:id="globalSearchCheckBox" disable="true" mnemonicParsing="false" text="Global Search" visible="false" />
                </children>
             </VBox>
          </children>

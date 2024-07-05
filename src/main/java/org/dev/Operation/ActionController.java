@@ -1,6 +1,7 @@
 package org.dev.Operation;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -18,6 +19,8 @@ import org.dev.App;
 import org.dev.Enum.ActionTypes;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Condition.Condition;
+import org.dev.Operation.Data.ActionData;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -65,6 +68,8 @@ public class ActionController implements Initializable, ActivityController {
         actionNameLabel.setOnMouseClicked(this::showRenameActionOption);
         renameButton.setOnMouseClicked(this::changeActionName);
         renameOptionPane.setVisible(false);
+        requiredCheckBox.setOnAction(this::toggleRequiredCheckBox);
+        previousPassCheckBox.setOnAction(this::togglePreviousPassCheckBox);
     }
 
     private boolean actionNameVisible = false;
@@ -82,6 +87,8 @@ public class ActionController implements Initializable, ActivityController {
             actionNameLabel.setText(newName);
             actionNameVisible = !actionNameVisible;
             renameOptionPane.setVisible(actionNameVisible);
+            if (action != null)
+                action.setActionName(newName);
         }
     }
 
@@ -97,9 +104,17 @@ public class ActionController implements Initializable, ActivityController {
     }
     public boolean isPreviousPass() { return previousPassCheckBox.isSelected(); }
 
+    private void toggleRequiredCheckBox(ActionEvent actionEvent) {
+        action.setRequired(requiredCheckBox.isSelected());
+    }
+    private void togglePreviousPassCheckBox(ActionEvent actionEvent) {
+        action.setPreviousPass(previousPassCheckBox.isSelected());
+    }
+
     public void registerActionPerform(Action action, BufferedImage displayImage) {
         isSet = true;
         this.action = action;
+        action.setActionName(actionNameLabel.getText());
         actionImage.setImage(SwingFXUtils.toFXImage(displayImage, null));
     }
 
@@ -169,18 +184,19 @@ public class ActionController implements Initializable, ActivityController {
             while (count > 0) {
                 Thread.sleep(action.getWaitBeforeTime());
                 if (checkAllConditions(entryConditionControllers)) {
-                    System.out.println(STR."Found entry with \{actionName}");
+                    System.out.println("Found entry with " + actionName);
                     action.performAction();
                     entryPassed = true;
-                    System.out.println(STR."\{actionName} performed: \{count}");
+                    System.out.println(actionName + " performed: " + count);
                 }
                 else if (!entryPassed) {
-                    System.out.println(STR."Not found entry with \{actionName} \{count}");
+                    System.out.println("Not found entry with " + actionName + " " + count);
+                    count--;
                     continue;
                 }
                 Thread.sleep(action.getWaitAfterTime());
                 if (checkAllConditions(exitConditionControllers)) {
-                    System.out.println(STR."Found exit with \{actionName}");
+                    System.out.println("Found exit with " + actionName);
                     return true;
                 }
                 else
@@ -190,7 +206,7 @@ public class ActionController implements Initializable, ActivityController {
         } catch (Exception e) {
             System.out.println("Fail performing action with number of attempts");
         }
-        System.out.println(STR."Exceeded number of attempt for performing  \{actionName}");
+        System.out.println("Exceeded number of attempt for performing " + actionName);
         return false;
     }
     private boolean performActionWithProgressiveSearch() {
@@ -240,5 +256,19 @@ public class ActionController implements Initializable, ActivityController {
             }
             return true;
         }
+    }
+
+    public ActionData getActionData() {
+        ActionData actionData = new ActionData();
+        actionData.setAction(action);
+        List<Condition> entryConditions = new ArrayList<>();
+        List<Condition> exitConditions = new ArrayList<>();
+        for (ConditionController c : entryConditionControllers)
+            entryConditions.add(c.getCondition());
+        for (ConditionController c : exitConditionControllers)
+            exitConditions.add(c.getCondition());
+        actionData.setEntryCondition(entryConditions);
+        actionData.setExitCondition(exitConditions);
+        return actionData;
     }
 }

@@ -13,12 +13,20 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import lombok.Getter;
+import org.dev.Operation.Data.OperationData;
+import org.dev.Operation.Data.TaskData;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class OperationController implements Initializable {
+public class OperationController implements Initializable, Serializable {
     @FXML
     private VBox mainTaskVBox;
     @FXML
@@ -36,6 +44,9 @@ public class OperationController implements Initializable {
     @FXML
     private HBox addTaskButton;
     private final List<MinimizedTaskController> taskList = new ArrayList<>();
+
+    @Getter
+    private final Operation operation = new Operation();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -59,6 +70,7 @@ public class OperationController implements Initializable {
             return;
         operationNameLabel.setText(name);
         renameOptionGroup.setVisible(false);
+        operation.setOperationName(name);
     }
 
     // ------------------------------------------------------
@@ -112,7 +124,15 @@ public class OperationController implements Initializable {
         updateTaskIndex(changeIndex);
     }
     private void moveTaskUp(MouseEvent event) {
-        startOperation();
+        try (FileOutputStream fileOut = new FileOutputStream(operationNameLabel.getText() + ".ser");
+             ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+            OperationData operationData = getOperationData();
+            out.writeObject(operationData);
+            System.out.println("Serialized data is saved in person.ser");
+        } catch (IOException i) {
+            i.printStackTrace();
+        }
+
         if (currentSelectedTaskPane == null)
             return;
         ObservableList<Node> children = operationVBox.getChildren();
@@ -165,21 +185,31 @@ public class OperationController implements Initializable {
         thread.start();
     }
     private void runOperation() {
-        System.out.println(STR."Start running operation: \{operationNameLabel.getText()}");
+        System.out.println("Start running operation: " + operationNameLabel.getText());
         boolean pass = false;
         for (MinimizedTaskController taskController : taskList) {
             String taskName = taskController.getTaskName();
             if (pass && taskController.isPreviousPass()) {
-                System.out.println(STR."Skipping task \{taskName} as previous is passed");
+                System.out.println("Skipping task " + taskName + " as previous is passed");
                 continue;
             }
             pass = taskController.runTask();
             if (!taskController.isRequired())
                 pass = true;
             else if (!pass) { // task is required but failed
-                System.out.println(STR."Fail performing task: \{taskName}");
+                System.out.println("Fail performing task: " + taskName);
                 break;
             }
         }
+    }
+
+    public OperationData getOperationData() {
+        OperationData operationData = new OperationData();
+        operationData.setOperation(operation);
+        List<TaskData> taskDataList = new ArrayList<>();
+        for (MinimizedTaskController taskController : taskList)
+            taskDataList.add(taskController.getTaskController().getTaskData());
+        operationData.setTaskData(taskDataList);
+        return operationData;
     }
 }

@@ -20,6 +20,6 @@ public class ActionKeyPressMouseClick extends Action {
         performMouseClick(mainImageBoundingBox);
         robot.delay(70 + (int) (Math.random() * 50));
         robot.keyRelease(eventKey);
-        System.out.println(STR."Key released: \{KeyEvent.getKeyText(eventKey)}");
+        System.out.println("Key released: " + KeyEvent.getKeyText(eventKey));
     }
 }

@@ -97,9 +97,9 @@ public class ConditionMenuController extends MenuController implements Initializ
         if (newReadText == null)
             recheckResultLabel.setText("Result");
         else if (pass)
-            recheckResultLabel.setText(STR."Pass reading \{newReadText}");
+            recheckResultLabel.setText("Pass reading " + newReadText);
         else
-            recheckResultLabel.setText(STR."Fail reading \{newReadText}");
+            recheckResultLabel.setText("Fail reading " + newReadText);
     }
     public void nativeKeyReleased(NativeKeyEvent e) {
         int nativeKeyCode = e.getKeyCode();

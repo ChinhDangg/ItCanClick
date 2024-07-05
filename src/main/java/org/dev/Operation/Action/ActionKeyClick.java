@@ -13,7 +13,7 @@ public class ActionKeyClick extends Action {
             performKeyPress(robot, keyCode);
             robot.delay(70 + (int) (Math.random() * 50));
             robot.keyRelease(keyCode);
-            System.out.println(STR."Key released: \{KeyEvent.getKeyText(keyCode)}");
+            System.out.println("Key released: " + KeyEvent.getKeyText(keyCode));
         } catch (AWTException e) {
             System.out.println("Error with action key clicking");
         }

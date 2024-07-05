@@ -18,10 +18,18 @@ import javafx.stage.Stage;
 import org.dev.Menu.ActionMenuController;
 import org.dev.Menu.ConditionMenuController;
 import org.dev.Operation.ActionController;
+import org.dev.Operation.Condition.PixelCondition;
+import org.dev.Operation.Condition.TextCondition;
 import org.dev.Operation.ConditionController;
+import org.dev.Operation.Data.ActionData;
+import org.dev.Operation.Data.OperationData;
 import org.dev.Operation.TaskController;
 
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.io.*;
 
 /**
  * JavaFX App

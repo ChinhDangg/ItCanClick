@@ -168,7 +168,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     }
     private void updateProgressiveSearchTimeLabel(int newProgressiveTime) {
         progressiveSearchTime = newProgressiveTime;
-        progressiveSearchTimeLabel.setText(STR."\{convertMilliToSecond(progressiveSearchTime)}s");
+        progressiveSearchTimeLabel.setText(convertMilliToSecond(progressiveSearchTime) + "s");
     }
     private double convertMilliToSecond(int milli) { return (double) milli / 1000.0; }
 
@@ -182,7 +182,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     }
     private void updateWaitBeforeTimeLabel(int newWaitBeforeTime) {
         waitBeforeTime = newWaitBeforeTime;
-        waitBeforeTimeLabel.setText(STR."\{convertMilliToSecond(waitBeforeTime)}s");
+        waitBeforeTimeLabel.setText(convertMilliToSecond(waitBeforeTime) + "s");
     }
 
     // ------------------------------------------------------
@@ -195,7 +195,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     }
     private void updateWaitAfterTimeLabel(int newWaitAfterTime) {
         waitAfterTime = newWaitAfterTime;
-        waitAfterTimeLabel.setText(STR."\{convertMilliToSecond(waitAfterTime)}s");
+        waitAfterTimeLabel.setText(convertMilliToSecond(waitAfterTime) + "s");
     }
 
     // ------------------------------------------------------
@@ -244,7 +244,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     }
     private int registeredKey = -1;
     public void nativeKeyReleased(NativeKeyEvent e) {
-        System.out.println(STR."Key Pressed: \{NativeKeyEvent.getKeyText(e.getKeyCode())}");
+        System.out.println("Key Pressed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
         int nativeKeyCode = e.getKeyCode();
         if (keyIsListening) {
             int keyEvent = mapNativeKeyToKeyEvent(nativeKeyCode);

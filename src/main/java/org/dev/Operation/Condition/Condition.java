@@ -2,14 +2,18 @@ package org.dev.Operation.Condition;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.Enum.ReadingCondition;
+
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.Base64;
 
 @Getter
 @Setter
-public abstract class Condition {
+public abstract class Condition implements Serializable {
     protected ReadingCondition chosenReadingCondition;
-    protected BufferedImage mainImage;
+    protected transient BufferedImage mainImage;
     protected Rectangle mainImageBoundingBox;
     protected boolean not;
     protected boolean required;
