@@ -2,14 +2,12 @@ package org.dev.Menu;
 
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
-import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -68,11 +66,13 @@ public class ConditionMenuController extends MenuController implements Initializ
             GlobalScreen.addNativeKeyListener(this);
         }
         this.conditionController = (ConditionController) activityController;
-        boolean controllerSet = conditionController.isSet();
-        recheckPane.setVisible(controllerSet);
+        boolean isControllerSet = conditionController.isSet();
+        recheckPane.setVisible(isControllerSet);
         updateRecheckResultLabel(false, null);
-        if (controllerSet)
+        if (isControllerSet) {
             mainImageView.setImage(SwingFXUtils.toFXImage(conditionController.getCondition().getMainDisplayImage(), null));
+            readingTypeChoice.setValue(conditionController.getCondition().getChosenReadingCondition());
+        }
         else
             mainImageView.setImage(null);
     }

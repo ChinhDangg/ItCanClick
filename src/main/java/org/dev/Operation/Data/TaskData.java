@@ -10,5 +10,5 @@ import java.util.List;
 @Setter
 public class TaskData implements Serializable {
     private Task task;
-    private List<ActionData> actionData;
+    private List<ActionData> actionDataList;
 }

@@ -10,6 +10,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import org.dev.App;
+import org.dev.Operation.Data.TaskData;
+import org.dev.Operation.Task.Task;
+
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -35,6 +39,7 @@ public class MinimizedTaskController implements Initializable {
         repeatPlusButton.setOnMouseClicked(this::increaseRepeatNumber);
         requiredCheckBox.setOnAction(this::toggleRequiredCheckBox);
         previousPassCheckBox.setOnAction(this::togglePreviousPassOption);
+        loadNewTaskPane();
     }
 
     public boolean isSet() { return (taskController != null && taskController.isSet()); }
@@ -58,15 +63,13 @@ public class MinimizedTaskController implements Initializable {
         taskController.getTask().setPreviousPass(requiredCheckBox.isSelected());
     }
 
+    // ------------------------------------------------------
     public void openTask(MouseEvent event) {
-        loadNewTaskPane();
         taskNameLabel.setText(taskController.getTaskName());
         App.displayNewNode(taskController.getTaskPane());
     }
     private void loadNewTaskPane() {
         try {
-            if (taskController != null)
-                return;
             FXMLLoader loader = new FXMLLoader(getClass().getResource("taskPane.fxml"));
             loader.load();
             taskController = loader.getController();
@@ -75,6 +78,7 @@ public class MinimizedTaskController implements Initializable {
         }
     }
 
+    // ------------------------------------------------------
     private int repeatNumber = 0;
     private void increaseRepeatNumber(MouseEvent event) {
         repeatNumber++;
@@ -102,5 +106,24 @@ public class MinimizedTaskController implements Initializable {
             if (!taskController.runTask())
                 return false;
         return true;
+    }
+
+    // ------------------------------------------------------
+    public TaskData getTaskData() {
+        Task task = taskController.getTask();
+        task.setRequired(requiredCheckBox.isSelected());
+        task.setPreviousPass(previousPassCheckBox.isSelected());
+        return taskController.getTaskData();
+    }
+
+    public void loadSavedTaskData(TaskData taskData) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("taskPane.fxml"));
+        loader.load();
+        taskController = loader.getController();
+        taskController.loadSavedTaskData(taskData);
+        Task task = taskController.getTask();
+        taskNameLabel.setText(task.getTaskName());
+        requiredCheckBox.setSelected(task.isRequired());
+        previousPassCheckBox.setSelected(task.isPreviousPass());
     }
 }

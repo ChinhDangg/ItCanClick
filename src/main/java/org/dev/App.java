@@ -18,17 +18,9 @@ import javafx.stage.Stage;
 import org.dev.Menu.ActionMenuController;
 import org.dev.Menu.ConditionMenuController;
 import org.dev.Operation.ActionController;
-import org.dev.Operation.Condition.PixelCondition;
-import org.dev.Operation.Condition.TextCondition;
 import org.dev.Operation.ConditionController;
-import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.Data.OperationData;
-import org.dev.Operation.TaskController;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
+import org.dev.Operation.OperationController;
 import java.io.*;
 
 /**
@@ -52,6 +44,8 @@ public class App extends Application {
     public static StackPane primaryCenterStackPane;
     public static ActionMenuController actionMenuController;
     public static ConditionMenuController conditionMenuController;
+    public static OperationController currentLoadedOperationController;
+
     public static double currentGlobalScale = 1.5;
 
     @Override
@@ -60,14 +54,9 @@ public class App extends Application {
         loadActionMenuPane();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Operation/operationPane.fxml"));
-        VBox taskPane = loader.load();
-        Scale scale = new Scale(1.5, 1.5, 0, 0);
-        taskPane.getTransforms().add(scale);
-
-        Group group = new Group(taskPane);
-
-//        ScrollPane scrollPane = new ScrollPane(stackPane);
-//        scrollPane.fitToWidthProperty().set(true);
+        VBox operationPane = loader.load();
+        currentLoadedOperationController = loader.getController();
+        Group group = new Group(operationPane);
 
         primaryCenterStackPane = new StackPane();
         primaryCenterStackPane.getChildren().add(group);
@@ -79,6 +68,34 @@ public class App extends Application {
         Scene scene = new Scene(primary);
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static void loadSavedOperation(String path) {
+        try (FileInputStream fileIn = new FileInputStream(path);
+             ObjectInputStream in = new ObjectInputStream(fileIn)) {
+             OperationData operationData = (OperationData) in.readObject();
+            System.out.println("Passed getting data");
+
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("Operation/operationPane.fxml"));
+            VBox operationPane = loader.load();
+            System.out.println("Passed loading operation pane");
+
+            currentLoadedOperationController = loader.getController();
+            ObservableList<Node> children = primaryCenterStackPane.getChildren();
+            System.out.println("Passed assigning controller");
+
+            primaryCenterStackPane.getChildren().clear();
+            System.out.println("Passed removing all children in primary stack pane");
+
+            currentLoadedOperationController.loadSavedOperationData(operationData);
+            System.out.println("Passed loading saved data into current operation controller");
+
+            children.add(new Group(operationPane));
+            System.out.println("Passed adding operation pane to primary stack pane");
+
+        } catch (IOException | ClassNotFoundException i) {
+            System.out.println("Fail loading saved operation data");
+        }
     }
 
     public static void displayNewNode(Node node) {
@@ -102,6 +119,7 @@ public class App extends Application {
         primaryCenterStackPane.getChildren().add(actionMenuPane);
     }
     public static void closeActionMenuPane() { primaryCenterStackPane.getChildren().remove(actionMenuPane); }
+
 
     private void loadActionMenuPane() {
         System.out.println("Loading Action Menu Pane");

@@ -17,10 +17,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.dev.App;
 import org.dev.Enum.ActionTypes;
+import org.dev.Enum.ReadingCondition;
 import org.dev.Operation.Action.Action;
+import org.dev.Operation.Action.ActionKeyClick;
 import org.dev.Operation.Condition.Condition;
+import org.dev.Operation.Condition.PixelCondition;
 import org.dev.Operation.Data.ActionData;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -30,7 +34,6 @@ import java.util.ResourceBundle;
 
 public class ActionController implements Initializable, ActivityController {
 
-    @Getter
     @FXML
     private Label actionNameLabel;
     @FXML
@@ -57,14 +60,14 @@ public class ActionController implements Initializable, ActivityController {
     @Getter
     @Setter
     private ActionTypes chosenActionPerform;
-    private final List<ConditionController> entryConditionControllers = new ArrayList<>();
-    private final List<ConditionController> exitConditionControllers = new ArrayList<>();
+    private final List<ConditionController> entryConditionList = new ArrayList<>();
+    private final List<ConditionController> exitConditionList = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         actionPane.setOnMouseClicked(this::openActionMenuPane);
-        entryAddButton.setOnMouseClicked(this::entryAddNewCondition);
-        exitAddButton.setOnMouseClicked(this::exitAddNewCondition);
+        entryAddButton.setOnMouseClicked(this::addNewEntryCondition);
+        exitAddButton.setOnMouseClicked(this::addNewExitCondition);
         actionNameLabel.setOnMouseClicked(this::showRenameActionOption);
         renameButton.setOnMouseClicked(this::changeActionName);
         renameOptionPane.setVisible(false);
@@ -111,11 +114,18 @@ public class ActionController implements Initializable, ActivityController {
         action.setPreviousPass(previousPassCheckBox.isSelected());
     }
 
-    public void registerActionPerform(Action action, BufferedImage displayImage) {
+    public void registerActionPerform(Action action) {
+        if (action == null)
+            throw new NullPointerException();
         isSet = true;
         this.action = action;
-        action.setActionName(actionNameLabel.getText());
-        actionImage.setImage(SwingFXUtils.toFXImage(displayImage, null));
+        if (action.getActionName() == null || action.getActionName().isBlank())
+            action.setActionName(actionNameLabel.getText());
+        displayActionImage(action.getDisplayImage());
+    }
+
+    private void displayActionImage(BufferedImage image) {
+        actionImage.setImage(SwingFXUtils.toFXImage(image, null));
     }
 
     private void openActionMenuPane(MouseEvent event) {
@@ -128,42 +138,50 @@ public class ActionController implements Initializable, ActivityController {
         return conditionBox.getChildren().size();
     }
 
-    private void entryAddNewCondition(MouseEvent event) {
+    private void addNewEntryCondition(MouseEvent event) {
         System.out.println("Entry add clicked");
         int numberOfCondition = getNumberOfCondition(entryConditionPane) - 1;
-        if (numberOfCondition > 0 && !entryConditionControllers.get(numberOfCondition - 1).isSet()) {
+        if (numberOfCondition > 0 && !entryConditionList.get(numberOfCondition - 1).isSet()) {
             System.out.println("Previous Entry Condition is not set yet");
             return;
         }
         try {
-            if (numberOfCondition < 5) {
-                FXMLLoader loader = getConditionPaneLoader();
-                StackPane pane = loader.load();
-                entryConditionControllers.add(loader.getController());
-                entryConditionPane.getChildren().add(numberOfCondition, pane);
-            }
+            if (numberOfCondition < 5)
+                addNewCondition(entryConditionList, entryConditionPane, numberOfCondition);
         } catch (IOException e) {
-            System.out.println("Fail loading and adding condition panes");
+            System.out.println("Fail loading and adding entry condition panes");
         }
     }
 
-    private void exitAddNewCondition(MouseEvent event) {
+    private void addNewExitCondition(MouseEvent event) {
         System.out.println("Exit add clicked");
         int numberOfCondition = getNumberOfCondition(exitConditionPane) - 1;
-        if (numberOfCondition > 0 && !exitConditionControllers.get(numberOfCondition - 1).isSet()) {
+        if (numberOfCondition > 0 && !exitConditionList.get(numberOfCondition - 1).isSet()) {
             System.out.println("Previous Exit Condition is not set yet");
             return;
         }
         try {
-            if (numberOfCondition < 5) {
-                FXMLLoader loader = getConditionPaneLoader();
-                StackPane pane = loader.load();
-                exitConditionControllers.add(loader.getController());
-                exitConditionPane.getChildren().add(numberOfCondition, pane);
-            }
+            if (numberOfCondition < 5)
+                addNewCondition(exitConditionList, exitConditionPane, numberOfCondition);
         } catch (IOException e) {
-            System.out.println("Fail loading and adding condition panes");
+            System.out.println("Fail loading and adding exit condition panes");
         }
+    }
+
+    private void addNewCondition(List<ConditionController> whichController, HBox whichPane, int numberOfCondition) throws IOException {
+        FXMLLoader loader = getConditionPaneLoader();
+        StackPane pane = loader.load();
+        whichController.add(loader.getController());
+        whichPane.getChildren().add(numberOfCondition, pane);
+    }
+
+    private void addNewSavedCondition(List<ConditionController> whichController, HBox whichPane, int numberOfCondition, Condition condition) throws IOException {
+        FXMLLoader loader = getConditionPaneLoader();
+        StackPane pane = loader.load();
+        ConditionController controller = loader.getController();
+        controller.loadSavedCondition(condition);
+        whichController.add(controller);
+        whichPane.getChildren().add(numberOfCondition, pane);
     }
 
     // ------------------------------------------------------
@@ -183,7 +201,7 @@ public class ActionController implements Initializable, ActivityController {
             boolean entryPassed = false;
             while (count > 0) {
                 Thread.sleep(action.getWaitBeforeTime());
-                if (checkAllConditions(entryConditionControllers)) {
+                if (checkAllConditions(entryConditionList)) {
                     System.out.println("Found entry with " + actionName);
                     action.performAction();
                     entryPassed = true;
@@ -195,7 +213,7 @@ public class ActionController implements Initializable, ActivityController {
                     continue;
                 }
                 Thread.sleep(action.getWaitAfterTime());
-                if (checkAllConditions(exitConditionControllers)) {
+                if (checkAllConditions(exitConditionList)) {
                     System.out.println("Found exit with " + actionName);
                     return true;
                 }
@@ -216,11 +234,11 @@ public class ActionController implements Initializable, ActivityController {
             boolean entryPassed = false;
             System.out.println("Starting progressive search");
             while (System.currentTimeMillis() - startTime < duration) {
-                if (checkAllConditions(entryConditionControllers)) {
+                if (checkAllConditions(entryConditionList)) {
                     action.performAction();
                     entryPassed = true;
                 }
-                if (entryPassed && checkAllConditions(exitConditionControllers))
+                if (entryPassed && checkAllConditions(exitConditionList))
                     return true;
             }
         } catch (Exception e) {
@@ -258,17 +276,34 @@ public class ActionController implements Initializable, ActivityController {
         }
     }
 
+    // ------------------------------------------------------
     public ActionData getActionData() {
         ActionData actionData = new ActionData();
         actionData.setAction(action);
         List<Condition> entryConditions = new ArrayList<>();
         List<Condition> exitConditions = new ArrayList<>();
-        for (ConditionController c : entryConditionControllers)
+        for (ConditionController c : entryConditionList)
             entryConditions.add(c.getCondition());
-        for (ConditionController c : exitConditionControllers)
+        for (ConditionController c : exitConditionList)
             exitConditions.add(c.getCondition());
         actionData.setEntryCondition(entryConditions);
         actionData.setExitCondition(exitConditions);
         return actionData;
+    }
+
+    public void loadSavedActionData(ActionData actionData) throws IOException {
+        if (actionData == null)
+            throw new NullPointerException("Can't load from saved action data");
+        registerActionPerform(actionData.getAction());
+        actionNameLabel.setText(action.getActionName());
+        requiredCheckBox.setSelected(action.isRequired());
+        previousPassCheckBox.setSelected(action.isPreviousPass());
+        displayActionImage(action.getDisplayImage());
+        List<Condition> entryConditions = actionData.getEntryCondition();
+        for (int j = 0; j < entryConditions.size(); j++)
+            addNewSavedCondition(entryConditionList, entryConditionPane, j, entryConditions.get(j));
+        List<Condition> exitConditions = actionData.getExitCondition();
+        for (int j = 0; j < exitConditions.size(); j++)
+            addNewSavedCondition(exitConditionList, exitConditionPane, j, exitConditions.get(j));
     }
 }

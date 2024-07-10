@@ -4,22 +4,19 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Scale;
 import lombok.Getter;
+import org.dev.App;
 import org.dev.Operation.Data.OperationData;
 import org.dev.Operation.Data.TaskData;
-
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,12 +27,6 @@ public class OperationController implements Initializable, Serializable {
     @FXML
     private VBox mainTaskVBox;
     @FXML
-    private Label operationNameLabel;
-    @FXML
-    private Group renameOptionGroup;
-    @FXML
-    private StackPane renameButton;
-    @FXML
     private TextField renameTextField;
     @FXML
     private StackPane removeTaskButton, moveTaskUpButton, moveTaskDownButton;
@@ -45,54 +36,72 @@ public class OperationController implements Initializable, Serializable {
     private HBox addTaskButton;
     private final List<MinimizedTaskController> taskList = new ArrayList<>();
 
+    private double currentGlobalScale = 1;
+
     @Getter
-    private final Operation operation = new Operation();
+    private Operation operation = new Operation();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        operationNameLabel.setOnMouseClicked(this::toggleRenameOperationPane);
-        renameOptionGroup.setVisible(false);
-        renameButton.setOnMouseClicked(this::changeOperationName);
-        addTaskButton.setOnMouseClicked(this::addNewMinimizedTask);
+        addTaskButton.setOnMouseClicked(this::addMinimizedTask);
         removeTaskButton.setOnMouseClicked(this::removeSelectedTaskPane);
         moveTaskUpButton.setOnMouseClicked(this::moveTaskUp);
         moveTaskDownButton.setOnMouseClicked(this::moveTaskDown);
+        renameTextField.focusedProperty().addListener((_, _, newValue) -> {
+            if (newValue) {
+                System.out.println("TextField gained focus");
+            } else {
+                System.out.println("TextField lost focus");
+                changeOperationName();
+            }
+        });
+        loadMainTaskVBox();
     }
 
-    private void toggleRenameOperationPane(MouseEvent event) {
-        renameTextField.setText(operationNameLabel.getText());
-        renameOptionGroup.setVisible(!renameOptionGroup.isVisible());
+    private void loadMainTaskVBox() {
+        if (currentGlobalScale != App.currentGlobalScale) {
+            currentGlobalScale = App.currentGlobalScale;
+            mainTaskVBox.getTransforms().add(new Scale(currentGlobalScale, currentGlobalScale, 0, 0));
+        }
     }
-    private void changeOperationName(MouseEvent event) {
+
+    private void changeOperationName() {
         String name = renameTextField.getText();
-        name = name.replace("\n", "");
+        name = name.trim();
         if (name.isBlank())
             return;
-        operationNameLabel.setText(name);
-        renameOptionGroup.setVisible(false);
         operation.setOperationName(name);
+        removeTaskButton.requestFocus();
+        renameTextField.setText(name);
+        System.out.println(operation.getOperationName());
     }
 
     // ------------------------------------------------------
-    private void addNewMinimizedTask(MouseEvent event) {
+    private void addMinimizedTask(MouseEvent event) {
         try {
             if (!taskList.isEmpty() && !taskList.getFirst().isSet()) {
                 System.out.println("Recent minimized task is not set");
                 return;
             }
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("minimizedTaskPane.fxml"));
-            StackPane taskPane = loader.load();
-            taskPane.getChildren().getFirst().setOnMouseClicked(this::selectTheTaskPane);
-            MinimizedTaskController controller = loader.getController();
-            int numberOfTask = operationVBox.getChildren().size();
-            if (numberOfTask == 0)
-                controller.disablePreviousOption();
-            controller.setTaskIndex(numberOfTask+1);
-            operationVBox.getChildren().add(numberOfTask, taskPane);
-            taskList.add(controller);
+            addNewMinimizedTask(null);
         } catch (Exception e) {
             System.out.println("Fail loading minimized task pane");
         }
+    }
+
+    private void addNewMinimizedTask(TaskData taskData) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("minimizedTaskPane.fxml"));
+        StackPane taskPane = loader.load();
+        taskPane.getChildren().getFirst().setOnMouseClicked(this::selectTheTaskPane);
+        MinimizedTaskController controller = loader.getController();
+        if (taskData != null)
+            controller.loadSavedTaskData(taskData);
+        int numberOfTask = operationVBox.getChildren().size();
+        if (numberOfTask == 0)
+            controller.disablePreviousOption();
+        controller.setTaskIndex(numberOfTask+1);
+        operationVBox.getChildren().add(numberOfTask, taskPane);
+        taskList.add(controller);
     }
 
     // ------------------------------------------------------
@@ -124,15 +133,6 @@ public class OperationController implements Initializable, Serializable {
         updateTaskIndex(changeIndex);
     }
     private void moveTaskUp(MouseEvent event) {
-        try (FileOutputStream fileOut = new FileOutputStream(operationNameLabel.getText() + ".ser");
-             ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
-            OperationData operationData = getOperationData();
-            out.writeObject(operationData);
-            System.out.println("Serialized data is saved in person.ser");
-        } catch (IOException i) {
-            i.printStackTrace();
-        }
-
         if (currentSelectedTaskPane == null)
             return;
         ObservableList<Node> children = operationVBox.getChildren();
@@ -185,7 +185,7 @@ public class OperationController implements Initializable, Serializable {
         thread.start();
     }
     private void runOperation() {
-        System.out.println("Start running operation: " + operationNameLabel.getText());
+        System.out.println("Start running operation: " + operation.getOperationName());
         boolean pass = false;
         for (MinimizedTaskController taskController : taskList) {
             String taskName = taskController.getTaskName();
@@ -208,8 +208,17 @@ public class OperationController implements Initializable, Serializable {
         operationData.setOperation(operation);
         List<TaskData> taskDataList = new ArrayList<>();
         for (MinimizedTaskController taskController : taskList)
-            taskDataList.add(taskController.getTaskController().getTaskData());
-        operationData.setTaskData(taskDataList);
+            taskDataList.add(taskController.getTaskData());
+        operationData.setTaskDataList(taskDataList);
         return operationData;
+    }
+
+    public void loadSavedOperationData(OperationData operationData) throws IOException {
+        if (operationData == null)
+            throw new NullPointerException("Operation data is null");
+        this.operation = operationData.getOperation();
+        renameTextField.setText(operation.getOperationName());
+        for (TaskData data : operationData.getTaskDataList())
+            addNewMinimizedTask(data);
     }
 }

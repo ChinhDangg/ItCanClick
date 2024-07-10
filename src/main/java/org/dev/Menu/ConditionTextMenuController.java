@@ -67,7 +67,11 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             updateTextScaleValue(textCondition.getCurrentTextScale());
             currentMainImage = condition.getMainImage();
             displayMainImageView(currentMainImage);
-            registeredTextLabel.setText(getAllReadText(textCondition.getReadText()));
+            readTexts = textCondition.getReadText();
+            updateRegisteredTextLabel();
+            notOptionCheckBox.setSelected(textCondition.isNot());
+            requiredOptionCheckBox.setSelected(textCondition.isRequired());
+            mainImageBoundingBox = textCondition.getMainImageBoundingBox();
         }
         else
             resetTextMenu();
@@ -102,7 +106,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
         }
         conditionController.registerReadingCondition(new TextCondition(ReadingCondition.Text, currentMainImage,
                 mainImageBoundingBox, notOptionCheckBox.isSelected(), requiredOptionCheckBox.isSelected(),
-                currentTextScaleValue, readTexts), currentMainImage);
+                currentTextScaleValue, readTexts));
     }
     @Override
     protected void backToPreviousMenu(MouseEvent event) {

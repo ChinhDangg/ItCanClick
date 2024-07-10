@@ -69,7 +69,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         Action newAction = getCorrespondAction(actionTypes);
         newAction.setActionOptions(attempt, progressiveSearchCheckBox.isSelected(), progressiveSearchTime, waitBeforeTime,
                 waitAfterTime, actionTypes, currentMainImage, currentDisplayImage, mainImageBoundingBox, registeredKey);
-        actionController.registerActionPerform(newAction, currentDisplayImage);
+        actionController.registerActionPerform(newAction);
     }
     private Action getCorrespondAction(ActionTypes actionTypes) {
         return switch (actionTypes) {

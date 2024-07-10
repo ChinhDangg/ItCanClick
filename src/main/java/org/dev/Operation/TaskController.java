@@ -18,7 +18,6 @@ import org.dev.App;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.Data.TaskData;
 import org.dev.Operation.Task.Task;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -43,14 +42,14 @@ public class TaskController implements Initializable {
     private double currentGlobalScale = 1;
 
     @Getter
-    private final Task task = new Task();
+    private Task task = new Task();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         taskNameLabel.setOnMouseClicked(this::toggleRenameTaskPane);
         renameButton.setOnMouseClicked(this::changeTaskName);
         renameOptionGroup.setVisible(false);
-        addNewActionButton.setOnMouseClicked(this::addNewAction);
+        addNewActionButton.setOnMouseClicked(this::addNewActionPane);
         removeActionButton.setOnMouseClicked(this::removeSelectedActionPane);
         moveActionDownButton.setOnMouseClicked(this::moveActionDown);
         moveActionUpButton.setOnMouseClicked(this::moveActionUp);
@@ -58,6 +57,13 @@ public class TaskController implements Initializable {
     }
 
     public boolean isSet() { return (!actionList.isEmpty() && actionList.getFirst().isSet()); }
+
+    public void registerTask(Task task) {
+        if (task == null)
+            throw new NullPointerException("Task is null");
+        this.task = task;
+    }
+
     public Node getTaskPane() {
         if (currentGlobalScale != App.currentGlobalScale) {
             currentGlobalScale = App.currentGlobalScale;
@@ -82,33 +88,50 @@ public class TaskController implements Initializable {
         task.setTaskName(name);
     }
 
-    private void addNewAction(MouseEvent event) {
+    // ------------------------------------------------------
+    private void addNewActionPane(MouseEvent event) {
+        if (!actionList.isEmpty() && !actionList.getLast().isSet()) {
+            System.out.println("Recent action is not set");
+            return;
+        }
         try {
-            if (!actionList.isEmpty() && !actionList.getLast().isSet()) {
-                System.out.println("Recent action is not set");
-                return;
-            }
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("actionPane.fxml"));
-            Pane actionPane = loader.load();
-            actionPane.setOnMouseClicked(this::selectTheActionPane);
-            ActionController actionController = loader.getController();
-            int numberOfActions = taskVBox.getChildren().size();
-            if (numberOfActions == 0)
-                actionController.disablePreviousOptions();
-            taskVBox.getChildren().add(numberOfActions, actionPane);
-            actionList.add(actionController);
+            addNewAction();
         } catch (IOException e) {
             System.out.println("Fail loading action pane in task controller");
         }
     }
+    private void addNewAction() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("actionPane.fxml"));
+        Pane actionPane = loader.load();
+        actionPane.setOnMouseClicked(this::selectTheActionPane);
+        ActionController actionController = loader.getController();
+        int numberOfActions = taskVBox.getChildren().size();
+        if (numberOfActions == 0)
+            actionController.disablePreviousOptions();
+        taskVBox.getChildren().add(numberOfActions, actionPane);
+        actionList.add(actionController);
+    }
+    private void addNewSavedAction(ActionData actionData) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("actionPane.fxml"));
+        Pane actionPane = loader.load();
+        actionPane.setOnMouseClicked(this::selectTheActionPane);
+        ActionController actionController = loader.getController();
+        actionController.loadSavedActionData(actionData);
+        int numberOfActions = taskVBox.getChildren().size();
+        if (numberOfActions == 0)
+            actionController.disablePreviousOptions();
+        taskVBox.getChildren().add(numberOfActions, actionPane);
+        actionList.add(actionController);
+    }
 
+    // ------------------------------------------------------
     private Pane currentSelectedActionPane = null;
     private void selectTheActionPane(MouseEvent event) { 
         try {
             if (currentSelectedActionPane != null)
-                setUnSelected(currentSelectedActionPane);
+                setUnSelectedAction(currentSelectedActionPane);
             currentSelectedActionPane = (Pane) event.getSource();
-            setSelected(currentSelectedActionPane);
+            setSelectedAction(currentSelectedActionPane);
         } catch (Exception e) {
             System.out.println("Fail assigning current selected action pane");
         }
@@ -124,8 +147,9 @@ public class TaskController implements Initializable {
             currentSelectedActionPane = null;
         }
     }
-    private void setSelected(Pane actionPane) { actionPane.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); }
-    private void setUnSelected(Pane actionPane) { actionPane.setStyle(""); }
+    private void setSelectedAction(Pane actionPane) { actionPane.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); }
+    private void setUnSelectedAction(Pane actionPane) { actionPane.setStyle(""); }
+
     private void moveActionUp(MouseEvent event) {
         if (currentSelectedActionPane == null)
             return;
@@ -165,11 +189,12 @@ public class TaskController implements Initializable {
         }
     }
 
+    // ------------------------------------------------------
     public boolean runTask() {
         System.out.println("Start running task: " + taskNameLabel.getText());
         boolean pass = false;
         for (ActionController actionController : actionList) {
-            String actionName = actionController.getActionNameLabel().getText();
+            String actionName = actionController.getAction().getActionName();
             if (pass && actionController.isPreviousPass()) {
                 System.out.println("Skipping action " + actionName + " as previous is passed");
                 continue;
@@ -186,13 +211,23 @@ public class TaskController implements Initializable {
         return true;
     }
 
+    // ------------------------------------------------------
     public TaskData getTaskData() {
         TaskData taskData = new TaskData();
         taskData.setTask(task);
         List<ActionData> actionData = new ArrayList<>();
         for (ActionController actionController : actionList)
             actionData.add(actionController.getActionData());
-        taskData.setActionData(actionData);
+        taskData.setActionDataList(actionData);
         return taskData;
+    }
+
+    public void loadSavedTaskData(TaskData taskData) throws IOException {
+        if (taskData == null)
+            throw new NullPointerException("Task data is null");
+        registerTask(taskData.getTask());
+        taskNameLabel.setText(task.getTaskName());
+        for (ActionData actionData : taskData.getActionDataList())
+            addNewSavedAction(actionData);
     }
 }

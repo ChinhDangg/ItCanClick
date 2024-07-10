@@ -3,7 +3,6 @@ package org.dev.Operation;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -15,7 +14,6 @@ import org.dev.Enum.ConditionRequirement;
 import org.dev.Operation.Condition.Condition;
 import java.awt.image.BufferedImage;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class ConditionController implements Initializable, ActivityController {
@@ -39,13 +37,13 @@ public class ConditionController implements Initializable, ActivityController {
         conditionStackPane.setPadding(new javafx.geometry.Insets(10));
     }
 
-    public void registerReadingCondition(Condition condition, BufferedImage image) {
-        if (condition == null || image == null)
-            throw new NullPointerException("Condition or image is null");
+    public void registerReadingCondition(Condition condition) {
+        if (condition == null)
+            throw new NullPointerException("Condition is null");
         isSet = true;
         this.condition = condition;
         readingConditionLabel.setText(condition.getChosenReadingCondition().name());
-        conditionImageView.setImage(SwingFXUtils.toFXImage(image, null));
+        conditionImageView.setImage(SwingFXUtils.toFXImage(condition.getMainDisplayImage(), null));
         requirementStatusLabel.setText(condition.isRequired() ?
                 ConditionRequirement.Required.name() : ConditionRequirement.Optional.name());
     }
@@ -59,5 +57,11 @@ public class ConditionController implements Initializable, ActivityController {
         } catch (Exception e) {
             System.out.println("Fail removing condition pane from parent");
         }
+    }
+
+    public void loadSavedCondition(Condition condition) {
+        if (condition == null)
+            throw new NullPointerException("Can't load null Condition");
+        registerReadingCondition(condition);
     }
 }

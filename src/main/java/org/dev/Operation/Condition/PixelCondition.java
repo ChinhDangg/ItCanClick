@@ -42,23 +42,40 @@ public class PixelCondition extends Condition {
         return false;
     }
 
-    private boolean checkPixelFromBoundingBox(Rectangle boundingBox, BufferedImage img2) throws AWTException {
+    private boolean checkPixelFromBoundingBox(Rectangle boundingBox, BufferedImage img2) throws AWTException, IOException {
+        System.out.println("here");
         BufferedImage img1 = new Robot().createScreenCapture(boundingBox);
-        if (img1.getWidth() != img2.getWidth() || img1.getHeight() != img2.getHeight())
+        ImageIO.write(img1, "png", new File("img1.png"));
+        ImageIO.write(img2, "png", new File("img2.png"));
+
+        System.out.println(img2.getType()); //BGR
+        System.out.println(img1.getType()); //RGB
+        System.out.println(img2.getColorModel());
+        System.out.println(img1.getColorModel());
+
+        if (img1.getWidth() != img2.getWidth() || img1.getHeight() != img2.getHeight()) {
+            System.out.println("Fail size");
             return false;
+        }
         DataBuffer db1 = img1.getRaster().getDataBuffer();
         DataBuffer db2 = img2.getRaster().getDataBuffer();
         int size1 = db1.getSize();
         int size2 = db2.getSize();
-        if (size1 != size2)
+        if (size1 != size2) {
+            System.out.println("Fail overall size");
+            System.out.println(size1);
+            System.out.println(size2);
             return false;
+        }
         for (int i = 0; i < size1; i++)
-            if (db1.getElem(i) != db2.getElem(i))
+            if (db1.getElem(i) != db2.getElem(i)) {
+                System.out.println("Fail not same element");
                 return false;
+            }
         return true;
     }
 
-    private boolean checkPixelFromCurrentScreen(BufferedImage img2) throws AWTException, IOException {
+    private boolean checkPixelFromCurrentScreen(BufferedImage img2) throws AWTException {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         BufferedImage currentScreen = new Robot().createScreenCapture(new Rectangle(0, 0, screenSize.width-1, screenSize.height-1));
 
@@ -117,6 +134,11 @@ public class PixelCondition extends Condition {
             byte[] imageBytes = Base64.getDecoder().decode(mainImageString);
             ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
             mainImage = ImageIO.read(bais);
+            if (mainImage.getType() != BufferedImage.TYPE_INT_RGB) {
+                BufferedImage rgbImage = new BufferedImage(mainImage.getWidth(), mainImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+                rgbImage.getGraphics().drawImage(mainImage, 0, 0, null);
+                mainImage = rgbImage;
+            }
         }
 
         String displayImageString = (String) in.readObject();
@@ -124,6 +146,11 @@ public class PixelCondition extends Condition {
             byte[] imageBytes = Base64.getDecoder().decode(displayImageString);
             ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
             displayImage = ImageIO.read(bais);
+            if (displayImage.getType() != BufferedImage.TYPE_INT_RGB) {
+                BufferedImage rgbImage = new BufferedImage(displayImage.getWidth(), displayImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+                rgbImage.getGraphics().drawImage(displayImage, 0, 0, null);
+                displayImage = rgbImage;
+            }
         }
     }
 }

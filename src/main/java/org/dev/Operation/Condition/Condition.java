@@ -2,12 +2,9 @@ package org.dev.Operation.Condition;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.Enum.ReadingCondition;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.Base64;
+import java.io.Serializable;
 
 @Getter
 @Setter

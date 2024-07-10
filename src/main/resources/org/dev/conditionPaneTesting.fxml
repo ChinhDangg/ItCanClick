@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="conditionStackPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Operation.ConditionController">
+   <children>
+      <HBox>
+         <children>
+            <HBox>
+               <children>
+                  <Group fx:id="folderIconGroupButton">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <children>
+                        <StackPane>
+                           <children>
+                              <ImageView fx:id="conditionImageView" fitHeight="81.0" fitWidth="31.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@images/folderIcon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </StackPane>
+                     </children>
+                  </Group>
+               </children>
+            </HBox>
+            <Separator orientation="VERTICAL" prefHeight="200.0" prefWidth="1.0" style="-fx-background-color: transparent;">
+               <padding>
+                  <Insets left="-5.0" right="-5.0" />
+               </padding>
+            </Separator>
+            <HBox prefHeight="191.0" prefWidth="200.0" />
+         </children>
+      </HBox>
+   </children>
+</StackPane>

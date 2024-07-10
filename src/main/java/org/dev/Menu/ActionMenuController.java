@@ -58,8 +58,10 @@ public class ActionMenuController extends MenuController implements Initializabl
         boolean controllerSet = actionController.isSet();
         recheckPane.setVisible(controllerSet);
         recheckResultLabel.setText("");
-        if (controllerSet)
+        if (controllerSet) {
             mainImageView.setImage(SwingFXUtils.toFXImage(actionController.getAction().getDisplayImage(), null));
+            actionTypeChoice.setValue(actionController.getAction().getChosenActionPerform());
+        }
         else
             mainImageView.setImage(null);
     }

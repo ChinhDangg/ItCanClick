@@ -5,6 +5,7 @@ module org.dev {
     requires static lombok;
     requires tess4j;
     requires com.github.kwhat.jnativehook;
+    requires jdk.unsupported.desktop;
 
     exports org.dev;
     exports org.dev.Enum;
@@ -14,6 +15,7 @@ module org.dev {
 
     opens org.dev to javafx.fxml;
     opens org.dev.Menu to javafx.fxml;
+
     exports org.dev.Operation;
     opens org.dev.Operation to javafx.fxml;
     exports org.dev.Operation.Action;

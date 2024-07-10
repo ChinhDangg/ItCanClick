@@ -53,6 +53,10 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             System.out.println("Loading preset reading pixel");
             currentMainImage = pixelCondition.getMainImage();
             displayMainImageView(pixelCondition.getDisplayImage());
+            mainImageBoundingBox = pixelCondition.getMainImageBoundingBox();
+            currentDisplayImage = pixelCondition.getDisplayImage();
+            notOptionCheckBox.setSelected(pixelCondition.isNot());
+            requiredOptionCheckBox.setSelected(pixelCondition.isRequired());
         }
         else
             resetPixelMenu();
@@ -85,7 +89,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
         }
         conditionController.registerReadingCondition(new PixelCondition(ReadingCondition.Pixel, currentMainImage,
                 mainImageBoundingBox, notOptionCheckBox.isSelected(), requiredOptionCheckBox.isSelected(),
-                currentDisplayImage, globalSearchCheckBox.isSelected()), currentDisplayImage);
+                currentDisplayImage, globalSearchCheckBox.isSelected()));
     }
     @Override
     protected void backToPreviousMenu(MouseEvent event) {
@@ -175,17 +179,5 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             startMouseMotionListening();
         else if (e.getKeyCode() == NativeKeyEvent.VC_F1)
             stopMouseMotionListening();
-    }
-
-    @Override
-    protected void stopMouseMotionListening() {
-        super.stopMouseMotionListening();
-        try {
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            BufferedImage entire = new Robot().createScreenCapture(new Rectangle(0, 0, screenSize.width-1, screenSize.height-1));
-            currentMainImage = entire.getSubimage(mainImageBoundingBox.x, mainImageBoundingBox.y, mainImageBoundingBox.width, mainImageBoundingBox.height);
-        } catch (Exception e) {
-            System.out.println("Fail assigning captured pixel image to main image");
-        }
     }
 }
