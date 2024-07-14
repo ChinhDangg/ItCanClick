@@ -52,7 +52,7 @@
             </HBox>
          </children>
       </VBox>
-      <ScrollPane hbarPolicy="NEVER" prefHeight="500.0" prefWidth="520.0" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" vbarPolicy="NEVER">
+      <ScrollPane fx:id="operationScrollPane" hbarPolicy="NEVER" prefHeight="500.0" prefWidth="520.0" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" vbarPolicy="NEVER">
          <content>
             <VBox spacing="10.0">
                <children>

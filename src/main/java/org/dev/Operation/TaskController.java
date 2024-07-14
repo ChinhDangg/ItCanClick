@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -28,6 +29,8 @@ public class TaskController implements Initializable {
     @FXML
     private Group mainTaskGroup;
     @FXML
+    private ScrollPane taskScrollPane;
+    @FXML
     private VBox mainTaskOuterVBox, taskVBox;
     @FXML
     private Label taskNameLabel;
@@ -37,6 +40,8 @@ public class TaskController implements Initializable {
     private TextField renameTextField;
     @FXML
     private StackPane renameButton, removeActionButton, moveActionUpButton, moveActionDownButton, addNewActionButton;
+
+    @Getter
     private final List<ActionController> actionList = new ArrayList<>();
 
     private double currentGlobalScale = 1;
@@ -71,7 +76,7 @@ public class TaskController implements Initializable {
         }
         return mainTaskGroup;
     }
-    public String getTaskName() { return taskNameLabel.getText(); }
+
     private void backToPrevious(MouseEvent event) { App.backToPrevious(mainTaskGroup); }
 
     private void toggleRenameTaskPane(MouseEvent event) {
@@ -95,33 +100,30 @@ public class TaskController implements Initializable {
             return;
         }
         try {
-            addNewAction();
+            addNewAction(null);
         } catch (IOException e) {
             System.out.println("Fail loading action pane in task controller");
         }
     }
-    private void addNewAction() throws IOException {
+    private void addNewAction(ActionData actionData) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("actionPane.fxml"));
         Pane actionPane = loader.load();
         actionPane.setOnMouseClicked(this::selectTheActionPane);
         ActionController actionController = loader.getController();
+        actionController.setVValueInScrollPane(taskScrollPane.getVvalue());
+        if (actionData != null)
+            actionController.loadSavedActionData(actionData);
         int numberOfActions = taskVBox.getChildren().size();
         if (numberOfActions == 0)
             actionController.disablePreviousOptions();
         taskVBox.getChildren().add(numberOfActions, actionPane);
+        addNewActionController(actionController);
+    }
+    public void addNewActionController(ActionController actionController) {
         actionList.add(actionController);
     }
-    private void addNewSavedAction(ActionData actionData) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("actionPane.fxml"));
-        Pane actionPane = loader.load();
-        actionPane.setOnMouseClicked(this::selectTheActionPane);
-        ActionController actionController = loader.getController();
-        actionController.loadSavedActionData(actionData);
-        int numberOfActions = taskVBox.getChildren().size();
-        if (numberOfActions == 0)
-            actionController.disablePreviousOptions();
-        taskVBox.getChildren().add(numberOfActions, actionPane);
-        actionList.add(actionController);
+    public void changeTaskScrollPaneView(double vValue) {
+        taskScrollPane.setVvalue(vValue);
     }
 
     // ------------------------------------------------------
@@ -228,6 +230,6 @@ public class TaskController implements Initializable {
         registerTask(taskData.getTask());
         taskNameLabel.setText(task.getTaskName());
         for (ActionData actionData : taskData.getActionDataList())
-            addNewSavedAction(actionData);
+            addNewAction(actionData);
     }
 }

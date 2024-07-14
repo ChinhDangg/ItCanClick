@@ -29,11 +29,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class ActionController implements Initializable, ActivityController {
 
+    @FXML
+    private Pane mainActionPane;
     @FXML
     private Label actionNameLabel;
     @FXML
@@ -56,10 +59,15 @@ public class ActionController implements Initializable, ActivityController {
     @Getter
     private boolean isSet;
     @Getter
+    @Setter
     private Action action;
     @Getter
     @Setter
     private ActionTypes chosenActionPerform;
+    @Getter
+    @Setter
+    private double vValueInScrollPane;
+
     private final List<ConditionController> entryConditionList = new ArrayList<>();
     private final List<ConditionController> exitConditionList = new ArrayList<>();
 

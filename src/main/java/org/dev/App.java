@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -45,6 +46,7 @@ public class App extends Application {
     public static ActionMenuController actionMenuController;
     public static ConditionMenuController conditionMenuController;
     public static OperationController currentLoadedOperationController;
+    public static SideMenuController sideMenuController;
 
     public static double currentGlobalScale = 1.5;
 
@@ -62,12 +64,22 @@ public class App extends Application {
         primaryCenterStackPane.getChildren().add(group);
         primaryCenterStackPane.setAlignment(Pos.TOP_CENTER);
 
+        FXMLLoader loader2 = new FXMLLoader(getClass().getResource("conditionPaneTesting.fxml"));
+        StackPane sideMenuPane = loader2.load();
+        sideMenuController = loader2.getController();
+
         BorderPane primary = new FXMLLoader(getClass().getResource("primary.fxml")).load();
         primary.setCenter(primaryCenterStackPane);
+        primary.setLeft(sideMenuPane);
 
         Scene scene = new Scene(primary);
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static void loadSideMenuHierarchy() {
+        if (currentLoadedOperationController != null)
+            sideMenuController.loadSideHierarchy(currentLoadedOperationController);
     }
 
     public static void loadSavedOperation(String path) {

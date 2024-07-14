@@ -7,8 +7,9 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<StackPane fx:id="conditionStackPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Operation.ConditionController">
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenuController">
    <children>
       <HBox>
          <children>
@@ -21,7 +22,7 @@
                      <children>
                         <StackPane>
                            <children>
-                              <ImageView fx:id="conditionImageView" fitHeight="81.0" fitWidth="31.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fitHeight="81.0" fitWidth="31.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@images/folderIcon.png" />
                                  </image>
@@ -40,7 +41,12 @@
                   <Insets left="-5.0" right="-5.0" />
                </padding>
             </Separator>
-            <HBox prefHeight="191.0" prefWidth="200.0" />
+            <VBox fx:id="sideHierarchyVBox" prefHeight="200.0" prefWidth="221.0" />
+            <Separator orientation="VERTICAL" prefHeight="200.0" prefWidth="1.0" style="-fx-background-color: transparent;">
+               <padding>
+                  <Insets left="-5.0" right="-5.0" />
+               </padding>
+            </Separator>
          </children>
       </HBox>
    </children>

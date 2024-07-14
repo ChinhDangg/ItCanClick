@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
+import lombok.Setter;
 import org.dev.App;
 import org.dev.Operation.Data.TaskData;
 import org.dev.Operation.Task.Task;
@@ -30,7 +31,12 @@ public class MinimizedTaskController implements Initializable {
     private StackPane repeatMinusButton, repeatPlusButton;
 
     @Getter
+    @Setter
     private TaskController taskController;
+
+    @Getter
+    @Setter
+    private double vValueInScrollPane;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -65,14 +71,14 @@ public class MinimizedTaskController implements Initializable {
 
     // ------------------------------------------------------
     public void openTask(MouseEvent event) {
-        taskNameLabel.setText(taskController.getTaskName());
+        taskNameLabel.setText(taskController.getTask().getTaskName());
         App.displayNewNode(taskController.getTaskPane());
     }
     private void loadNewTaskPane() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("taskPane.fxml"));
             loader.load();
-            taskController = loader.getController();
+            setTaskController(loader.getController());
         } catch (Exception e) {
             System.out.println("Fail loading task vbox");
         }

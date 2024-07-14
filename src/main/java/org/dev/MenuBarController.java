@@ -49,5 +49,6 @@ public class MenuBarController implements Initializable {
     public void openSavedOperation(ActionEvent event) {
         System.out.println("Opening saved operation");
         App.loadSavedOperation("SomeOperationName.ser");
+        App.loadSideMenuHierarchy();
     }
 }

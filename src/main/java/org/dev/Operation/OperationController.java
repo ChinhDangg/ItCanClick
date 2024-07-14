@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -31,9 +32,13 @@ public class OperationController implements Initializable, Serializable {
     @FXML
     private StackPane removeTaskButton, moveTaskUpButton, moveTaskDownButton;
     @FXML
+    private ScrollPane operationScrollPane;
+    @FXML
     private VBox operationVBox;
     @FXML
     private HBox addTaskButton;
+
+    @Getter
     private final List<MinimizedTaskController> taskList = new ArrayList<>();
 
     private double currentGlobalScale = 1;
@@ -88,12 +93,12 @@ public class OperationController implements Initializable, Serializable {
             System.out.println("Fail loading minimized task pane");
         }
     }
-
     private void addNewMinimizedTask(TaskData taskData) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("minimizedTaskPane.fxml"));
         StackPane taskPane = loader.load();
         taskPane.getChildren().getFirst().setOnMouseClicked(this::selectTheTaskPane);
         MinimizedTaskController controller = loader.getController();
+        controller.setVValueInScrollPane(operationScrollPane.getVvalue());
         if (taskData != null)
             controller.loadSavedTaskData(taskData);
         int numberOfTask = operationVBox.getChildren().size();
@@ -102,6 +107,9 @@ public class OperationController implements Initializable, Serializable {
         controller.setTaskIndex(numberOfTask+1);
         operationVBox.getChildren().add(numberOfTask, taskPane);
         taskList.add(controller);
+    }
+    public void changeOperationScrollPaneView(double vValue) {
+        operationScrollPane.setVvalue(vValue);
     }
 
     // ------------------------------------------------------
