@@ -9,5 +9,5 @@ import java.io.Serializable;
 @Setter
 public class Operation implements Serializable {
 
-    private String operationName;
+    private String operationName = "Operation Name";
 }

@@ -57,6 +57,9 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             currentDisplayImage = pixelCondition.getDisplayImage();
             notOptionCheckBox.setSelected(pixelCondition.isNot());
             requiredOptionCheckBox.setSelected(pixelCondition.isRequired());
+            imageWidth = currentMainImage.getWidth();
+            imageHeight = currentMainImage.getHeight();
+            outsideBoxWidth = (currentDisplayImage.getHeight() - imageHeight)/2;
         }
         else
             resetPixelMenu();
@@ -143,6 +146,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     }
     private void changePixelLineColor(javafx.event.ActionEvent event) {
         if (mouseStopped) {
+            showHideLineCheckBox.setSelected(true);
             Graphics2D g = currentDisplayImage.createGraphics();
             g.drawImage(drawBox(imageWidth, imageHeight, getPixelColor()),
                     outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);

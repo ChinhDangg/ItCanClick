@@ -8,14 +8,18 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import lombok.Getter;
 import org.dev.Operation.ActivityController;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public abstract class MenuController implements Initializable, NativeKeyListener {
+    @Getter
     @FXML
-    protected StackPane mainMenuStackPane, backButton, recheckButton;
+    protected StackPane mainMenuStackPane;
+    @FXML
+    protected StackPane backButton, recheckButton;
     @FXML
     protected Pane backgroundPane, recheckPane;
     @FXML

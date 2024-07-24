@@ -12,7 +12,6 @@ import lombok.Getter;
 import org.dev.App;
 import org.dev.Enum.ConditionRequirement;
 import org.dev.Operation.Condition.Condition;
-import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ResourceBundle;
 

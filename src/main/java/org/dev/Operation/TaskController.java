@@ -77,7 +77,7 @@ public class TaskController implements Initializable {
         return mainTaskGroup;
     }
 
-    private void backToPrevious(MouseEvent event) { App.backToPrevious(mainTaskGroup); }
+    private void backToPrevious(MouseEvent event) { App.backToPrevious(); }
 
     private void toggleRenameTaskPane(MouseEvent event) {
         renameTextField.setText(taskNameLabel.getText());
@@ -110,7 +110,6 @@ public class TaskController implements Initializable {
         Pane actionPane = loader.load();
         actionPane.setOnMouseClicked(this::selectTheActionPane);
         ActionController actionController = loader.getController();
-        actionController.setVValueInScrollPane(taskScrollPane.getVvalue());
         if (actionData != null)
             actionController.loadSavedActionData(actionData);
         int numberOfActions = taskVBox.getChildren().size();
@@ -122,8 +121,14 @@ public class TaskController implements Initializable {
     public void addNewActionController(ActionController actionController) {
         actionList.add(actionController);
     }
-    public void changeTaskScrollPaneView(double vValue) {
-        taskScrollPane.setVvalue(vValue);
+
+    public void changeTaskScrollPaneView(Pane mainActionPane) {
+        double targetPaneY = mainActionPane.getBoundsInParent().getMinY();
+        double contentHeight = taskScrollPane.getContent().getBoundsInLocal().getHeight();
+        double scrollPaneHeight = taskScrollPane.getViewportBounds().getHeight();
+
+        double vValue = targetPaneY / (contentHeight - scrollPaneHeight);
+        taskScrollPane.setVvalue(Math.min(vValue, 1.00));
     }
 
     // ------------------------------------------------------

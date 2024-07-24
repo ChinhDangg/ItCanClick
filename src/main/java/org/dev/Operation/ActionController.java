@@ -17,23 +17,17 @@ import lombok.Getter;
 import lombok.Setter;
 import org.dev.App;
 import org.dev.Enum.ActionTypes;
-import org.dev.Enum.ReadingCondition;
 import org.dev.Operation.Action.Action;
-import org.dev.Operation.Action.ActionKeyClick;
 import org.dev.Operation.Condition.Condition;
-import org.dev.Operation.Condition.PixelCondition;
 import org.dev.Operation.Data.ActionData;
-
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ActionController implements Initializable, ActivityController {
+public class ActionController implements Initializable, MainJobController, ActivityController {
 
     @FXML
     private Pane mainActionPane;
@@ -64,9 +58,6 @@ public class ActionController implements Initializable, ActivityController {
     @Getter
     @Setter
     private ActionTypes chosenActionPerform;
-    @Getter
-    @Setter
-    private double vValueInScrollPane;
 
     private final List<ConditionController> entryConditionList = new ArrayList<>();
     private final List<ConditionController> exitConditionList = new ArrayList<>();
@@ -81,6 +72,26 @@ public class ActionController implements Initializable, ActivityController {
         renameOptionPane.setVisible(false);
         requiredCheckBox.setOnAction(this::toggleRequiredCheckBox);
         previousPassCheckBox.setOnAction(this::togglePreviousPassCheckBox);
+    }
+
+    @Override
+    public void takeToDisplay() {
+        TaskController parentTaskController = findParentTaskController();
+        if (parentTaskController == null)
+            throw new IllegalStateException("Parent task controller is null for action controller - bug");
+        if (mainActionPane.getScene() == null)
+            App.displayNewNode(parentTaskController.getTaskPane());
+        parentTaskController.changeTaskScrollPaneView(mainActionPane);
+    }
+    private TaskController findParentTaskController() {
+        for (MinimizedTaskController taskController : App.currentLoadedOperationController.getTaskList()) {
+            TaskController currentTaskController = taskController.getTaskController();
+            List<ActionController> actionList = currentTaskController.getActionList();
+            for (ActionController actionController : actionList)
+                if (actionController == this)
+                    return currentTaskController;
+        }
+        return null;
     }
 
     private boolean actionNameVisible = false;

@@ -1,5 +1,6 @@
 package org.dev.Operation;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,12 +14,11 @@ import lombok.Setter;
 import org.dev.App;
 import org.dev.Operation.Data.TaskData;
 import org.dev.Operation.Task.Task;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class MinimizedTaskController implements Initializable {
+public class MinimizedTaskController implements Initializable, MainJobController {
     @FXML
     private StackPane minimizedTaskLayerStackPane;
     @FXML
@@ -32,11 +32,7 @@ public class MinimizedTaskController implements Initializable {
 
     @Getter
     @Setter
-    private TaskController taskController;
-
-    @Getter
-    @Setter
-    private double vValueInScrollPane;
+    private TaskController taskController;;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -67,6 +63,12 @@ public class MinimizedTaskController implements Initializable {
     }
     private void togglePreviousPassOption(ActionEvent event) {
         taskController.getTask().setPreviousPass(requiredCheckBox.isSelected());
+    }
+
+    @Override
+    public void takeToDisplay() {
+        App.currentLoadedOperationController.takeToDisplay();
+        App.currentLoadedOperationController.changeOperationScrollPaneView(minimizedTaskLayerStackPane);
     }
 
     // ------------------------------------------------------

@@ -1,15 +1,11 @@
 package org.dev;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.dev.Operation.*;
-import org.dev.Operation.Action.Action;
-import org.dev.Operation.Action.ActionKeyClick;
 
 public class Testing extends Application {
 
@@ -20,41 +16,27 @@ public class Testing extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        OperationController operationController = new OperationController();
-        operationController.getOperation().setOperationName("Some operation name");
 
-        MinimizedTaskController minimizedTaskController = new MinimizedTaskController();
-        MinimizedTaskController minimizedTaskController1 = new MinimizedTaskController();
-        operationController.getTaskList().add(minimizedTaskController);
-        operationController.getTaskList().add(minimizedTaskController1);
 
-        TaskController taskController = new TaskController();
-        taskController.getTask().setTaskName("Some task name");
-        TaskController taskController1 = new TaskController();
-        taskController1.getTask().setTaskName("Some task name 2");
-        minimizedTaskController.setTaskController(taskController);
-        minimizedTaskController1.setTaskController(taskController1);
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setVvalue(1.00);
+        scrollPane.setPrefHeight(10);
+        VBox vBox = new VBox();
+        Label label1 = new Label("Hello World1");
+        Label label2 = new Label("Hello World2");
+        Label label3 = new Label("Hello World3");
+        Label label4 = new Label("Hello World4");
+        Label label5 = new Label("Hello World5");
+        vBox.getChildren().addAll(label1, label2, label3, label4, label5);
+        scrollPane.setContent(vBox);
 
-        ActionController actionController = new ActionController();
-        Action action = new ActionKeyClick();
-        action.setActionName("Some action name");
-        actionController.setAction(action);
-        ActionController actionController1 = new ActionController();
-        Action action1 = new ActionKeyClick();
-        action1.setActionName("Some action name 2");
-        actionController1.setAction(action1);
-        taskController.getActionList().add(actionController);
-        taskController.getActionList().add(actionController1);
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("conditionPaneTesting.fxml"));
-        StackPane node = loader.load();
-        SideMenuController sideMenuController = loader.getController();
-        sideMenuController.loadSideHierarchy(operationController);
-
-        Group group = new Group(node);
-        Pane p = new Pane(group);
-        Scene scene = new Scene(p);
+        Scene scene = new Scene(scrollPane);
         stage.setScene(scene);
         stage.show();
+
+        Thread.sleep(5000);
+        scrollPane.setVisible(false);
+        Thread.sleep(2000);
+        scrollPane.setVisible(true);
     }
 }

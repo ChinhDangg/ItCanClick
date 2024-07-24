@@ -4,6 +4,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -24,9 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class OperationController implements Initializable, Serializable {
+public class OperationController implements Initializable, Serializable, MainJobController {
     @FXML
-    private VBox mainTaskVBox;
+    private Group mainOperaiontGroup;
+    @FXML
+    private VBox mainOperationVBox;
     @FXML
     private TextField renameTextField;
     @FXML
@@ -53,20 +56,33 @@ public class OperationController implements Initializable, Serializable {
         moveTaskUpButton.setOnMouseClicked(this::moveTaskUp);
         moveTaskDownButton.setOnMouseClicked(this::moveTaskDown);
         renameTextField.focusedProperty().addListener((_, _, newValue) -> {
-            if (newValue) {
-                System.out.println("TextField gained focus");
-            } else {
-                System.out.println("TextField lost focus");
+            if (!newValue) {
+                //System.out.println("TextField lost focus");
                 changeOperationName();
             }
         });
         loadMainTaskVBox();
     }
 
+    public boolean isSet() { return !taskList.isEmpty() && taskList.getFirst().isSet(); }
+    public void setVisible(boolean visible) { mainOperaiontGroup.setVisible(visible); }
+
+    @Override
+    public void takeToDisplay() {
+        if (mainOperationVBox.getScene() != null) {
+            if (App.currentDisplayNode != null && App.currentDisplayNode.getScene() != null)
+                App.backToPrevious();
+            return;
+        }
+        System.out.println("This will probably never get reached. If seen then recheck");
+        loadMainTaskVBox();
+        App.primaryCenterStackPane.getChildren().clear();
+        App.primaryCenterStackPane.getChildren().add(mainOperaiontGroup);
+    }
     private void loadMainTaskVBox() {
         if (currentGlobalScale != App.currentGlobalScale) {
             currentGlobalScale = App.currentGlobalScale;
-            mainTaskVBox.getTransforms().add(new Scale(currentGlobalScale, currentGlobalScale, 0, 0));
+            mainOperationVBox.getTransforms().add(new Scale(currentGlobalScale, currentGlobalScale, 0, 0));
         }
     }
 
@@ -78,13 +94,12 @@ public class OperationController implements Initializable, Serializable {
         operation.setOperationName(name);
         removeTaskButton.requestFocus();
         renameTextField.setText(name);
-        System.out.println(operation.getOperationName());
     }
 
     // ------------------------------------------------------
     private void addMinimizedTask(MouseEvent event) {
         try {
-            if (!taskList.isEmpty() && !taskList.getFirst().isSet()) {
+            if (!taskList.isEmpty() && !taskList.getLast().isSet()) {
                 System.out.println("Recent minimized task is not set");
                 return;
             }
@@ -98,7 +113,6 @@ public class OperationController implements Initializable, Serializable {
         StackPane taskPane = loader.load();
         taskPane.getChildren().getFirst().setOnMouseClicked(this::selectTheTaskPane);
         MinimizedTaskController controller = loader.getController();
-        controller.setVValueInScrollPane(operationScrollPane.getVvalue());
         if (taskData != null)
             controller.loadSavedTaskData(taskData);
         int numberOfTask = operationVBox.getChildren().size();
@@ -108,21 +122,43 @@ public class OperationController implements Initializable, Serializable {
         operationVBox.getChildren().add(numberOfTask, taskPane);
         taskList.add(controller);
     }
-    public void changeOperationScrollPaneView(double vValue) {
-        operationScrollPane.setVvalue(vValue);
+    public void changeOperationScrollPaneView(StackPane minimizedTaskLayerStackPane) {
+        Pane innerChildPane = (Pane) minimizedTaskLayerStackPane.getChildren().getFirst();
+        selectTheTaskPane(innerChildPane);
+        operationScrollPane.setVvalue(0.0);
+        Thread thread = new Thread(() -> changeScrollPaneView(minimizedTaskLayerStackPane));
+        thread.start();
     }
+    private void changeScrollPaneView(StackPane minimizedTaskLayerStackPane) {
+        double targetPaneY = minimizedTaskLayerStackPane.getBoundsInParent().getMinY();
+        double contentHeight = operationScrollPane.getContent().getBoundsInLocal().getHeight();
+        double scrollPaneHeight = operationScrollPane.getViewportBounds().getHeight();
+        double vValue = Math.min(targetPaneY / (contentHeight - scrollPaneHeight), 1.00);
+        try {
+            while (operationScrollPane.getVvalue() != vValue) {
+                operationScrollPane.setVvalue(vValue);
+                Thread.sleep(500);
+            }
+        } catch (Exception e) {
+            System.out.println("bullshit");
+        }
+    }
+
 
     // ------------------------------------------------------
     private Pane currentSelectedTaskPane = null;
     private void selectTheTaskPane(MouseEvent event) {
         try {
-            if (currentSelectedTaskPane != null)
-                setUnselected(currentSelectedTaskPane);
-            currentSelectedTaskPane = (Pane) event.getSource();
-            setSelected(currentSelectedTaskPane);
+            selectTheTaskPane((Pane) event.getSource());
         } catch (Exception e) {
             System.out.println("Fail assigning current selected task pane");
         }
+    }
+    private void selectTheTaskPane(Pane taskPane) {
+        if (currentSelectedTaskPane != null)
+            setUnselected(currentSelectedTaskPane);
+        currentSelectedTaskPane = taskPane;
+        setSelected(currentSelectedTaskPane);
     }
     private void setSelected(Pane taskPane) { taskPane.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); }
     private void setUnselected(Pane taskPane) { taskPane.setStyle(""); }
@@ -211,6 +247,7 @@ public class OperationController implements Initializable, Serializable {
         }
     }
 
+    // ------------------------------------------------------
     public OperationData getOperationData() {
         OperationData operationData = new OperationData();
         operationData.setOperation(operation);

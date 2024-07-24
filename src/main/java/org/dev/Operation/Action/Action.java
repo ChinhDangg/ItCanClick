@@ -15,7 +15,7 @@ import java.util.Base64;
 @Getter
 public abstract class Action implements Serializable {
     @Setter
-    protected String actionName;
+    protected String actionName = "Action Name";
     @Setter
     protected ActionTypes chosenActionPerform;
     protected transient BufferedImage mainImage;

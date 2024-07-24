@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.MenuItem;
 import org.dev.Operation.Data.OperationData;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -27,13 +28,14 @@ public class MenuBarController implements Initializable {
 
     public void save(ActionEvent event) {
         try {
-            System.out.println("Saved all");
+            System.out.println("CLicked on saved all");
             if (App.currentLoadedOperationController == null)
                 return;
             OperationData operationData = App.currentLoadedOperationController.getOperationData();
             FileOutputStream fileOut = new FileOutputStream(operationData.getOperation().getOperationName()+".ser");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(operationData);
+            System.out.println("Saved");
         } catch (Exception e) {
             System.out.println("Fail saving all operation data");
         }
@@ -44,6 +46,12 @@ public class MenuBarController implements Initializable {
 
     public void createNewOperation(ActionEvent event) {
         System.out.println("New operation opened");
+        try {
+            App.loadNewEmptyOperation();
+            App.loadSideMenuHierarchy();
+        } catch (IOException e) {
+            System.out.println("Fail loading empty operation pane at top menu bar");
+        }
     }
 
     public void openSavedOperation(ActionEvent event) {

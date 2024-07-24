@@ -40,31 +40,25 @@ public class App extends Application {
         launch();
     }
 
-    public static Pane actionMenuPane;
-    public static Pane conditionMenuPane;
+    public static SideMenuController sideMenuController;
     public static StackPane primaryCenterStackPane;
     public static ActionMenuController actionMenuController;
     public static ConditionMenuController conditionMenuController;
     public static OperationController currentLoadedOperationController;
-    public static SideMenuController sideMenuController;
+    public static Node currentDisplayNode;
 
     public static double currentGlobalScale = 1.5;
 
     @Override
     public void start(Stage stage) throws IOException {
+
         loadConditionMenuPane();
         loadActionMenuPane();
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Operation/operationPane.fxml"));
-        VBox operationPane = loader.load();
-        currentLoadedOperationController = loader.getController();
-        Group group = new Group(operationPane);
-
         primaryCenterStackPane = new StackPane();
-        primaryCenterStackPane.getChildren().add(group);
         primaryCenterStackPane.setAlignment(Pos.TOP_CENTER);
 
-        FXMLLoader loader2 = new FXMLLoader(getClass().getResource("conditionPaneTesting.fxml"));
+        FXMLLoader loader2 = new FXMLLoader(getClass().getResource("sideMenuPane.fxml"));
         StackPane sideMenuPane = loader2.load();
         sideMenuController = loader2.getController();
 
@@ -77,6 +71,19 @@ public class App extends Application {
         stage.show();
     }
 
+    public static void loadNewEmptyOperation() throws IOException {
+        if (currentLoadedOperationController != null && !currentLoadedOperationController.isSet()) {
+            System.out.println("Empty operation already loaded");
+            return;
+        }
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("Operation/operationPane.fxml"));
+        Group operationPane = loader.load();
+        currentLoadedOperationController = loader.getController();
+        primaryCenterStackPane.getChildren().clear();
+        primaryCenterStackPane.getChildren().add(operationPane);
+        System.out.println("New empty operation pane added");
+    }
+
     public static void loadSideMenuHierarchy() {
         if (currentLoadedOperationController != null)
             sideMenuController.loadSideHierarchy(currentLoadedOperationController);
@@ -86,58 +93,64 @@ public class App extends Application {
         try (FileInputStream fileIn = new FileInputStream(path);
              ObjectInputStream in = new ObjectInputStream(fileIn)) {
              OperationData operationData = (OperationData) in.readObject();
-            System.out.println("Passed getting data");
+             System.out.println("Passed getting data");
 
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("Operation/operationPane.fxml"));
-            VBox operationPane = loader.load();
-            System.out.println("Passed loading operation pane");
+             FXMLLoader loader = new FXMLLoader(App.class.getResource("Operation/operationPane.fxml"));
+             Group operationPane = loader.load();
+             System.out.println("Passed loading operation pane");
 
-            currentLoadedOperationController = loader.getController();
-            ObservableList<Node> children = primaryCenterStackPane.getChildren();
-            System.out.println("Passed assigning controller");
+             currentLoadedOperationController = loader.getController();
+             System.out.println("Passed assigning controller");
 
-            primaryCenterStackPane.getChildren().clear();
-            System.out.println("Passed removing all children in primary stack pane");
+             ObservableList<Node> children = primaryCenterStackPane.getChildren();
+             primaryCenterStackPane.getChildren().clear();
+             System.out.println("Passed removing all children in primary stack pane");
 
-            currentLoadedOperationController.loadSavedOperationData(operationData);
-            System.out.println("Passed loading saved data into current operation controller");
+             currentLoadedOperationController.loadSavedOperationData(operationData);
+             System.out.println("Passed loading saved data into current operation controller");
 
-            children.add(new Group(operationPane));
-            System.out.println("Passed adding operation pane to primary stack pane");
+             children.add(operationPane);
+             System.out.println("Passed adding operation pane to primary stack pane");
 
         } catch (IOException | ClassNotFoundException i) {
             System.out.println("Fail loading saved operation data");
         }
     }
 
+
     public static void displayNewNode(Node node) {
-        primaryCenterStackPane.getChildren().getFirst().setVisible(false);
+        currentLoadedOperationController.setVisible(false);
+        if (currentDisplayNode != null)
+            primaryCenterStackPane.getChildren().remove(currentDisplayNode);
         primaryCenterStackPane.getChildren().add(node);
+        currentDisplayNode = node;
     }
-    public static void backToPrevious(Node node) {
-        primaryCenterStackPane.getChildren().remove(node);
-        primaryCenterStackPane.getChildren().getFirst().setVisible(true);
+    public static void backToPrevious() {
+        if (currentDisplayNode != null)
+            primaryCenterStackPane.getChildren().remove(currentDisplayNode);
+        currentLoadedOperationController.setVisible(true);
     }
 
     public static void openConditionMenuPane(ConditionController conditionController) {
         conditionMenuController.loadMenu(conditionController);
-        primaryCenterStackPane.getChildren().add(conditionMenuPane);
+        primaryCenterStackPane.getChildren().add(conditionMenuController.getMainMenuStackPane());
     }
     public static void closeConditionMenuPane() {
-        primaryCenterStackPane.getChildren().remove(conditionMenuPane);
+        primaryCenterStackPane.getChildren().remove(conditionMenuController.getMainMenuStackPane());
     }
     public static void openActionMenuPane(ActionController actionController) {
         actionMenuController.loadMenu(actionController);
-        primaryCenterStackPane.getChildren().add(actionMenuPane);
+        primaryCenterStackPane.getChildren().add(actionMenuController.getMainMenuStackPane());
     }
-    public static void closeActionMenuPane() { primaryCenterStackPane.getChildren().remove(actionMenuPane); }
+    public static void closeActionMenuPane() {
+        primaryCenterStackPane.getChildren().remove(actionMenuController.getMainMenuStackPane()); }
 
 
     private void loadActionMenuPane() {
         System.out.println("Loading Action Menu Pane");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Menu/actionMenuPane.fxml"));
-            actionMenuPane = loader.load();
+            loader.load();
             actionMenuController = loader.getController();
         } catch (IOException e) {
             System.out.println("Error loading action menu pane");
@@ -147,7 +160,7 @@ public class App extends Application {
         System.out.println("Loading Condition Menu Pane");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("Menu/conditionMenuPane.fxml"));
-            conditionMenuPane = loader.load();
+            loader.load();
             conditionMenuController = loader.getController();
         } catch (IOException e) {
             System.out.println("Error loading condition menu pane");

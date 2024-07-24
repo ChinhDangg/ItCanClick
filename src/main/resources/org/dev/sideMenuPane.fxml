@@ -2,12 +2,14 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 
 <StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenuController">
    <children>
@@ -41,7 +43,27 @@
                   <Insets left="-5.0" right="-5.0" />
                </padding>
             </Separator>
-            <VBox fx:id="sideHierarchyVBox" prefHeight="200.0" prefWidth="221.0" />
+            <Group>
+               <children>
+                  <StackPane fx:id="mainSideHierarchyStackPane" alignment="TOP_CENTER">
+                     <children>
+                        <VBox fx:id="sideHierarchyVBox" minHeight="200.0" minWidth="221.0">
+                           <StackPane.margin>
+                              <Insets left="5.0" />
+                           </StackPane.margin></VBox>
+                        <Group fx:id="newOperationGroupButton">
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="24.0" stroke="BLACK" strokeType="INSIDE" width="91.0" />
+                              <Label layoutX="5.3333282470703125" layoutY="3.3333332538604736" text="New Operation" />
+                           </children>
+                           <StackPane.margin>
+                              <Insets top="20.0" />
+                           </StackPane.margin>
+                        </Group>
+                     </children>
+                  </StackPane>
+               </children>
+            </Group>
             <Separator orientation="VERTICAL" prefHeight="200.0" prefWidth="1.0" style="-fx-background-color: transparent;">
                <padding>
                   <Insets left="-5.0" right="-5.0" />
