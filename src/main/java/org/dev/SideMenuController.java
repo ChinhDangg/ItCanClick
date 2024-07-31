@@ -1,6 +1,5 @@
 package org.dev;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -64,7 +63,7 @@ public class SideMenuController implements Initializable {
         newOperationGroupButton.setVisible(false);
 
         sideHierarchyVBox.getChildren().clear();
-        Label operationLabel = new Label(operationController.getOperation().getOperationName());
+        Label operationLabel = operationController.getOperationNameLabel();
         operationLabel.setOnMouseClicked(mouseEvent -> sideLabelDoubleClick(mouseEvent, operationController));
         VBox taskGroup = new VBox();
         HBox operationHBox = getDropDownHBox(taskGroup, operationLabel);
@@ -75,21 +74,22 @@ public class SideMenuController implements Initializable {
 
         for (MinimizedTaskController minimizedTask : taskControllerList) {
             TaskController currentTaskController = minimizedTask.getTaskController();
-            Label taskLabel = new Label(currentTaskController.getTask().getTaskName());
+            Label taskLabel = minimizedTask.getTaskNameLabel();
             taskLabel.setOnMouseClicked(mouseEvent -> sideLabelDoubleClick(mouseEvent, minimizedTask));
             List<ActionController> actionControllerList = currentTaskController.getActionList();
 
             VBox actionGroup = new VBox();
             actionGroup.setPadding(new Insets(0, 0, 0, 35));
             HBox taskHBox = getDropDownHBox(actionGroup, taskLabel);
-            taskGroup.getChildren().add(taskHBox);
 
             for (ActionController currentActionController : actionControllerList) {
-                Label actionLabel = new Label(currentActionController.getAction().getActionName());
+                Label actionLabel = currentActionController.getActionNameLabel();
                 actionLabel.setOnMouseClicked(mouseEvent -> sideLabelDoubleClick(mouseEvent, currentActionController));
                 actionGroup.getChildren().add(actionLabel);
             }
-            taskGroup.getChildren().add(actionGroup);
+            VBox group = new VBox();
+            group.getChildren().addAll(taskHBox, actionGroup);
+            taskGroup.getChildren().add(group);
         }
         sideHierarchyVBox.getChildren().add(taskGroup);
     }

@@ -31,14 +31,11 @@ public class ActionController implements Initializable, MainJobController, Activ
 
     @FXML
     private Pane mainActionPane;
+    @Getter
     @FXML
-    private Label actionNameLabel;
+    private final Label actionNameLabel = new Label();
     @FXML
-    private Pane renameOptionPane;
-    @FXML
-    private StackPane renameButton;
-    @FXML
-    private TextField renameActionTextField;
+    private TextField renameTextField;
     @FXML
     private CheckBox requiredCheckBox, previousPassCheckBox;
     @FXML
@@ -67,11 +64,15 @@ public class ActionController implements Initializable, MainJobController, Activ
         actionPane.setOnMouseClicked(this::openActionMenuPane);
         entryAddButton.setOnMouseClicked(this::addNewEntryCondition);
         exitAddButton.setOnMouseClicked(this::addNewExitCondition);
-        actionNameLabel.setOnMouseClicked(this::showRenameActionOption);
-        renameButton.setOnMouseClicked(this::changeActionName);
-        renameOptionPane.setVisible(false);
+        actionNameLabel.setText(renameTextField.getText());
         requiredCheckBox.setOnAction(this::toggleRequiredCheckBox);
         previousPassCheckBox.setOnAction(this::togglePreviousPassCheckBox);
+        renameTextField.focusedProperty().addListener((_, _, newValue) -> {
+            if (!newValue) {
+                //System.out.println("TextField lost focus");
+                changeActionName();
+            }
+        });
     }
 
     @Override
@@ -94,24 +95,20 @@ public class ActionController implements Initializable, MainJobController, Activ
         return null;
     }
 
-    private boolean actionNameVisible = false;
-    private void showRenameActionOption(MouseEvent event) {
-        if (!actionNameVisible)
-            renameActionTextField.setText(actionNameLabel.getText());
-        actionNameVisible = !actionNameVisible;
-        renameOptionPane.setVisible(actionNameVisible);
-    }
-
-    private void changeActionName(MouseEvent event) {
-        String newName = renameActionTextField.getText().replace("\n", "");
-        if (!newName.isBlank()) {
-            renameActionTextField.setText("");
-            actionNameLabel.setText(newName);
-            actionNameVisible = !actionNameVisible;
-            renameOptionPane.setVisible(actionNameVisible);
-            if (action != null)
-                action.setActionName(newName);
+    private void changeActionName() {
+        String name = renameTextField.getText();
+        name = name.strip();
+        if (name.isBlank()) {
+            renameTextField.setText(actionNameLabel.getText());
+            return;
         }
+        if (action != null)
+            action.setActionName(name);
+        updateActionName(name);
+    }
+    private void updateActionName(String name) {
+        renameTextField.setText(name);
+        actionNameLabel.setText(name);
     }
 
     public void disablePreviousOptions() {
@@ -314,7 +311,7 @@ public class ActionController implements Initializable, MainJobController, Activ
         if (actionData == null)
             throw new NullPointerException("Can't load from saved action data");
         registerActionPerform(actionData.getAction());
-        actionNameLabel.setText(action.getActionName());
+        updateActionName(action.getActionName());
         requiredCheckBox.setSelected(action.isRequired());
         previousPassCheckBox.setSelected(action.isPreviousPass());
         displayActionImage(action.getDisplayImage());

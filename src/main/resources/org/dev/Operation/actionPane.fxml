@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Group?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -15,35 +16,33 @@
 
 <Pane fx:id="mainActionPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Operation.ActionController">
    <children>
-      <VBox layoutX="3.0" layoutY="2.0" spacing="3.0">
+      <VBox layoutX="3.0" layoutY="2.0" spacing="10.0">
          <children>
-            <Pane>
+            <VBox spacing="5.0">
                <children>
-                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="16.0" layoutX="-1.0" stroke="BLACK" strokeType="INSIDE" width="518.0" />
-                  <Pane layoutY="18.0">
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="16.0" stroke="BLACK" strokeType="INSIDE" width="518.0" />
+                  <HBox spacing="70.0">
                      <children>
-                        <Label fx:id="actionNameLabel" layoutX="56.0" text="Name of action" />
-                        <Pane fx:id="renameOptionPane" layoutY="17.0">
+                        <Group>
                            <children>
-                              <StackPane fx:id="renameButton" layoutY="1.0">
+                              <StackPane>
                                  <children>
-                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="22.0" stroke="BLACK" strokeType="INSIDE" width="52.0" />
-                                    <Label text="Rename" />
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="36.0" stroke="BLACK" strokeType="INSIDE" width="227.0" />
+                                    <TextField fx:id="renameTextField" alignment="CENTER" focusTraversable="false" prefHeight="25.0" prefWidth="214.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Action Name" />
                                  </children>
                               </StackPane>
-                              <TextField fx:id="renameActionTextField" layoutX="53.0" prefHeight="25.0" prefWidth="149.0" />
                            </children>
-                        </Pane>
-                     </children>
-                  </Pane>
-                  <HBox layoutX="309.0" layoutY="18.0" spacing="10.0">
-                     <children>
-                        <CheckBox fx:id="requiredCheckBox" mnemonicParsing="false" selected="true" text="Required" />
-                        <CheckBox fx:id="previousPassCheckBox" mnemonicParsing="false" text="Previous pass" />
+                        </Group>
+                        <HBox spacing="10.0">
+                           <children>
+                              <CheckBox fx:id="requiredCheckBox" mnemonicParsing="false" selected="true" text="Required" />
+                              <CheckBox fx:id="previousPassCheckBox" mnemonicParsing="false" text="Previous pass" />
+                           </children>
+                        </HBox>
                      </children>
                   </HBox>
                </children>
-            </Pane>
+            </VBox>
             <StackPane>
                <children>
                   <Pane maxWidth="424.0" prefWidth="424.0">

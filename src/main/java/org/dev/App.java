@@ -9,12 +9,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import org.dev.Menu.ActionMenuController;
 import org.dev.Menu.ConditionMenuController;
@@ -57,6 +53,7 @@ public class App extends Application {
 
         primaryCenterStackPane = new StackPane();
         primaryCenterStackPane.setAlignment(Pos.TOP_CENTER);
+        primaryCenterStackPane.setOnMouseClicked(_ -> primaryCenterStackPane.requestFocus());
 
         FXMLLoader loader2 = new FXMLLoader(getClass().getResource("sideMenuPane.fxml"));
         StackPane sideMenuPane = loader2.load();

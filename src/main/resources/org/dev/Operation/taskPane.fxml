@@ -4,7 +4,6 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
@@ -19,30 +18,6 @@
                <children>
                   <StackPane>
                      <children>
-                        <Group>
-                           <children>
-                              <VBox>
-                                 <children>
-                                    <StackPane>
-                                       <children>
-                                          <Label fx:id="taskNameLabel" text="Task Name" />
-                                       </children>
-                                    </StackPane>
-                                    <Group fx:id="renameOptionGroup">
-                                       <children>
-                                          <StackPane fx:id="renameButton" layoutY="1.0">
-                                             <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="22.0" stroke="BLACK" strokeType="INSIDE" width="52.0" />
-                                                <Label text="Rename" />
-                                             </children>
-                                          </StackPane>
-                                          <TextField fx:id="renameTextField" layoutX="53.0" prefHeight="25.0" prefWidth="174.0" />
-                                       </children>
-                                    </Group>
-                                 </children>
-                              </VBox>
-                           </children>
-                        </Group>
                         <Group fx:id="backButton" StackPane.alignment="TOP_LEFT">
                            <children>
                               <StackPane>
@@ -55,6 +30,16 @@
                            <StackPane.margin>
                               <Insets left="5.0" top="5.0" />
                            </StackPane.margin>
+                        </Group>
+                        <Group>
+                           <children>
+                              <StackPane>
+                                 <children>
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="36.0" stroke="BLACK" strokeType="INSIDE" width="227.0" />
+                                    <Label fx:id="taskNameLabel" text="Task Name" />
+                                 </children>
+                              </StackPane>
+                           </children>
                         </Group>
                      </children>
                   </StackPane>

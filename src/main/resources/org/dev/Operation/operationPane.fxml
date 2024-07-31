@@ -19,10 +19,14 @@
                <children>
                   <StackPane>
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="36.0" stroke="BLACK" strokeType="INSIDE" width="227.0" />
                         <Group>
                            <children>
-                              <TextField fx:id="renameTextField" alignment="CENTER" focusTraversable="false" prefHeight="25.0" prefWidth="214.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Operation Name" />
+                              <StackPane>
+                                 <children>
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="36.0" stroke="BLACK" strokeType="INSIDE" width="227.0" />
+                                    <TextField fx:id="renameTextField" alignment="CENTER" focusTraversable="false" prefHeight="25.0" prefWidth="214.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Operation Name" />
+                                 </children>
+                              </StackPane>
                            </children>
                         </Group>
                      </children>

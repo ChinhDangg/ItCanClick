@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -32,6 +33,8 @@ public class OperationController implements Initializable, Serializable, MainJob
     private VBox mainOperationVBox;
     @FXML
     private TextField renameTextField;
+    @Getter
+    private final Label operationNameLabel = new Label();
     @FXML
     private StackPane removeTaskButton, moveTaskUpButton, moveTaskDownButton;
     @FXML
@@ -55,6 +58,7 @@ public class OperationController implements Initializable, Serializable, MainJob
         removeTaskButton.setOnMouseClicked(this::removeSelectedTaskPane);
         moveTaskUpButton.setOnMouseClicked(this::moveTaskUp);
         moveTaskDownButton.setOnMouseClicked(this::moveTaskDown);
+        operationNameLabel.setText(renameTextField.getText());
         renameTextField.focusedProperty().addListener((_, _, newValue) -> {
             if (!newValue) {
                 //System.out.println("TextField lost focus");
@@ -88,11 +92,16 @@ public class OperationController implements Initializable, Serializable, MainJob
 
     private void changeOperationName() {
         String name = renameTextField.getText();
-        name = name.trim();
-        if (name.isBlank())
+        name = name.strip();
+        if (name.isBlank()) {
+            renameTextField.setText(operation.getOperationName());
             return;
+        }
         operation.setOperationName(name);
-        removeTaskButton.requestFocus();
+        updateOperationName(name);
+    }
+    private void updateOperationName(String name) {
+        operationNameLabel.setText(name);
         renameTextField.setText(name);
     }
 
@@ -143,7 +152,6 @@ public class OperationController implements Initializable, Serializable, MainJob
             System.out.println("bullshit");
         }
     }
-
 
     // ------------------------------------------------------
     private Pane currentSelectedTaskPane = null;
@@ -232,7 +240,7 @@ public class OperationController implements Initializable, Serializable, MainJob
         System.out.println("Start running operation: " + operation.getOperationName());
         boolean pass = false;
         for (MinimizedTaskController taskController : taskList) {
-            String taskName = taskController.getTaskName();
+            String taskName = taskController.getTaskNameLabel().getText();
             if (pass && taskController.isPreviousPass()) {
                 System.out.println("Skipping task " + taskName + " as previous is passed");
                 continue;
@@ -262,7 +270,7 @@ public class OperationController implements Initializable, Serializable, MainJob
         if (operationData == null)
             throw new NullPointerException("Operation data is null");
         this.operation = operationData.getOperation();
-        renameTextField.setText(operation.getOperationName());
+        updateOperationName(operation.getOperationName());
         for (TaskData data : operationData.getTaskDataList())
             addNewMinimizedTask(data);
     }

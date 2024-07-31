@@ -8,7 +8,6 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -18,7 +17,6 @@ import lombok.Getter;
 import org.dev.App;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.Data.TaskData;
-import org.dev.Operation.Task.Task;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,31 +27,23 @@ public class TaskController implements Initializable {
     @FXML
     private Group mainTaskGroup;
     @FXML
+    private Label taskNameLabel;
+    @FXML
     private ScrollPane taskScrollPane;
     @FXML
     private VBox mainTaskOuterVBox, taskVBox;
     @FXML
-    private Label taskNameLabel;
+    private Group backButton;
     @FXML
-    private Group renameOptionGroup, backButton;
-    @FXML
-    private TextField renameTextField;
-    @FXML
-    private StackPane renameButton, removeActionButton, moveActionUpButton, moveActionDownButton, addNewActionButton;
+    private StackPane removeActionButton, moveActionUpButton, moveActionDownButton, addNewActionButton;
 
     @Getter
     private final List<ActionController> actionList = new ArrayList<>();
 
     private double currentGlobalScale = 1;
 
-    @Getter
-    private Task task = new Task();
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        taskNameLabel.setOnMouseClicked(this::toggleRenameTaskPane);
-        renameButton.setOnMouseClicked(this::changeTaskName);
-        renameOptionGroup.setVisible(false);
         addNewActionButton.setOnMouseClicked(this::addNewActionPane);
         removeActionButton.setOnMouseClicked(this::removeSelectedActionPane);
         moveActionDownButton.setOnMouseClicked(this::moveActionDown);
@@ -62,12 +52,6 @@ public class TaskController implements Initializable {
     }
 
     public boolean isSet() { return (!actionList.isEmpty() && actionList.getFirst().isSet()); }
-
-    public void registerTask(Task task) {
-        if (task == null)
-            throw new NullPointerException("Task is null");
-        this.task = task;
-    }
 
     public Node getTaskPane() {
         if (currentGlobalScale != App.currentGlobalScale) {
@@ -78,20 +62,7 @@ public class TaskController implements Initializable {
     }
 
     private void backToPrevious(MouseEvent event) { App.backToPrevious(); }
-
-    private void toggleRenameTaskPane(MouseEvent event) {
-        renameTextField.setText(taskNameLabel.getText());
-        renameOptionGroup.setVisible(!renameOptionGroup.isVisible());
-    }
-    private void changeTaskName(MouseEvent event) {
-        String name = renameTextField.getText();
-        name = name.replace("\n", "");
-        if (name.isBlank())
-            return;
-        taskNameLabel.setText(name);
-        renameOptionGroup.setVisible(false);
-        task.setTaskName(name);
-    }
+    public void changeTaskName(String name) { taskNameLabel.setText(name); }
 
     // ------------------------------------------------------
     private void addNewActionPane(MouseEvent event) {
@@ -221,7 +192,6 @@ public class TaskController implements Initializable {
     // ------------------------------------------------------
     public TaskData getTaskData() {
         TaskData taskData = new TaskData();
-        taskData.setTask(task);
         List<ActionData> actionData = new ArrayList<>();
         for (ActionController actionController : actionList)
             actionData.add(actionController.getActionData());
@@ -232,8 +202,7 @@ public class TaskController implements Initializable {
     public void loadSavedTaskData(TaskData taskData) throws IOException {
         if (taskData == null)
             throw new NullPointerException("Task data is null");
-        registerTask(taskData.getTask());
-        taskNameLabel.setText(task.getTaskName());
+        taskNameLabel.setText(taskData.getTask().getTaskName());
         for (ActionData actionData : taskData.getActionDataList())
             addNewAction(actionData);
     }
