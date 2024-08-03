@@ -19,6 +19,7 @@ import lombok.Getter;
 import org.dev.App;
 import org.dev.Operation.Data.OperationData;
 import org.dev.Operation.Data.TaskData;
+import org.dev.SideMenuHierarchy;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
@@ -46,11 +47,11 @@ public class OperationController implements Initializable, Serializable, MainJob
 
     @Getter
     private final List<MinimizedTaskController> taskList = new ArrayList<>();
-
-    private double currentGlobalScale = 1;
-
     @Getter
     private Operation operation = new Operation();
+    @Getter
+    private SideMenuHierarchy operationSideMenuHierarchy;
+    private double currentGlobalScale = 1;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -66,6 +67,7 @@ public class OperationController implements Initializable, Serializable, MainJob
             }
         });
         loadMainTaskVBox();
+        operationSideMenuHierarchy = new SideMenuHierarchy(operationNameLabel, this);
     }
 
     public boolean isSet() { return !taskList.isEmpty() && taskList.getFirst().isSet(); }
@@ -130,27 +132,33 @@ public class OperationController implements Initializable, Serializable, MainJob
         controller.setTaskIndex(numberOfTask+1);
         operationVBox.getChildren().add(numberOfTask, taskPane);
         taskList.add(controller);
+        operationSideMenuHierarchy.addSubHierarchy(controller.getTaskController().getTaskSideMenuHierarchy());
     }
     public void changeOperationScrollPaneView(StackPane minimizedTaskLayerStackPane) {
         Pane innerChildPane = (Pane) minimizedTaskLayerStackPane.getChildren().getFirst();
         selectTheTaskPane(innerChildPane);
-        operationScrollPane.setVvalue(0.0);
-        Thread thread = new Thread(() -> changeScrollPaneView(minimizedTaskLayerStackPane));
-        thread.start();
+        changeScrollPaneView(minimizedTaskLayerStackPane);
     }
     private void changeScrollPaneView(StackPane minimizedTaskLayerStackPane) {
         double targetPaneY = minimizedTaskLayerStackPane.getBoundsInParent().getMinY();
         double contentHeight = operationScrollPane.getContent().getBoundsInLocal().getHeight();
         double scrollPaneHeight = operationScrollPane.getViewportBounds().getHeight();
         double vValue = Math.min(targetPaneY / (contentHeight - scrollPaneHeight), 1.00);
-        try {
-            while (operationScrollPane.getVvalue() != vValue) {
-                operationScrollPane.setVvalue(vValue);
-                Thread.sleep(500);
-            }
-        } catch (Exception e) {
-            System.out.println("bullshit");
-        }
+        operationScrollPane.setVvalue(vValue);
+//        Lock lock = new ReentrantLock();
+//        Condition condition = lock.newCondition();
+//        new Thread(() -> {
+//            try {
+//                lock.lock();
+//                while (operationScrollPane.getVvalue() != vValue) {
+//                    operationScrollPane.setVvalue(vValue);
+//                    if (condition.await(1, TimeUnit.SECONDS))
+//                        break;
+//                }
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//            } finally { lock.unlock(); }
+//        }).start();
     }
 
     // ------------------------------------------------------

@@ -17,13 +17,15 @@ import lombok.Getter;
 import org.dev.App;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.Data.TaskData;
+import org.dev.SideMenuHierarchy;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class TaskController implements Initializable {
+public class TaskController implements Initializable, MainJobController {
     @FXML
     private Group mainTaskGroup;
     @FXML
@@ -39,7 +41,8 @@ public class TaskController implements Initializable {
 
     @Getter
     private final List<ActionController> actionList = new ArrayList<>();
-
+    @Getter
+    private SideMenuHierarchy taskSideMenuHierarchy;
     private double currentGlobalScale = 1;
 
     @Override
@@ -49,6 +52,7 @@ public class TaskController implements Initializable {
         moveActionDownButton.setOnMouseClicked(this::moveActionDown);
         moveActionUpButton.setOnMouseClicked(this::moveActionUp);
         backButton.setOnMouseClicked(this::backToPrevious);
+        taskSideMenuHierarchy = new SideMenuHierarchy(taskNameLabel, this);
     }
 
     public boolean isSet() { return (!actionList.isEmpty() && actionList.getFirst().isSet()); }
@@ -206,4 +210,7 @@ public class TaskController implements Initializable {
         for (ActionData actionData : taskData.getActionDataList())
             addNewAction(actionData);
     }
+
+    @Override
+    public void takeToDisplay() {}
 }

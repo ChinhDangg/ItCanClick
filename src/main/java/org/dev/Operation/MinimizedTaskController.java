@@ -14,6 +14,8 @@ import lombok.Setter;
 import org.dev.App;
 import org.dev.Operation.Data.TaskData;
 import org.dev.Operation.Task.Task;
+import org.dev.SideMenuHierarchy;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -31,13 +33,13 @@ public class MinimizedTaskController implements Initializable, MainJobController
     private StackPane repeatMinusButton, repeatPlusButton;
 
     @Getter
+    private final Label taskNameLabel = new Label();
+
+    @Getter
     @Setter
     private TaskController taskController;
     @Getter
     private Task task = new Task();
-
-    @Getter
-    private final Label taskNameLabel = new Label();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
