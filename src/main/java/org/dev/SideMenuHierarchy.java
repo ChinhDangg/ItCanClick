@@ -11,15 +11,16 @@ public class SideMenuHierarchy {
 
     private final Label controllerLabelName;
     private final MainJobController controller;
-    private final List<SideMenuHierarchy> subHierarchies;
+    private List<SideMenuHierarchy> subHierarchies;
 
     public SideMenuHierarchy(Label name, MainJobController controller) {
         controllerLabelName = name;
         this.controller = controller;
-        subHierarchies = new ArrayList<>();
     }
 
     public void addSubHierarchy(SideMenuHierarchy hierarchy) {
+        if (subHierarchies == null)
+            subHierarchies = new ArrayList<>();
         subHierarchies.add(hierarchy);
     }
     public void removeSubHierarchy(SideMenuHierarchy hierarchy) {
@@ -27,9 +28,5 @@ public class SideMenuHierarchy {
     }
     public void adjustSubHierarchy(int oldIndex, int newIndex) {
         subHierarchies.add(newIndex, subHierarchies.remove(oldIndex));
-    }
-
-    public void changeName(String newName) {
-        controllerLabelName.setText(newName);
     }
 }

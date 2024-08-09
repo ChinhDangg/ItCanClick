@@ -18,7 +18,6 @@ import org.dev.App;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.Data.TaskData;
 import org.dev.SideMenuHierarchy;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -92,6 +91,7 @@ public class TaskController implements Initializable, MainJobController {
             actionController.disablePreviousOptions();
         taskVBox.getChildren().add(numberOfActions, actionPane);
         addNewActionController(actionController);
+        taskSideMenuHierarchy.addSubHierarchy(actionController.getActionSideMenuHierarchy());
     }
     public void addNewActionController(ActionController actionController) {
         actionList.add(actionController);

@@ -20,6 +20,8 @@ import org.dev.Enum.ActionTypes;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
+import org.dev.SideMenuHierarchy;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -55,6 +57,8 @@ public class ActionController implements Initializable, MainJobController, Activ
     @Getter
     @Setter
     private ActionTypes chosenActionPerform;
+    @Getter
+    private SideMenuHierarchy actionSideMenuHierarchy;
 
     private final List<ConditionController> entryConditionList = new ArrayList<>();
     private final List<ConditionController> exitConditionList = new ArrayList<>();
@@ -73,6 +77,7 @@ public class ActionController implements Initializable, MainJobController, Activ
                 changeActionName();
             }
         });
+        actionSideMenuHierarchy = new SideMenuHierarchy(actionNameLabel, this);
     }
 
     @Override
