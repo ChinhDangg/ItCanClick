@@ -14,7 +14,7 @@
    <children>
       <VBox fx:id="mainTaskOuterVBox">
          <children>
-            <VBox spacing="5.0">
+            <VBox prefHeight="66.0" spacing="5.0">
                <children>
                   <StackPane>
                      <children>
@@ -71,7 +71,7 @@
                   </Pane>
                </children>
             </VBox>
-            <ScrollPane fx:id="taskScrollPane" hbarPolicy="NEVER" prefHeight="500.0" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" vbarPolicy="NEVER">
+            <ScrollPane fx:id="taskScrollPane" hbarPolicy="NEVER" prefHeight="100.0" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" vbarPolicy="NEVER">
                <content>
                   <VBox spacing="10.0">
                      <children>

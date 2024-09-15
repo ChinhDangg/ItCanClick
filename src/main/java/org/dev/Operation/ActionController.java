@@ -20,7 +20,7 @@ import org.dev.Enum.ActionTypes;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
-import org.dev.SideMenuHierarchy;
+import org.dev.SideMenuController;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -33,9 +33,6 @@ public class ActionController implements Initializable, MainJobController, Activ
 
     @FXML
     private Pane mainActionPane;
-    @Getter
-    @FXML
-    private final Label actionNameLabel = new Label();
     @FXML
     private TextField renameTextField;
     @FXML
@@ -58,7 +55,7 @@ public class ActionController implements Initializable, MainJobController, Activ
     @Setter
     private ActionTypes chosenActionPerform;
     @Getter
-    private SideMenuHierarchy actionSideMenuHierarchy;
+    private final Label actionNameLabel = new Label();
 
     private final List<ConditionController> entryConditionList = new ArrayList<>();
     private final List<ConditionController> exitConditionList = new ArrayList<>();
@@ -77,16 +74,18 @@ public class ActionController implements Initializable, MainJobController, Activ
                 changeActionName();
             }
         });
-        actionSideMenuHierarchy = new SideMenuHierarchy(actionNameLabel, this);
     }
 
     @Override
     public void takeToDisplay() {
+        System.out.println("Action take to display");
+        App.closeActionMenuPane();
+        App.closeConditionMenuPane();
         TaskController parentTaskController = findParentTaskController();
         if (parentTaskController == null)
             throw new IllegalStateException("Parent task controller is null for action controller - bug");
         if (mainActionPane.getScene() == null)
-            App.displayNewNode(parentTaskController.getTaskPane());
+            parentTaskController.openTaskPane();
         parentTaskController.changeTaskScrollPaneView(mainActionPane);
     }
     private TaskController findParentTaskController() {
@@ -150,6 +149,10 @@ public class ActionController implements Initializable, MainJobController, Activ
     }
 
     private void openActionMenuPane(MouseEvent event) {
+        if (App.isOperationRunning) {
+            System.out.println("Operation is running, cannot modify");
+            return;
+        }
         App.openActionMenuPane(this);
     }
     private FXMLLoader getConditionPaneLoader() {
@@ -161,6 +164,10 @@ public class ActionController implements Initializable, MainJobController, Activ
 
     private void addNewEntryCondition(MouseEvent event) {
         System.out.println("Entry add clicked");
+        if (App.isOperationRunning) {
+            System.out.println("Operation is running, cannot modify");
+            return;
+        }
         int numberOfCondition = getNumberOfCondition(entryConditionPane) - 1;
         if (numberOfCondition > 0 && !entryConditionList.get(numberOfCondition - 1).isSet()) {
             System.out.println("Previous Entry Condition is not set yet");
@@ -176,6 +183,10 @@ public class ActionController implements Initializable, MainJobController, Activ
 
     private void addNewExitCondition(MouseEvent event) {
         System.out.println("Exit add clicked");
+        if (App.isOperationRunning) {
+            System.out.println("Operation is running, cannot modify");
+            return;
+        }
         int numberOfCondition = getNumberOfCondition(exitConditionPane) - 1;
         if (numberOfCondition > 0 && !exitConditionList.get(numberOfCondition - 1).isSet()) {
             System.out.println("Previous Exit Condition is not set yet");
@@ -208,7 +219,7 @@ public class ActionController implements Initializable, MainJobController, Activ
     // ------------------------------------------------------
     public boolean performAction() {
         if (action == null) {
-            System.out.println("Bug, no action is found");
+            System.out.println("No action is found");
             return false;
         }
         if (action.isProgressiveSearch())

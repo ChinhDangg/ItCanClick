@@ -15,7 +15,7 @@
    <children>
       <VBox fx:id="mainOperationVBox">
          <children>
-            <VBox spacing="10.0">
+            <VBox prefHeight="68.0" spacing="10.0">
                <children>
                   <StackPane>
                      <children>
@@ -58,7 +58,7 @@
                   </HBox>
                </children>
             </VBox>
-            <ScrollPane fx:id="operationScrollPane" hbarPolicy="NEVER" prefHeight="500.0" prefWidth="520.0" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" vbarPolicy="NEVER">
+            <ScrollPane fx:id="operationScrollPane" hbarPolicy="NEVER" prefHeight="100.0" prefWidth="520.0" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" vbarPolicy="NEVER">
                <content>
                   <VBox spacing="10.0">
                      <children>

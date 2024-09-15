@@ -3,6 +3,7 @@ package org.dev;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -36,14 +37,19 @@ public class App extends Application {
         launch();
     }
 
-    public static SideMenuController sideMenuController;
+    public static BorderPane primaryBorderPane;
     public static StackPane primaryCenterStackPane;
+    public static StackPane primaryLeftStackPane;
+    public static Node currentDisplayNode;
+
+    public static MenuBarController menuBarController;
+    public static SideMenuController sideMenuController;
     public static ActionMenuController actionMenuController;
     public static ConditionMenuController conditionMenuController;
     public static OperationController currentLoadedOperationController;
-    public static Node currentDisplayNode;
 
     public static double currentGlobalScale = 1.5;
+    public static boolean isOperationRunning = false;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -55,16 +61,20 @@ public class App extends Application {
         primaryCenterStackPane.setAlignment(Pos.TOP_CENTER);
         primaryCenterStackPane.setOnMouseClicked(_ -> primaryCenterStackPane.requestFocus());
 
-        FXMLLoader loader2 = new FXMLLoader(getClass().getResource("sideMenuPane.fxml"));
-        StackPane sideMenuPane = loader2.load();
-        sideMenuController = loader2.getController();
+        FXMLLoader sideMenuLoader = new FXMLLoader(getClass().getResource("sideMenuPane.fxml"));
+        primaryLeftStackPane = sideMenuLoader.load();
+        sideMenuController = sideMenuLoader.getController();
 
-        BorderPane primary = new FXMLLoader(getClass().getResource("primary.fxml")).load();
-        primary.setCenter(primaryCenterStackPane);
-        primary.setLeft(sideMenuPane);
+        FXMLLoader primaryLoader = new FXMLLoader(getClass().getResource("primary.fxml"));
+        primaryBorderPane = primaryLoader.load();
+        menuBarController = primaryLoader.getController();
 
-        Scene scene = new Scene(primary);
+        primaryBorderPane.setCenter(primaryCenterStackPane);
+        primaryBorderPane.setLeft(primaryLeftStackPane);
+
+        Scene scene = new Scene(primaryBorderPane);
         stage.setScene(scene);
+        stage.setOnCloseRequest(_ -> System.exit(0));
         stage.show();
     }
 

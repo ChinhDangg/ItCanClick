@@ -207,7 +207,9 @@ public class ActionPerformMenuController extends OptionsMenuController {
         BufferedImage zoomedImage = getZoomedImage(imageWithEdges);
         if (zoomedImage != null)
             return zoomedImage;
-        return imageWithEdges;
+        else if (imageWithEdges != null)
+            return imageWithEdges;
+        return currentDisplayImage;
     }
     @Override
     public void actionPerformed(ActionEvent e) {

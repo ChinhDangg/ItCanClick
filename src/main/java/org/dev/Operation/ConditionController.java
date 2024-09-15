@@ -47,7 +47,13 @@ public class ConditionController implements Initializable, ActivityController {
                 ConditionRequirement.Required.name() : ConditionRequirement.Optional.name());
     }
 
-    private void openConditionOptionPane(MouseEvent event) { App.openConditionMenuPane(this); }
+    private void openConditionOptionPane(MouseEvent event) {
+        if (App.isOperationRunning) {
+            System.out.println("Operation is running, cannot modify");
+            return;
+        }
+        App.openConditionMenuPane(this);
+    }
 
     public void removeThisConditionFromParent() {
         try {

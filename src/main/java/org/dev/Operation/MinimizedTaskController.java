@@ -14,7 +14,7 @@ import lombok.Setter;
 import org.dev.App;
 import org.dev.Operation.Data.TaskData;
 import org.dev.Operation.Task.Task;
-import org.dev.SideMenuHierarchy;
+import org.dev.SideMenuController;
 
 import java.io.IOException;
 import java.net.URL;
@@ -96,12 +96,17 @@ public class MinimizedTaskController implements Initializable, MainJobController
     @Override
     public void takeToDisplay() {
         App.currentLoadedOperationController.takeToDisplay();
+        System.out.println("Minimized task take to display");
         App.currentLoadedOperationController.changeOperationScrollPaneView(minimizedTaskLayerStackPane);
     }
 
     // ------------------------------------------------------
     public void openTask(MouseEvent event) {
-        App.displayNewNode(taskController.getTaskPane());
+        if (App.isOperationRunning) {
+            System.out.println("Operation is running, cannot navigate");
+            return;
+        }
+        taskController.openTaskPane();
     }
     private void loadNewTaskPane() {
         try {

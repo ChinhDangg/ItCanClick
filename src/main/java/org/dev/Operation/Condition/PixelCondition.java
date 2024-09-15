@@ -43,7 +43,6 @@ public class PixelCondition extends Condition {
     }
 
     private boolean checkPixelFromBoundingBox(Rectangle boundingBox, BufferedImage img2) throws AWTException, IOException {
-        System.out.println("here");
         BufferedImage img1 = new Robot().createScreenCapture(boundingBox);
         ImageIO.write(img1, "png", new File("img1.png"));
         ImageIO.write(img2, "png", new File("img2.png"));

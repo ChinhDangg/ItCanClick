@@ -48,6 +48,8 @@ public class ActionMenuController extends MenuController implements Initializabl
             loadActionPerformMenu();
         actionController.setChosenActionPerform(actionTypeChoice.getValue());
         actionPerformMenuController.loadMenu(actionController);
+        GlobalScreen.removeNativeKeyListener(this);
+        isKeyListening = false;
     }
     public void loadMenu(ActivityController activityController) {
         if (!isKeyListening) {

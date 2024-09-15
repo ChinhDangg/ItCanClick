@@ -4,6 +4,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -16,16 +17,19 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import lombok.Getter;
+import lombok.Setter;
 import org.dev.App;
 import org.dev.Operation.Data.OperationData;
 import org.dev.Operation.Data.TaskData;
-import org.dev.SideMenuHierarchy;
+import org.dev.SideMenuController;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.jar.JarOutputStream;
 
 public class OperationController implements Initializable, Serializable, MainJobController {
     @FXML
@@ -49,9 +53,10 @@ public class OperationController implements Initializable, Serializable, MainJob
     private final List<MinimizedTaskController> taskList = new ArrayList<>();
     @Getter
     private Operation operation = new Operation();
-    @Getter
-    private SideMenuHierarchy operationSideMenuHierarchy;
     private double currentGlobalScale = 1;
+
+    @Getter
+    private VBox taskGroupVBox = new VBox();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -66,8 +71,8 @@ public class OperationController implements Initializable, Serializable, MainJob
                 changeOperationName();
             }
         });
-        loadMainTaskVBox();
-        operationSideMenuHierarchy = new SideMenuHierarchy(operationNameLabel, this);
+        loadMainOperationVBox();
+        taskGroupVBox.setPadding(new Insets(0, 0, 0, 15));
     }
 
     public boolean isSet() { return !taskList.isEmpty() && taskList.getFirst().isSet(); }
@@ -75,21 +80,28 @@ public class OperationController implements Initializable, Serializable, MainJob
 
     @Override
     public void takeToDisplay() {
+        System.out.println("Operation take to display");
+        App.closeActionMenuPane();
+        App.closeConditionMenuPane();
         if (mainOperationVBox.getScene() != null) {
             if (App.currentDisplayNode != null && App.currentDisplayNode.getScene() != null)
                 App.backToPrevious();
             return;
         }
         System.out.println("This will probably never get reached. If seen then recheck");
-        loadMainTaskVBox();
+        loadMainOperationVBox();
         App.primaryCenterStackPane.getChildren().clear();
         App.primaryCenterStackPane.getChildren().add(mainOperaiontGroup);
     }
-    private void loadMainTaskVBox() {
+    private void loadMainOperationVBox() {
+        double offset = ((VBox) mainOperationVBox.getChildren().getFirst()).getPrefHeight();
+        double newScrollHeight = App.primaryBorderPane.getPrefHeight() - offset;
         if (currentGlobalScale != App.currentGlobalScale) {
             currentGlobalScale = App.currentGlobalScale;
             mainOperationVBox.getTransforms().add(new Scale(currentGlobalScale, currentGlobalScale, 0, 0));
+            newScrollHeight = (App.primaryBorderPane.getPrefHeight() - offset * currentGlobalScale) / currentGlobalScale;
         }
+        operationScrollPane.setPrefHeight(newScrollHeight - 25);
     }
 
     private void changeOperationName() {
@@ -109,11 +121,15 @@ public class OperationController implements Initializable, Serializable, MainJob
 
     // ------------------------------------------------------
     private void addMinimizedTask(MouseEvent event) {
+        if (App.isOperationRunning) {
+            System.out.println("Operation is running, cannot modify");
+            return;
+        }
+        if (!taskList.isEmpty() && !taskList.getLast().isSet()) {
+            System.out.println("Recent minimized task is not set");
+            return;
+        }
         try {
-            if (!taskList.isEmpty() && !taskList.getLast().isSet()) {
-                System.out.println("Recent minimized task is not set");
-                return;
-            }
             addNewMinimizedTask(null);
         } catch (Exception e) {
             System.out.println("Fail loading minimized task pane");
@@ -132,7 +148,11 @@ public class OperationController implements Initializable, Serializable, MainJob
         controller.setTaskIndex(numberOfTask+1);
         operationVBox.getChildren().add(numberOfTask, taskPane);
         taskList.add(controller);
-        operationSideMenuHierarchy.addSubHierarchy(controller.getTaskController().getTaskSideMenuHierarchy());
+        // update side menu
+        ObservableList<Node> taskGroupChildren = taskGroupVBox.getChildren();
+        VBox taskActionVBox = controller.getTaskController().getActionGroupVBox();
+        HBox taskLabelHBox = SideMenuController.getDropDownHBox(taskActionVBox, controller.getTaskNameLabel(), controller);
+        taskGroupChildren.add(new VBox(taskLabelHBox, taskActionVBox));
     }
     public void changeOperationScrollPaneView(StackPane minimizedTaskLayerStackPane) {
         Pane innerChildPane = (Pane) minimizedTaskLayerStackPane.getChildren().getFirst();
@@ -191,6 +211,8 @@ public class OperationController implements Initializable, Serializable, MainJob
         System.out.println("Removed the selected task pane");
         currentSelectedTaskPane = null;
         updateTaskIndex(changeIndex);
+        // update side menu
+        taskGroupVBox.getChildren().remove(changeIndex);
     }
     private void moveTaskUp(MouseEvent event) {
         if (currentSelectedTaskPane == null)
@@ -205,10 +227,14 @@ public class OperationController implements Initializable, Serializable, MainJob
         if (changeIndex == numberOfTasks)
             return;
         taskList.add(changeIndex, taskList.remove(selectedTaskPaneIndex));
-        changeTaskPreviousOption(changeIndex);
+        updateTaskPreviousOption(changeIndex);
         children.remove(selectedNode);
         children.add(changeIndex, selectedNode);
         updateTaskIndex(changeIndex-1);
+        //update side menu
+        Node temp = taskGroupVBox.getChildren().get(selectedTaskPaneIndex);
+        taskGroupVBox.getChildren().remove(selectedTaskPaneIndex);
+        taskGroupVBox.getChildren().add(changeIndex, temp);
     }
     private void moveTaskDown(MouseEvent event) {
         if (currentSelectedTaskPane == null)
@@ -223,12 +249,16 @@ public class OperationController implements Initializable, Serializable, MainJob
             return;
         int changeIndex = selectedTaskPaneIndex-1;
         taskList.add(changeIndex, taskList.remove(selectedTaskPaneIndex));
-        changeTaskPreviousOption(changeIndex);
+        updateTaskPreviousOption(changeIndex);
         children.remove(selectedNode);
         children.add(changeIndex, selectedNode);
         updateTaskIndex(changeIndex);
+        //update side menu
+        Node temp = taskGroupVBox.getChildren().get(selectedTaskPaneIndex);
+        taskGroupVBox.getChildren().remove(selectedTaskPaneIndex);
+        taskGroupVBox.getChildren().add(changeIndex, temp);
     }
-    private void changeTaskPreviousOption(int index) {
+    private void updateTaskPreviousOption(int index) {
         if (index < 2) {
             taskList.get(0).disablePreviousOption();
             taskList.get(1).enablePreviousOption();
@@ -241,8 +271,12 @@ public class OperationController implements Initializable, Serializable, MainJob
 
     // ------------------------------------------------------
     public void startOperation() {
-        Thread thread = new Thread(this::runOperation);
-        thread.start();
+        try {
+            //runOperation();
+            System.out.println("waiting");
+            Thread.sleep(20000);
+            System.out.println("Operation is finished");
+        } catch (Exception e) {}
     }
     private void runOperation() {
         System.out.println("Start running operation: " + operation.getOperationName());
