@@ -3,6 +3,8 @@ package org.dev.Operation.Condition;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.Enum.ReadingCondition;
+import org.dev.ImageSerialization;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -103,16 +105,16 @@ public class PixelCondition extends Condition {
     @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
-        serializeBufferedImageWriteObject(out, mainImage);   // Serialize mainImage
-        serializeBufferedImageWriteObject(out, displayImage);// Serialize displayImage
+        ImageSerialization.serializeBufferedImageWriteObject(out, mainImage);   // Serialize mainImage
+        ImageSerialization.serializeBufferedImageWriteObject(out, displayImage);// Serialize displayImage
     }
 
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         String mainImageString = (String) in.readObject();
-        mainImage = deserializeBufferedImageReadObject(in, mainImageString, true);        // Deserialize mainImage
+        mainImage = ImageSerialization.deserializeBufferedImageReadObject(in, mainImageString, true);        // Deserialize mainImage
         String displayImageString = (String) in.readObject();
-        displayImage = deserializeBufferedImageReadObject(in, displayImageString, true);  // Deserialize mainImage
+        displayImage = ImageSerialization.deserializeBufferedImageReadObject(in, displayImageString, true);  // Deserialize mainImage
     }
 }

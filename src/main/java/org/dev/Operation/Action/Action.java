@@ -3,6 +3,7 @@ package org.dev.Operation.Action;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.Enum.ActionTypes;
+import org.dev.ImageSerialization;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -83,46 +84,16 @@ public abstract class Action implements Serializable {
     @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
-
-        // Serialize mainImage
-        if (mainImage != null) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(mainImage, "png", baos);
-            byte[] imageBytes = baos.toByteArray();
-            out.writeObject(Base64.getEncoder().encodeToString(imageBytes));
-        } else {
-            out.writeObject(null);
-        }
-
-        // Serialize displayImage
-        if (displayImage != null) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(displayImage, "png", baos);
-            byte[] imageBytes = baos.toByteArray();
-            out.writeObject(Base64.getEncoder().encodeToString(imageBytes));
-        } else {
-            out.writeObject(null);
-        }
+        ImageSerialization.serializeBufferedImageWriteObject(out, mainImage);   // Serialize mainImage
+        ImageSerialization.serializeBufferedImageWriteObject(out, displayImage);// Serialize displayImage
     }
 
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-
-        // Deserialize mainImage
         String mainImageString = (String) in.readObject();
-        if (mainImageString != null) {
-            byte[] imageBytes = Base64.getDecoder().decode(mainImageString);
-            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
-            mainImage = ImageIO.read(bais);
-        }
-
-        // Deserialize displayImage
+        mainImage = ImageSerialization.deserializeBufferedImageReadObject(in, mainImageString, false);
         String displayImageString = (String) in.readObject();
-        if (displayImageString != null) {
-            byte[] imageBytes = Base64.getDecoder().decode(displayImageString);
-            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
-            displayImage = ImageIO.read(bais);
-        }
+        displayImage = ImageSerialization.deserializeBufferedImageReadObject(in, displayImageString, false);
     }
 }

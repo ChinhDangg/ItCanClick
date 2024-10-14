@@ -3,6 +3,7 @@ package org.dev.Operation.Condition;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.Enum.ReadingCondition;
+import org.dev.ImageSerialization;
 import org.dev.Menu.ConditionTextMenuController;
 
 import javax.imageio.ImageIO;
@@ -44,13 +45,13 @@ public class TextCondition extends Condition {
     @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
-        serializeBufferedImageWriteObject(out, mainImage); // Serialize mainImage
+        ImageSerialization.serializeBufferedImageWriteObject(out, mainImage); // Serialize mainImage
     }
 
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         String imageString = (String) in.readObject();
-        mainImage = deserializeBufferedImageReadObject(in, imageString, false); // Deserialize mainImage
+        mainImage = ImageSerialization.deserializeBufferedImageReadObject(in, imageString, false); // Deserialize mainImage
     }
 }
