@@ -44,26 +44,13 @@ public class TextCondition extends Condition {
     @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
-        // Serialize mainImage
-        if (mainImage != null) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(mainImage, "png", baos);
-            byte[] imageBytes = baos.toByteArray();
-            out.writeObject(Base64.getEncoder().encodeToString(imageBytes));
-        } else {
-            out.writeObject(null);
-        }
+        serializeBufferedImageWriteObject(out, mainImage); // Serialize mainImage
     }
 
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        // Deserialize mainImage
         String imageString = (String) in.readObject();
-        if (imageString != null) {
-            byte[] imageBytes = Base64.getDecoder().decode(imageString);
-            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
-            mainImage = ImageIO.read(bais);
-        }
+        mainImage = deserializeBufferedImageReadObject(in, imageString, false); // Deserialize mainImage
     }
 }

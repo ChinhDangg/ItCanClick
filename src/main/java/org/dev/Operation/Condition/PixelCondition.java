@@ -103,53 +103,16 @@ public class PixelCondition extends Condition {
     @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
-        // Serialize mainImage
-        if (mainImage != null) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(mainImage, "png", baos);
-            byte[] imageBytes = baos.toByteArray();
-            out.writeObject(Base64.getEncoder().encodeToString(imageBytes));
-        } else {
-            out.writeObject(null);
-        }
-
-        // Serialize displayImage
-        if (displayImage != null) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(displayImage, "png", baos);
-            byte[] imageBytes = baos.toByteArray();
-            out.writeObject(Base64.getEncoder().encodeToString(imageBytes));
-        } else {
-            out.writeObject(null);
-        }
+        serializeBufferedImageWriteObject(out, mainImage);   // Serialize mainImage
+        serializeBufferedImageWriteObject(out, displayImage);// Serialize displayImage
     }
 
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        // Deserialize mainImage
         String mainImageString = (String) in.readObject();
-        if (mainImageString != null) {
-            byte[] imageBytes = Base64.getDecoder().decode(mainImageString);
-            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
-            mainImage = ImageIO.read(bais);
-            if (mainImage.getType() != BufferedImage.TYPE_INT_RGB) {
-                BufferedImage rgbImage = new BufferedImage(mainImage.getWidth(), mainImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-                rgbImage.getGraphics().drawImage(mainImage, 0, 0, null);
-                mainImage = rgbImage;
-            }
-        }
-
+        mainImage = deserializeBufferedImageReadObject(in, mainImageString, true);        // Deserialize mainImage
         String displayImageString = (String) in.readObject();
-        if (displayImageString != null) {
-            byte[] imageBytes = Base64.getDecoder().decode(displayImageString);
-            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
-            displayImage = ImageIO.read(bais);
-            if (displayImage.getType() != BufferedImage.TYPE_INT_RGB) {
-                BufferedImage rgbImage = new BufferedImage(displayImage.getWidth(), displayImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-                rgbImage.getGraphics().drawImage(displayImage, 0, 0, null);
-                displayImage = rgbImage;
-            }
-        }
+        displayImage = deserializeBufferedImageReadObject(in, displayImageString, true);  // Deserialize mainImage
     }
 }
