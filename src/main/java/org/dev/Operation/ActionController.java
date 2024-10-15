@@ -42,7 +42,7 @@ public class ActionController implements Initializable, MainJobController, Activ
     @FXML
     private StackPane actionPane;
     @FXML
-    private HBox entryConditionPane, exitConditionPane;
+    private HBox entryConditionHBox, exitConditionHBox;
     @FXML
     private Pane entryAddButton, exitAddButton;
 
@@ -57,7 +57,9 @@ public class ActionController implements Initializable, MainJobController, Activ
     @Getter
     private final Label actionNameLabel = new Label();
 
+    @Getter
     private final List<ConditionController> entryConditionList = new ArrayList<>();
+    @Getter
     private final List<ConditionController> exitConditionList = new ArrayList<>();
 
     @Override
@@ -168,14 +170,14 @@ public class ActionController implements Initializable, MainJobController, Activ
             System.out.println("Operation is running, cannot modify");
             return;
         }
-        int numberOfCondition = getNumberOfCondition(entryConditionPane) - 1;
+        int numberOfCondition = getNumberOfCondition(entryConditionHBox);
         if (numberOfCondition > 0 && !entryConditionList.get(numberOfCondition - 1).isSet()) {
             System.out.println("Previous Entry Condition is not set yet");
             return;
         }
         try {
             if (numberOfCondition < 5)
-                addNewCondition(entryConditionList, entryConditionPane, numberOfCondition);
+                addNewCondition(entryConditionList, entryConditionHBox);
         } catch (IOException e) {
             System.out.println("Fail loading and adding entry condition panes");
         }
@@ -187,125 +189,33 @@ public class ActionController implements Initializable, MainJobController, Activ
             System.out.println("Operation is running, cannot modify");
             return;
         }
-        int numberOfCondition = getNumberOfCondition(exitConditionPane) - 1;
+        int numberOfCondition = getNumberOfCondition(exitConditionHBox);
         if (numberOfCondition > 0 && !exitConditionList.get(numberOfCondition - 1).isSet()) {
             System.out.println("Previous Exit Condition is not set yet");
             return;
         }
         try {
             if (numberOfCondition < 5)
-                addNewCondition(exitConditionList, exitConditionPane, numberOfCondition);
+                addNewCondition(exitConditionList, exitConditionHBox);
         } catch (IOException e) {
             System.out.println("Fail loading and adding exit condition panes");
         }
     }
 
-    private void addNewCondition(List<ConditionController> whichController, HBox whichPane, int numberOfCondition) throws IOException {
+    private void addNewCondition(List<ConditionController> whichController, HBox whichPane) throws IOException {
         FXMLLoader loader = getConditionPaneLoader();
         StackPane pane = loader.load();
         whichController.add(loader.getController());
-        whichPane.getChildren().add(numberOfCondition, pane);
+        whichPane.getChildren().add(pane);
     }
 
-    private void addNewSavedCondition(List<ConditionController> whichController, HBox whichPane, int numberOfCondition, Condition condition) throws IOException {
+    private void addSavedCondition(List<ConditionController> whichController, HBox whichPane, Condition condition) throws IOException {
         FXMLLoader loader = getConditionPaneLoader();
         StackPane pane = loader.load();
         ConditionController controller = loader.getController();
         controller.loadSavedCondition(condition);
         whichController.add(controller);
-        whichPane.getChildren().add(numberOfCondition, pane);
-    }
-
-    // ------------------------------------------------------
-    public boolean performAction() {
-        if (action == null) {
-            System.out.println("No action is found");
-            return false;
-        }
-        if (action.isProgressiveSearch())
-            return performActionWithProgressiveSearch();
-        return performActionWithAttempt();
-    }
-    private boolean performActionWithAttempt() {
-        String actionName = actionNameLabel.getText();
-        try {
-            int count = action.getAttempt();
-            boolean entryPassed = false;
-            while (count > 0) {
-                Thread.sleep(action.getWaitBeforeTime());
-                if (checkAllConditions(entryConditionList)) {
-                    System.out.println("Found entry with " + actionName);
-                    action.performAction();
-                    entryPassed = true;
-                    System.out.println(actionName + " performed: " + count);
-                }
-                else if (!entryPassed) {
-                    System.out.println("Not found entry with " + actionName + " " + count);
-                    count--;
-                    continue;
-                }
-                Thread.sleep(action.getWaitAfterTime());
-                if (checkAllConditions(exitConditionList)) {
-                    System.out.println("Found exit with " + actionName);
-                    return true;
-                }
-                else
-                    System.out.println("Can't find exit");
-                count--;
-            }
-        } catch (Exception e) {
-            System.out.println("Fail performing action with number of attempts");
-        }
-        System.out.println("Exceeded number of attempt for performing " + actionName);
-        return false;
-    }
-    private boolean performActionWithProgressiveSearch() {
-        try {
-            long startTime = System.currentTimeMillis();
-            int duration = action.getProgressiveSearchTime();
-            boolean entryPassed = false;
-            System.out.println("Starting progressive search");
-            while (System.currentTimeMillis() - startTime < duration) {
-                if (checkAllConditions(entryConditionList)) {
-                    action.performAction();
-                    entryPassed = true;
-                }
-                if (entryPassed && checkAllConditions(exitConditionList))
-                    return true;
-            }
-        } catch (Exception e) {
-            System.out.println("Fail performing action with progressive search");
-        }
-        System.out.println("Exceeded progressive search time with ");
-        return false;
-    }
-
-    private boolean checkAllConditionsIsNotRequired(List<ConditionController> controllers) {
-        if (controllers.isEmpty())
-            return true;
-        for (ConditionController c : controllers)
-            if (c.getCondition().isRequired())
-                return false;
-        return true;
-    }
-    private boolean checkAllConditions(List<ConditionController> controllers) {
-        if (controllers.isEmpty())
-            return true;
-        // all conditions are optional therefore only need one condition to pass
-        if (checkAllConditionsIsNotRequired(controllers)) {
-            for (ConditionController c : controllers)
-                if (c.getCondition().checkCondition())
-                    return true;
-            return false;
-        }
-        else { // only check required condition and they must pass
-            for (ConditionController c : controllers) {
-                Condition condition = c.getCondition();
-                if (condition.isRequired() && !condition.checkCondition())
-                    return false;
-            }
-            return true;
-        }
+        whichPane.getChildren().add(pane);
     }
 
     // ------------------------------------------------------
@@ -318,8 +228,8 @@ public class ActionController implements Initializable, MainJobController, Activ
             entryConditions.add(c.getCondition());
         for (ConditionController c : exitConditionList)
             exitConditions.add(c.getCondition());
-        actionData.setEntryCondition(entryConditions);
-        actionData.setExitCondition(exitConditions);
+        actionData.setEntryConditionList(entryConditions);
+        actionData.setExitConditionList(exitConditions);
         return actionData;
     }
 
@@ -331,11 +241,11 @@ public class ActionController implements Initializable, MainJobController, Activ
         requiredCheckBox.setSelected(action.isRequired());
         previousPassCheckBox.setSelected(action.isPreviousPass());
         displayActionImage(action.getDisplayImage());
-        List<Condition> entryConditions = actionData.getEntryCondition();
-        for (int j = 0; j < entryConditions.size(); j++)
-            addNewSavedCondition(entryConditionList, entryConditionPane, j, entryConditions.get(j));
-        List<Condition> exitConditions = actionData.getExitCondition();
-        for (int j = 0; j < exitConditions.size(); j++)
-            addNewSavedCondition(exitConditionList, exitConditionPane, j, exitConditions.get(j));
+        List<Condition> entryConditions = actionData.getEntryConditionList();
+        for (Condition entryCondition : entryConditions)
+            addSavedCondition(entryConditionList, entryConditionHBox, entryCondition);
+        List<Condition> exitConditions = actionData.getExitConditionList();
+        for (Condition exitCondition : exitConditions)
+            addSavedCondition(exitConditionList, exitConditionHBox, exitCondition);
     }
 }
