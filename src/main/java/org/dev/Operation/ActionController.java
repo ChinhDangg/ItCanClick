@@ -124,10 +124,6 @@ public class ActionController implements Initializable, MainJobController, Activ
     public void enablePreviousOptions() {
         previousPassCheckBox.setVisible(true);
     }
-    public boolean isRequired() {
-        return requiredCheckBox.isSelected();
-    }
-    public boolean isPreviousPass() { return previousPassCheckBox.isSelected(); }
 
     private void toggleRequiredCheckBox(ActionEvent actionEvent) {
         action.setRequired(requiredCheckBox.isSelected());
@@ -221,6 +217,8 @@ public class ActionController implements Initializable, MainJobController, Activ
     // ------------------------------------------------------
     public ActionData getActionData() {
         ActionData actionData = new ActionData();
+        action.setRequired(requiredCheckBox.isSelected());
+        action.setPreviousPass(previousPassCheckBox.isSelected());
         actionData.setAction(action);
         List<Condition> entryConditions = new ArrayList<>();
         List<Condition> exitConditions = new ArrayList<>();
