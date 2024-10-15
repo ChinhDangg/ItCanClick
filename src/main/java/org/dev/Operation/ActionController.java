@@ -68,8 +68,6 @@ public class ActionController implements Initializable, MainJobController, Activ
         entryAddButton.setOnMouseClicked(this::addNewEntryCondition);
         exitAddButton.setOnMouseClicked(this::addNewExitCondition);
         actionNameLabel.setText(renameTextField.getText());
-        requiredCheckBox.setOnAction(this::toggleRequiredCheckBox);
-        previousPassCheckBox.setOnAction(this::togglePreviousPassCheckBox);
         renameTextField.focusedProperty().addListener((_, _, newValue) -> {
             if (!newValue) {
                 //System.out.println("TextField lost focus");
@@ -123,13 +121,6 @@ public class ActionController implements Initializable, MainJobController, Activ
     }
     public void enablePreviousOptions() {
         previousPassCheckBox.setVisible(true);
-    }
-
-    private void toggleRequiredCheckBox(ActionEvent actionEvent) {
-        action.setRequired(requiredCheckBox.isSelected());
-    }
-    private void togglePreviousPassCheckBox(ActionEvent actionEvent) {
-        action.setPreviousPass(previousPassCheckBox.isSelected());
     }
 
     public void registerActionPerform(Action action) {
