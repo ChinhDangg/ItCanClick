@@ -8,6 +8,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import org.dev.App;
+import org.dev.AppScene;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Condition.PixelCondition;
 import org.dev.Operation.ConditionController;
@@ -100,7 +101,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             System.out.println("Backed to main menu");
             stopAllListeners();
             showMenu(false);
-            App.conditionMenuController.loadMenu(conditionController);
+            AppScene.conditionMenuController.loadMenu(conditionController);
         }
     }
 

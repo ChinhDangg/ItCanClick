@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import org.dev.App;
+import org.dev.AppScene;
 import org.dev.Enum.ConditionRequirement;
 import org.dev.Operation.Condition.Condition;
 import java.net.URL;
@@ -48,11 +49,11 @@ public class ConditionController implements Initializable, ActivityController {
     }
 
     private void openConditionOptionPane(MouseEvent event) {
-        if (App.isOperationRunning) {
+        if (AppScene.isOperationRunning) {
             System.out.println("Operation is running, cannot modify");
             return;
         }
-        App.openConditionMenuPane(this);
+        AppScene.openConditionMenuPane(this);
     }
 
     public void removeThisConditionFromParent() {

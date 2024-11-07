@@ -1,19 +1,21 @@
 package org.dev.Operation.Condition;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.Enum.ReadingCondition;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.Serializable;
+import java.io.*;
 
-@Getter
-@Setter
+@Getter @Setter
 public abstract class Condition implements Serializable {
     protected ReadingCondition chosenReadingCondition;
     protected transient BufferedImage mainImage;
     protected Rectangle mainImageBoundingBox;
     protected boolean not;
     protected boolean required;
+    @Getter(AccessLevel.NONE) @Setter(AccessLevel.NONE)
+    protected String readResult;
 
     public Condition(ReadingCondition chosenReadingCondition, BufferedImage mainImage, Rectangle mainImageBoundingBox,
                      boolean not, boolean required) {
@@ -27,4 +29,7 @@ public abstract class Condition implements Serializable {
         return mainImage;
     }
     public abstract boolean checkCondition();
+
+    public abstract String getExpectedResult();
+    public abstract String getActualResult();
 }

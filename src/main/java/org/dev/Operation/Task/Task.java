@@ -10,4 +10,5 @@ public class Task implements Serializable {
     private String taskName = "Task Name";
     private boolean required;
     private boolean previousPass;
+    private int repeatNumber;
 }

@@ -33,15 +33,15 @@ public abstract class MenuController implements Initializable, NativeKeyListener
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loadTypeChoices();
-        backgroundPane.setOnMouseClicked(this::closeMenuController);
-        startRegisteringButton.setOnMouseClicked(this::startRegistering);
-        backButton.setOnMouseClicked(this::closeMenuController);
+        backgroundPane.setOnMouseClicked(this::closeMenuControllerAction);
+        startRegisteringButton.setOnMouseClicked(this::startRegisteringAction);
+        backButton.setOnMouseClicked(this::closeMenuControllerAction);
         recheckButton.setOnMouseClicked(this::recheck);
     }
 
     protected abstract void loadTypeChoices();
-    protected abstract void closeMenuController(MouseEvent event);
-    protected abstract void startRegistering(MouseEvent event);
+    protected abstract void closeMenuControllerAction(MouseEvent event);
+    protected abstract void startRegisteringAction(MouseEvent event);
     public abstract void loadMenu(ActivityController activityController);
     protected abstract void recheck();
     protected abstract void recheck(MouseEvent event);

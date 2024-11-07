@@ -11,6 +11,6 @@ import java.util.List;
 @Setter
 public class ActionData implements Serializable {
     private Action action;
-    private List<Condition> entryCondition;
-    private List<Condition> exitCondition;
+    private List<Condition> entryConditionList;
+    private List<Condition> exitConditionList;
 }

@@ -16,12 +16,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import lombok.Getter;
-import org.dev.App;
-import org.dev.Operation.Action.Action;
+import org.dev.AppScene;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.Data.TaskData;
 import org.dev.SideMenuController;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -47,7 +45,7 @@ public class TaskController implements Initializable, MainJobController {
     private double currentGlobalScale = 1;
 
     @Getter
-    private VBox actionGroupVBox = new VBox();
+    private VBox actionGroupVBoxSideContent = new VBox();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -55,9 +53,9 @@ public class TaskController implements Initializable, MainJobController {
         removeActionButton.setOnMouseClicked(this::removeSelectedActionPane);
         moveActionDownButton.setOnMouseClicked(this::moveActionDown);
         moveActionUpButton.setOnMouseClicked(this::moveActionUp);
-        backButton.setOnMouseClicked(this::backToPrevious);
+        backButton.setOnMouseClicked(this::backToPreviousAction);
         loadMainTaskVBox();
-        actionGroupVBox.setPadding(new Insets(0, 0, 0, 35));
+        actionGroupVBoxSideContent.setPadding(new Insets(0, 0, 0, 35));
     }
 
     public boolean isSet() { return (!actionList.isEmpty() && actionList.getFirst().isSet()); }
@@ -65,22 +63,22 @@ public class TaskController implements Initializable, MainJobController {
     private void loadMainTaskVBox() {
         double offset = ((VBox) mainTaskOuterVBox.getChildren().getFirst()).getPrefHeight();
         double newScrollHeight = taskScrollPane.getPrefHeight() - offset;
-        if (currentGlobalScale != App.currentGlobalScale) {
-            currentGlobalScale = App.currentGlobalScale;
+        if (currentGlobalScale != AppScene.currentGlobalScale) {
+            currentGlobalScale = AppScene.currentGlobalScale;
             mainTaskOuterVBox.getTransforms().add(new Scale(currentGlobalScale, currentGlobalScale, 0, 0));
-            newScrollHeight = (App.primaryBorderPane.getPrefHeight() - offset * currentGlobalScale) / currentGlobalScale;
+            newScrollHeight = (AppScene.primaryBorderPane.getPrefHeight() - offset * currentGlobalScale) / currentGlobalScale;
         }
         taskScrollPane.setPrefHeight(newScrollHeight - 25);
     }
 
-    public void openTaskPane() { App.displayNewNode(mainTaskGroup); }
+    public void openTaskPane() { AppScene.displayNewNode(mainTaskGroup); }
 
-    private void backToPrevious(MouseEvent event) { App.backToPrevious(); }
+    private void backToPreviousAction(MouseEvent event) { AppScene.backToOperationScene(); }
     public void changeTaskName(String name) { taskNameLabel.setText(name); }
 
     // ------------------------------------------------------
     private void addNewActionPane(MouseEvent event) {
-        if (App.isOperationRunning) {
+        if (AppScene.isOperationRunning) {
             System.out.println("Operation is running, cannot modify");
             return;
         }
@@ -108,7 +106,7 @@ public class TaskController implements Initializable, MainJobController {
         addNewActionController(actionController);
         // update side menu
         HBox actionLabelHBox = SideMenuController.getDropDownHBox(null, actionController.getActionNameLabel(), actionController);
-        actionGroupVBox.getChildren().add(actionLabelHBox);
+        actionGroupVBoxSideContent.getChildren().add(actionLabelHBox);
     }
     public void addNewActionController(ActionController actionController) {
         actionList.add(actionController);
@@ -149,7 +147,7 @@ public class TaskController implements Initializable, MainJobController {
         System.out.println("Removed the selected action pane");
         currentSelectedActionPane = null;
         //update side menu
-        actionGroupVBox.getChildren().remove(changeIndex);
+        actionGroupVBoxSideContent.getChildren().remove(changeIndex);
     }
     private void setSelectedAction(Pane actionPane) { actionPane.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); }
     private void setUnSelectedAction(Pane actionPane) { actionPane.setStyle(""); }
@@ -170,9 +168,10 @@ public class TaskController implements Initializable, MainJobController {
         children.remove(currentSelectedActionPane);
         children.add(changeIndex, currentSelectedActionPane);
         //update side menu
-        Node temp = actionGroupVBox.getChildren().get(selectedActionPaneIndex);
-        actionGroupVBox.getChildren().remove(selectedActionPaneIndex);
-        actionGroupVBox.getChildren().add(changeIndex, temp);
+        ObservableList<Node> actionSideContent = actionGroupVBoxSideContent.getChildren();
+        Node temp = actionSideContent.get(selectedActionPaneIndex);
+        actionSideContent.remove(selectedActionPaneIndex);
+        actionSideContent.add(changeIndex, temp);
     }
     private void moveActionDown(MouseEvent event) {
         if (currentSelectedActionPane == null)
@@ -190,39 +189,16 @@ public class TaskController implements Initializable, MainJobController {
         children.remove(currentSelectedActionPane);
         children.add(changeIndex, currentSelectedActionPane);
         //update side menu
-        Node temp = actionGroupVBox.getChildren().get(selectedActionPaneIndex);
-        actionGroupVBox.getChildren().remove(selectedActionPaneIndex);
-        actionGroupVBox.getChildren().add(changeIndex, temp);
+        ObservableList<Node> actionSideContent = actionGroupVBoxSideContent.getChildren();
+        Node temp = actionSideContent.get(selectedActionPaneIndex);
+        actionSideContent.remove(selectedActionPaneIndex);
+        actionSideContent.add(changeIndex, temp);
     }
     private void changeActionPreviousOptions(int index) {
         if (index < 2) {
             actionList.get(0).disablePreviousOptions();
             actionList.get(1).enablePreviousOptions();
         }
-    }
-
-    // ------------------------------------------------------
-    public boolean runTask() {
-        System.out.println("Start running task: " + taskNameLabel.getText());
-        boolean pass = false;
-        for (ActionController actionController : actionList) {
-            String actionName = actionController.getActionNameLabel().getText();
-            if (pass && actionController.isPreviousPass()) {
-                System.out.println("Skipping action " + actionName + " as previous is passed");
-                continue;
-            }
-            System.out.println("Start running action: " + actionName);
-            if (!actionController.isSet())
-                continue;
-            pass = actionController.performAction();
-            if (!actionController.isRequired())
-                pass = true;
-            else if (!pass) { // action is required but failed
-                System.out.println("Fail performing action: " + actionName);
-                return false;
-            }
-        }
-        return true;
     }
 
     // ------------------------------------------------------

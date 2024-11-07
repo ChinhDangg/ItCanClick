@@ -15,6 +15,7 @@ import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.dev.App;
+import org.dev.AppScene;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Operation.ActivityController;
 import org.dev.Operation.Condition.Condition;
@@ -67,7 +68,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             updateTextScaleValue(textCondition.getCurrentTextScale());
             currentMainImage = condition.getMainImage();
             displayMainImageView(currentMainImage);
-            readTexts = textCondition.getReadText();
+            readTexts = textCondition.getSavedText();
             updateRegisteredTextLabel();
             notOptionCheckBox.setSelected(textCondition.isNot());
             requiredOptionCheckBox.setSelected(textCondition.isRequired());
@@ -114,7 +115,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             System.out.println("Backed to main menu");
             stopAllListeners();
             showMenu(false);
-            App.conditionMenuController.loadMenu(conditionController);
+            AppScene.conditionMenuController.loadMenu(conditionController);
         }
     }
 
@@ -162,11 +163,11 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     }
     public static String readTextFromImage(BufferedImage image) throws TesseractException {
         System.out.println("Read texts from an image");
-        ITesseract tesseract = new Tesseract();
+        ITesseract tess = new Tesseract();
         // deprecated but usable to remove warning variable or just import all languages in tessdata
-        tesseract.setTessVariable("debug_file", "/dev/null");
-        tesseract.setDatapath("tessdata");
-        return tesseract.doOCR(image);
+        tess.setTessVariable("debug_file", "/dev/null");
+        tess.setDatapath("tessdata");
+        return tess.doOCR(image);
     }
     private void readAndUpdateReadTextLabel() {
         if (currentMainImage != null) {

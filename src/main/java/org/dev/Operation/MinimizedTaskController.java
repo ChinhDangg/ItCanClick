@@ -1,6 +1,5 @@
 package org.dev.Operation;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -12,10 +11,9 @@ import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.App;
+import org.dev.AppScene;
 import org.dev.Operation.Data.TaskData;
 import org.dev.Operation.Task.Task;
-import org.dev.SideMenuController;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -46,8 +44,6 @@ public class MinimizedTaskController implements Initializable, MainJobController
         taskNameAreaStackPane.setOnMouseClicked(this::openTask);
         repeatMinusButton.setOnMouseClicked(this::decreaseRepeatNumber);
         repeatPlusButton.setOnMouseClicked(this::increaseRepeatNumber);
-        requiredCheckBox.setOnAction(this::toggleRequiredCheckBox);
-        previousPassCheckBox.setOnAction(this::togglePreviousPassOption);
         taskNameLabel.setText(renameTextField.getText());
         loadNewTaskPane();
         renameTextField.focusedProperty().addListener((_, _, newValue) -> {
@@ -86,23 +82,16 @@ public class MinimizedTaskController implements Initializable, MainJobController
         previousPassCheckBox.setVisible(true);
     }
 
-    private void toggleRequiredCheckBox(ActionEvent event) {
-        task.setRequired(requiredCheckBox.isSelected());
-    }
-    private void togglePreviousPassOption(ActionEvent event) {
-        task.setPreviousPass(requiredCheckBox.isSelected());
-    }
-
     @Override
     public void takeToDisplay() {
-        App.currentLoadedOperationController.takeToDisplay();
+        AppScene.currentLoadedOperationController.takeToDisplay();
         System.out.println("Minimized task take to display");
-        App.currentLoadedOperationController.changeOperationScrollPaneView(minimizedTaskLayerStackPane);
+        AppScene.currentLoadedOperationController.changeOperationScrollPaneView(minimizedTaskLayerStackPane);
     }
 
     // ------------------------------------------------------
     public void openTask(MouseEvent event) {
-        if (App.isOperationRunning) {
+        if (AppScene.isOperationRunning) {
             System.out.println("Operation is running, cannot navigate");
             return;
         }
@@ -121,38 +110,24 @@ public class MinimizedTaskController implements Initializable, MainJobController
     // ------------------------------------------------------
     private int repeatNumber = 0;
     private void increaseRepeatNumber(MouseEvent event) {
-        repeatNumber++;
-        updateRepeatNumberLabel();
+        updateRepeatNumberLabel(repeatNumber + 1);
     }
     private void decreaseRepeatNumber(MouseEvent event) {
-        repeatNumber = Math.max(repeatNumber - 1, -1);
-        updateRepeatNumberLabel();
+        updateRepeatNumberLabel(Math.max(repeatNumber - 1, -1));
     }
-    private void updateRepeatNumberLabel() { repeatNumberLabel.setText(Integer.toString(repeatNumber)); }
-
-    public boolean runTask() {
-        if (taskController == null) {
-            System.out.println("Task controller not found in minimized task - bug");
-            return false;
-        }
-        if (repeatNumber == -1) {
-            System.out.println("Running task 'infinitely'");
-            for (int j = 0; j < Integer.MAX_VALUE; j++)
-                if (!taskController.runTask())
-                    return false;
-            return true;
-        }
-        for (int j = -1; j < repeatNumber; j++)
-            if (!taskController.runTask())
-                return false;
-        return true;
+    private void updateRepeatNumberLabel(int newRepeatNumber) {
+        repeatNumber = newRepeatNumber;
+        repeatNumberLabel.setText(Integer.toString(repeatNumber));
     }
 
     // ------------------------------------------------------
     public TaskData getTaskData() {
         TaskData taskData = taskController.getTaskData();
+        task.setRepeatNumber(repeatNumber);
+        task.setRequired(requiredCheckBox.isSelected());
+        task.setPreviousPass(requiredCheckBox.isSelected());
         taskData.setTask(task);
-        return taskController.getTaskData();
+        return taskData;
     }
 
     public void loadSavedTaskData(TaskData taskData) throws IOException {
@@ -161,6 +136,7 @@ public class MinimizedTaskController implements Initializable, MainJobController
         task = taskData.getTask();
         requiredCheckBox.setSelected(task.isRequired());
         previousPassCheckBox.setSelected(task.isPreviousPass());
+        updateRepeatNumberLabel(task.getRepeatNumber());
         updateTaskName(task.getTaskName());
     }
 }

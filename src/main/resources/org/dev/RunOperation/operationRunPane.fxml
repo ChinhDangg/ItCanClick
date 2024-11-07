@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+
+<Group xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.RunOperation.OperationRunController">
+   <children>
+      <VBox fx:id="mainOperationRunVBox" spacing="10.0">
+         <children>
+            <StackPane>
+               <children>
+                  <Group>
+                     <children>
+                        <StackPane>
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="36.0" stroke="BLACK" strokeType="INSIDE" width="227.0" />
+                              <Label fx:id="operationNameRunLabel" text="Operation Name" />
+                           </children>
+                        </StackPane>
+                     </children>
+                  </Group>
+               </children>
+            </StackPane>
+            <ScrollPane fx:id="operationRunScrollPane" hbarPolicy="NEVER" prefHeight="100.0" prefWidth="550.0" style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" vbarPolicy="NEVER">
+               <content>
+                  <VBox fx:id="runVBox" />
+               </content>
+            </ScrollPane>
+         </children>
+      </VBox>
+   </children>
+</Group>

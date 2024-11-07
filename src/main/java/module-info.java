@@ -22,4 +22,6 @@ module org.dev {
     opens org.dev.Operation.Action to javafx.fxml;
     exports org.dev.Operation.Task;
     opens org.dev.Operation.Task to javafx.fxml;
+    exports org.dev.RunOperation;
+    opens org.dev.RunOperation to javafx.fxml;
 }

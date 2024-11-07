@@ -12,6 +12,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import org.dev.App;
+import org.dev.AppScene;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Operation.ActivityController;
 import org.dev.Operation.Condition.Condition;
@@ -38,8 +39,9 @@ public class ConditionMenuController extends MenuController implements Initializ
         readingTypeChoice.getItems().addAll(ReadingCondition.values());
         readingTypeChoice.setValue(ReadingCondition.Text);
     }
-    protected void closeMenuController(MouseEvent event) {
-        App.closeConditionMenuPane();
+    @Override
+    protected void closeMenuControllerAction(MouseEvent event) {
+        AppScene.closeConditionMenuPane();
         if (textMenuController != null && textMenuController.visible)
             textMenuController.backToPreviousMenu(event);
         else if (pixelMenuController != null && pixelMenuController.visible)
@@ -47,7 +49,8 @@ public class ConditionMenuController extends MenuController implements Initializ
         GlobalScreen.removeNativeKeyListener(this);
         isKeyListening = false;
     }
-    protected void startRegistering(MouseEvent event) {
+    @Override
+    protected void startRegisteringAction(MouseEvent event) {
         System.out.println("Click on start registering");
         if (readingTypeChoice.getValue() == ReadingCondition.Text) {
             if (textMenuController == null)
@@ -132,7 +135,7 @@ public class ConditionMenuController extends MenuController implements Initializ
 
     private void removeSelectedCondition(MouseEvent event) {
         conditionController.removeThisConditionFromParent();
-        closeMenuController(event);
+        closeMenuControllerAction(event);
         System.out.println("Removed selected condition from action");
     }
 }

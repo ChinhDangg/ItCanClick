@@ -7,7 +7,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -15,13 +14,28 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
-import lombok.Setter;
 import org.dev.Operation.*;
+import org.dev.RunOperation.OperationRunController;
 import java.io.IOException;
-import java.io.Serial;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
+/**
+ operationHBox
+    taskVBox
+    Vbox
+    taskLabelHBox
+        taskActionVBox
+        actionLabelHBox
+        actionLabelHBox
+        actionLabelHBox
+    Vbox
+    taskLabelHBox
+        taskActionVBox
+        actionLabelHBox
+        actionLabelHBox
+ */
 
 public class SideMenuController implements Initializable {
 
@@ -30,7 +44,7 @@ public class SideMenuController implements Initializable {
     @FXML
     private StackPane mainSideHierarchyStackPane;
     @FXML
-    private VBox sideHierarchyVBox;
+    private VBox runSideHierarchyVBox, sideHierarchyVBox;
     @FXML
     private Group newOperationGroupButton;
 
@@ -43,8 +57,8 @@ public class SideMenuController implements Initializable {
 
     private void getNewOperationPane(MouseEvent event) {
         try {
-            App.loadNewEmptyOperation();
-            App.loadSideMenuHierarchy();
+            AppScene.loadNewEmptyOperation();
+            AppScene.loadSideMenuHierarchy();
         } catch (IOException e) {
             System.out.println("Fail loading empty operation at side menu hierarchy");
         }
@@ -64,17 +78,30 @@ public class SideMenuController implements Initializable {
     public void loadSideHierarchy(OperationController operationController) {
         newOperationGroupButton.setVisible(false);
 
-        ObservableList< Node> sideHierarchyChildren = sideHierarchyVBox.getChildren();
+        ObservableList<Node> sideHierarchyChildren = sideHierarchyVBox.getChildren();
         sideHierarchyChildren.clear();
 
-        VBox operationTaskVBox = operationController.getTaskGroupVBox();
+        VBox operationTaskVBox = operationController.getTaskGroupVBoxSideContent();
         HBox operationSideLabelHBox = getDropDownHBox(operationTaskVBox, operationController.getOperationNameLabel(), operationController);
         sideHierarchyChildren.add(operationSideLabelHBox);
         sideHierarchyChildren.add(operationTaskVBox);
     }
 
+    public void loadRunSideHierarchy(OperationRunController operationRunController) {
+        sideHierarchyVBox.setVisible(false);
+        ObservableList<Node> runSideHierarchyChildren = runSideHierarchyVBox.getChildren();
+        runSideHierarchyChildren.clear();
+
+        VBox operationRunTaskVBox = operationRunController.getTaskRunVBoxSideContent();
+        HBox operationRunSideLabelHBox = getDropDownHBox(operationRunTaskVBox,
+                new Label(operationRunController.getOperationNameRunLabel().getText()),
+                operationRunController);
+        runSideHierarchyChildren.add(operationRunSideLabelHBox);
+        runSideHierarchyChildren.add(operationRunTaskVBox);
+    }
+
     private static void sideLabelDoubleClick(MouseEvent event, MainJobController jobController) {
-        if (event.getClickCount() == 2 && !App.isOperationRunning)
+        if (event.getClickCount() == 2 && !AppScene.isOperationRunning)
             jobController.takeToDisplay();
     }
 

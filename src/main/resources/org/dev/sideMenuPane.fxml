@@ -47,7 +47,8 @@
                <children>
                   <StackPane fx:id="mainSideHierarchyStackPane" alignment="TOP_CENTER">
                      <children>
-                        <VBox fx:id="sideHierarchyVBox" minHeight="200.0" minWidth="221.0">
+                        <VBox fx:id="runSideHierarchyVBox" minHeight="200.0" minWidth="220.0" />
+                        <VBox fx:id="sideHierarchyVBox" minHeight="200.0" minWidth="220.0">
                            <StackPane.margin>
                               <Insets left="5.0" />
                            </StackPane.margin></VBox>

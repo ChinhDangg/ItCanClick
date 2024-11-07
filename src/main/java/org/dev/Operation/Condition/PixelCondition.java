@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.dev.Enum.ReadingCondition;
 import org.dev.ImageSerialization;
+import org.dev.RunOperation.RunningStatus;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -12,8 +13,7 @@ import java.awt.image.DataBuffer;
 import java.io.*;
 import java.util.Base64;
 
-@Getter
-@Setter
+@Getter @Setter
 public class PixelCondition extends Condition {
 
     private transient BufferedImage displayImage;
@@ -35,6 +35,7 @@ public class PixelCondition extends Condition {
         try {
             boolean pass = (globalSearch) ? checkPixelFromCurrentScreen(mainImage)
                     : checkPixelFromBoundingBox(mainImageBoundingBox, mainImage);
+            readResult = pass ? RunningStatus.Passed.name() : RunningStatus.Failed.name();
             if (not)
                 return !pass;
             return pass;
@@ -44,35 +45,37 @@ public class PixelCondition extends Condition {
         return false;
     }
 
+    @Override
+    public String getExpectedResult() {
+        return ReadingCondition.Pixel.name();
+    }
+
+    @Override
+    public String getActualResult() {
+        return readResult;
+    }
+
     private boolean checkPixelFromBoundingBox(Rectangle boundingBox, BufferedImage img2) throws AWTException, IOException {
         BufferedImage img1 = new Robot().createScreenCapture(boundingBox);
-        ImageIO.write(img1, "png", new File("img1.png"));
-        ImageIO.write(img2, "png", new File("img2.png"));
+//        ImageIO.write(img1, "png", new File("img1.png"));
+//        ImageIO.write(img2, "png", new File("img2.png"));
+//
+//        System.out.println(img2.getType()); //BGR
+//        System.out.println(img1.getType()); //RGB
+//        System.out.println(img2.getColorModel());
+//        System.out.println(img1.getColorModel());
 
-        System.out.println(img2.getType()); //BGR
-        System.out.println(img1.getType()); //RGB
-        System.out.println(img2.getColorModel());
-        System.out.println(img1.getColorModel());
-
-        if (img1.getWidth() != img2.getWidth() || img1.getHeight() != img2.getHeight()) {
-            System.out.println("Fail size");
+        if (img1.getWidth() != img2.getWidth() || img1.getHeight() != img2.getHeight())
             return false;
-        }
         DataBuffer db1 = img1.getRaster().getDataBuffer();
         DataBuffer db2 = img2.getRaster().getDataBuffer();
         int size1 = db1.getSize();
         int size2 = db2.getSize();
-        if (size1 != size2) {
-            System.out.println("Fail overall size");
-            System.out.println(size1);
-            System.out.println(size2);
+        if (size1 != size2)
             return false;
-        }
         for (int i = 0; i < size1; i++)
-            if (db1.getElem(i) != db2.getElem(i)) {
-                System.out.println("Fail not same element");
+            if (db1.getElem(i) != db2.getElem(i))
                 return false;
-            }
         return true;
     }
 

@@ -10,12 +10,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import org.dev.App;
+import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
 import org.dev.Operation.ActionController;
 import org.dev.Operation.ActivityController;
 
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -35,14 +34,16 @@ public class ActionMenuController extends MenuController implements Initializabl
         actionTypeChoice.getItems().addAll(ActionTypes.values());
         actionTypeChoice.setValue(ActionTypes.MouseClick);
     }
-    protected void closeMenuController(MouseEvent event) {
-        App.closeActionMenuPane();
+    @Override
+    protected void closeMenuControllerAction(MouseEvent event) {
+        AppScene.closeActionMenuPane();
         if (actionPerformMenuController != null && actionPerformMenuController.visible)
             actionPerformMenuController.backToPreviousMenu(event);
         GlobalScreen.removeNativeKeyListener(this);
         isKeyListening = false;
     }
-    protected void startRegistering(MouseEvent event) {
+    @Override
+    protected void startRegisteringAction(MouseEvent event) {
         System.out.println("Click on start registering");
         if (actionPerformMenuController == null)
             loadActionPerformMenu();

@@ -10,6 +10,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import org.dev.App;
+import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
 import org.dev.Operation.Action.*;
 import org.dev.Operation.ActionController;
@@ -86,7 +87,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
             System.out.println("Backed");
             stopAllListeners();
             showMenu(false);
-            App.actionMenuController.loadMenu(actionController);
+            AppScene.actionMenuController.loadMenu(actionController);
         }
     }
     @Override

@@ -16,14 +16,6 @@ public class ImageSerialization {
         }
         else
             out.writeObject(null);
-//        if (mainImage != null) {
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            ImageIO.write(mainImage, "png", baos);
-//            byte[] imageBytes = baos.toByteArray();
-//            out.writeObject(Base64.getEncoder().encodeToString(imageBytes));
-//        } else {
-//            out.writeObject(null);
-//        }
     }
 
     public static BufferedImage deserializeBufferedImageReadObject(ObjectInputStream in, String inputStringStream, boolean getRGB) throws IOException {

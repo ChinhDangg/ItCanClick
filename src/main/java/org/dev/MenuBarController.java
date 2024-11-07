@@ -46,9 +46,9 @@ public class MenuBarController implements Initializable {
     public void save(ActionEvent event) {
         try {
             System.out.println("CLicked on saved all");
-            if (App.currentLoadedOperationController == null)
+            if (AppScene.currentLoadedOperationController == null)
                 return;
-            OperationData operationData = App.currentLoadedOperationController.getOperationData();
+            OperationData operationData = AppScene.currentLoadedOperationController.getOperationData();
             FileOutputStream fileOut = new FileOutputStream(savedRootPath + operationData.getOperation().getOperationName()+".ser");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(operationData);
@@ -64,8 +64,8 @@ public class MenuBarController implements Initializable {
     public void createNewOperation(ActionEvent event) {
         System.out.println("Opening new operation");
         try {
-            App.loadNewEmptyOperation();
-            App.loadSideMenuHierarchy();
+            AppScene.loadNewEmptyOperation();
+            AppScene.loadSideMenuHierarchy();
         } catch (IOException e) {
             System.out.println("Fail loading empty operation pane at top menu bar");
         }
@@ -73,18 +73,18 @@ public class MenuBarController implements Initializable {
 
     public void openSavedOperation(ActionEvent event) {
         System.out.println("Opening saved operation");
-        App.loadSavedOperation(savedRootPath + "SomeOperationName.ser");
-        App.loadSideMenuHierarchy();
+        AppScene.loadSavedOperation(savedRootPath + "SomeOperationName.ser");
+        AppScene.loadSideMenuHierarchy();
     }
 
     public void runOperation(MouseEvent event) {
         System.out.println("Start running operation");
-        if (App.currentLoadedOperationController == null) {
+        if (AppScene.currentLoadedOperationController == null) {
             System.out.println("No operation found");
             return;
         }
         operationRunThread = new Thread(() -> {
-            App.currentLoadedOperationController.startOperation();
+            AppScene.currentLoadedOperationRunController.startOperation(AppScene.currentLoadedOperationController);
             setOperationIsRunning(false);
         });
         operationRunThread.start();
@@ -97,7 +97,7 @@ public class MenuBarController implements Initializable {
     }
     private void setOperationIsRunning(boolean isRunning) {
         operationIsRunning = isRunning;
-        App.isOperationRunning = isRunning;
+        AppScene.isOperationRunning = isRunning;
         stopRunGroupButton.setVisible(isRunning);
         operationRunningIndicationHBox.setVisible(isRunning);
     }

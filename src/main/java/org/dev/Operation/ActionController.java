@@ -1,7 +1,6 @@
 package org.dev.Operation;
 
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,13 +14,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import lombok.Setter;
-import org.dev.App;
+import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
-import org.dev.SideMenuController;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -48,11 +45,9 @@ public class ActionController implements Initializable, MainJobController, Activ
 
     @Getter
     private boolean isSet;
-    @Getter
-    @Setter
+    @Getter @Setter
     private Action action;
-    @Getter
-    @Setter
+    @Getter @Setter
     private ActionTypes chosenActionPerform;
     @Getter
     private final Label actionNameLabel = new Label();
@@ -79,8 +74,8 @@ public class ActionController implements Initializable, MainJobController, Activ
     @Override
     public void takeToDisplay() {
         System.out.println("Action take to display");
-        App.closeActionMenuPane();
-        App.closeConditionMenuPane();
+        AppScene.closeActionMenuPane();
+        AppScene.closeConditionMenuPane();
         TaskController parentTaskController = findParentTaskController();
         if (parentTaskController == null)
             throw new IllegalStateException("Parent task controller is null for action controller - bug");
@@ -89,7 +84,7 @@ public class ActionController implements Initializable, MainJobController, Activ
         parentTaskController.changeTaskScrollPaneView(mainActionPane);
     }
     private TaskController findParentTaskController() {
-        for (MinimizedTaskController taskController : App.currentLoadedOperationController.getTaskList()) {
+        for (MinimizedTaskController taskController : AppScene.currentLoadedOperationController.getTaskList()) {
             TaskController currentTaskController = taskController.getTaskController();
             List<ActionController> actionList = currentTaskController.getActionList();
             for (ActionController actionController : actionList)
@@ -138,11 +133,11 @@ public class ActionController implements Initializable, MainJobController, Activ
     }
 
     private void openActionMenuPane(MouseEvent event) {
-        if (App.isOperationRunning) {
+        if (AppScene.isOperationRunning) {
             System.out.println("Operation is running, cannot modify");
             return;
         }
-        App.openActionMenuPane(this);
+        AppScene.openActionMenuPane(this);
     }
     private FXMLLoader getConditionPaneLoader() {
         return new FXMLLoader(getClass().getResource("conditionPane.fxml"));
@@ -153,7 +148,7 @@ public class ActionController implements Initializable, MainJobController, Activ
 
     private void addNewEntryCondition(MouseEvent event) {
         System.out.println("Entry add clicked");
-        if (App.isOperationRunning) {
+        if (AppScene.isOperationRunning) {
             System.out.println("Operation is running, cannot modify");
             return;
         }
@@ -172,7 +167,7 @@ public class ActionController implements Initializable, MainJobController, Activ
 
     private void addNewExitCondition(MouseEvent event) {
         System.out.println("Exit add clicked");
-        if (App.isOperationRunning) {
+        if (AppScene.isOperationRunning) {
             System.out.println("Operation is running, cannot modify");
             return;
         }
@@ -231,10 +226,12 @@ public class ActionController implements Initializable, MainJobController, Activ
         previousPassCheckBox.setSelected(action.isPreviousPass());
         displayActionImage(action.getDisplayImage());
         List<Condition> entryConditions = actionData.getEntryConditionList();
-        for (Condition entryCondition : entryConditions)
-            addSavedCondition(entryConditionList, entryConditionHBox, entryCondition);
+        if (entryConditions != null)
+            for (Condition entryCondition : entryConditions)
+                addSavedCondition(entryConditionList, entryConditionHBox, entryCondition);
         List<Condition> exitConditions = actionData.getExitConditionList();
-        for (Condition exitCondition : exitConditions)
-            addSavedCondition(exitConditionList, exitConditionHBox, exitCondition);
+        if (exitConditions != null)
+            for (Condition exitCondition : exitConditions)
+                addSavedCondition(exitConditionList, exitConditionHBox, exitCondition);
     }
 }
