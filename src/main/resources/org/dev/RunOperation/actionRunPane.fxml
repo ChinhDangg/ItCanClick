@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Group xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.RunOperation.ActionRunController">
+<Group fx:id="mainActionRunGroup" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.RunOperation.ActionRunController">
    <children>
-      <Pane fx:id="mainActionRunPane" prefWidth="520.0">
+      <Pane prefWidth="520.0">
          <children>
             <VBox layoutX="12.0" spacing="5.0">
                <children>
@@ -38,7 +38,7 @@
                                     <Font size="10.0" />
                                  </font>
                               </Label>
-                              <ScrollPane maxWidth="496.0" vbarPolicy="NEVER">
+                              <ScrollPane fx:id="entryConditionScrollPane" maxWidth="496.0" vbarPolicy="NEVER">
                                  <content>
                                     <HBox fx:id="entryConditionHBox" spacing="10.0" />
                                  </content>
@@ -103,7 +103,7 @@
                                     <Font size="10.0" />
                                  </font>
                               </Label>
-                              <ScrollPane hbarPolicy="NEVER" maxWidth="496.0" vbarPolicy="NEVER">
+                              <ScrollPane fx:id="exitConditionScrollPane" hbarPolicy="NEVER" maxWidth="496.0" vbarPolicy="NEVER">
                                  <content>
                                     <HBox fx:id="exitConditionHBox" />
                                  </content>

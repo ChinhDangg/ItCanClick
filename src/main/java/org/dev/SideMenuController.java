@@ -101,7 +101,7 @@ public class SideMenuController implements Initializable {
     }
 
     private static void sideLabelDoubleClick(MouseEvent event, MainJobController jobController) {
-        if (event.getClickCount() == 2 && !AppScene.isOperationRunning)
+        if (event.getClickCount() == 2)
             jobController.takeToDisplay();
     }
 

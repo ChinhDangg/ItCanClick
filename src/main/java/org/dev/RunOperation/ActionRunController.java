@@ -4,19 +4,22 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
-import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.MainJobController;
+import org.dev.SideMenuController;
 
 import java.io.IOException;
 import java.net.URL;
@@ -26,7 +29,9 @@ import java.util.ResourceBundle;
 public class ActionRunController extends RunActivity implements Initializable, MainJobController {
 
     @FXML
-    private Pane mainActionRunPane;
+    private Group mainActionRunGroup;
+    @FXML
+    private ScrollPane entryConditionScrollPane, exitConditionScrollPane;
     @FXML
     private ImageView actionSavedImageView, actionPerformedImageView;
     @FXML @Getter
@@ -44,15 +49,13 @@ public class ActionRunController extends RunActivity implements Initializable, M
 
     @Getter
     private VBox conditionRunVBoxSideContent = new VBox();
-    @Setter
-    private TaskRunController parentTaskRunController;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         showActionRunPane(false);
         conditionRunExitVBoxContainer.setVisible(false);
         setFitDimensionImageView();
-        conditionRunVBoxSideContent.setPadding(new Insets(0, 0, 0, 50));
+        conditionRunVBoxSideContent.setPadding(new Insets(0, 0, 0, 35));
     }
 
     private void setFitDimensionImageView() {
@@ -67,11 +70,8 @@ public class ActionRunController extends RunActivity implements Initializable, M
     @Override
     public void takeToDisplay() {
         AppScene.currentLoadedOperationRunController.takeToDisplay();
-        // todo
-        // action view is in task view and task view is in operation view
-        // only operation view control the view scroll
-        // need to get task view relative to parent view first
-        // then use that task view for offset ? to get actual action view relative to operation view
+        System.out.println("Action run take To Display");
+        changeScrollPaneVValueView(AppScene.currentLoadedOperationRunController.getOperationRunScrollPane(), null, mainActionRunGroup);
     }
 
     private void showActionRunPane(boolean visible) {
@@ -92,7 +92,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
     }
 
     // ------------------------------------------------------
-    public boolean runAction(ActionData actionData) throws InterruptedException {
+    public boolean startAction(ActionData actionData) throws InterruptedException {
         if (actionData == null) {
             System.out.println("Action data not found - bug");
             return false;
@@ -104,17 +104,12 @@ public class ActionRunController extends RunActivity implements Initializable, M
         }
         changeLabelText(actionRunNameLabel, action.getActionName());
         changeActionRunStatus(RunningStatus.Running);
+        return runAction(actionData);
+    }
 
-//        boolean entryPassed = checkAllConditions(entryConditionHBox, actionData.getEntryConditionList());
-//        System.out.println(entryPassed);
-//
-//        performAction(action);
-//
-//        boolean exitPassed = checkAllConditions(exitConditionHBox, actionData.getExitConditionList());
-//        System.out.println(exitPassed);
-
+    private boolean runAction(ActionData actionData) throws InterruptedException {
         boolean passed;
-        if (action.isProgressiveSearch())
+        if (actionData.getAction().isProgressiveSearch())
             passed = performActionWithProgressiveSearch(actionData);
         else
             passed = performActionWithAttempt(actionData);
@@ -131,7 +126,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
         while (count > 0) {
             count--;
             Thread.sleep(action.getWaitBeforeTime());
-            entryPassed = checkAllConditions(entryConditionHBox, actionData.getEntryConditionList());
+            entryPassed = checkAllConditions(entryConditionHBox, entryConditionScrollPane, actionData.getEntryConditionList());
             if (!entryPassed) {
                 System.out.println("Not found entry with " + actionName + " " + count);
                 continue;
@@ -139,7 +134,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
             System.out.println("Found entry with " + actionName);
             performAction(action);
             Thread.sleep(action.getWaitAfterTime());
-            if (checkAllConditions(exitConditionHBox, actionData.getExitConditionList())) {
+            if (checkAllConditions(exitConditionHBox, exitConditionScrollPane, actionData.getExitConditionList())) {
                 System.out.println("Found exit with " + actionName);
                 return true;
             }
@@ -157,11 +152,11 @@ public class ActionRunController extends RunActivity implements Initializable, M
         boolean entryPassed;
         System.out.println("Starting progressive search: " + actionName);
         while (System.currentTimeMillis() - startTime < duration) {
-            entryPassed = checkAllConditions(entryConditionHBox, actionData.getEntryConditionList());
+            entryPassed = checkAllConditions(entryConditionHBox, entryConditionScrollPane, actionData.getEntryConditionList());
             if (!entryPassed)
                 continue;
             performAction(action);
-            if (checkAllConditions(exitConditionHBox, actionData.getExitConditionList()))
+            if (checkAllConditions(exitConditionHBox, exitConditionScrollPane, actionData.getExitConditionList()))
                 return true;
         }
         System.out.println("Exceeded progressive search time with " + actionName);
@@ -176,14 +171,14 @@ public class ActionRunController extends RunActivity implements Initializable, M
         System.out.println("Performed action: " + action.getActionName());
     }
 
-    private boolean checkAllConditions(HBox whichRunConditionHBox, List<Condition> conditions) {
+    private boolean checkAllConditions(HBox whichRunConditionHBox, ScrollPane whichScrollPane, List<Condition> conditions) {
         if (conditions == null || conditions.isEmpty())
             return true;
         // all conditions are optional therefore only need one condition to pass
         System.out.println(conditions.size());
         if (checkAllConditionsIsNotRequired(conditions)) {
             for (Condition c : conditions) {
-                whichRunConditionHBox.getChildren().add(loadConditionRunPane());
+                loadConditionRunPane(whichRunConditionHBox, whichScrollPane);
                 if (currentConditionRunController.checkCondition(c))
                     return true;
             }
@@ -191,7 +186,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
         }
         else { // only check required condition and they must pass
             for (Condition c : conditions) {
-                whichRunConditionHBox.getChildren().add(loadConditionRunPane());
+                loadConditionRunPane(whichRunConditionHBox, whichScrollPane);
                 if (c.isRequired() && !currentConditionRunController.checkCondition(c))
                     return false;
             }
@@ -209,15 +204,18 @@ public class ActionRunController extends RunActivity implements Initializable, M
 
     // ------------------------------------------------------
     private ConditionRunController currentConditionRunController;
-    private HBox loadConditionRunPane() {
+    private void loadConditionRunPane(HBox whichRunConditionHBox, ScrollPane whichScrollPane) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("conditionRunPane.fxml"));
-            HBox conditionRunPane = fxmlLoader.load();
+            Node conditionRunPane = fxmlLoader.load();
             currentConditionRunController = fxmlLoader.getController();
-            return conditionRunPane;
+            currentConditionRunController.setParentScrollPane(whichScrollPane);
+            HBox conditionHBox = SideMenuController.getDropDownHBox(null,
+                    new Label("Condition"), currentConditionRunController);
+            conditionRunVBoxSideContent.getChildren().add(conditionHBox);
+            whichRunConditionHBox.getChildren().add(conditionRunPane);
         } catch (IOException e) {
             System.out.println("Fail loading condition run pane");
-            return null;
         }
     }
 }

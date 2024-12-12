@@ -5,7 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
@@ -20,7 +19,6 @@ import org.dev.Operation.MainJobController;
 import org.dev.Operation.OperationController;
 import org.dev.Operation.Task.Task;
 import org.dev.SideMenuController;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -30,9 +28,9 @@ public class OperationRunController implements Initializable, MainJobController 
     private VBox mainOperationRunVBox;
     @FXML @Getter
     private Label operationNameRunLabel;
-    @FXML
+    @FXML @Getter
     private ScrollPane operationRunScrollPane;
-    @FXML
+    @FXML @Getter
     private VBox runVBox;
 
     @Getter
@@ -66,14 +64,6 @@ public class OperationRunController implements Initializable, MainJobController 
         operationRunScrollPane.setVvalue(0.0);
     }
 
-    public void changeOperationRunScrollPaneView(Node node) {
-        double targetPaneY = node.getBoundsInParent().getMinY();
-        double contentHeight = operationRunScrollPane.getContent().getBoundsInLocal().getHeight();
-        double scrollPaneHeight = operationRunScrollPane.getViewportBounds().getHeight();
-        double vValue = Math.min(targetPaneY / (contentHeight - scrollPaneHeight), 1.00);
-        operationRunScrollPane.setVvalue(vValue);
-    }
-
     private void changeOperationRunName(String newName) {
         operationNameRunLabel.setText(newName);
     }
@@ -81,7 +71,12 @@ public class OperationRunController implements Initializable, MainJobController 
     // ------------------------------------------------------
     public void startOperation(OperationController operationController) {
         try {
-            //runOperation(operationController);
+            OperationData operationData = operationController.getOperationData();
+            String operationName = operationData.getOperation().getOperationName();
+            changeOperationRunName(operationName);
+            System.out.println("Start running operation: " + operationName);
+
+            //runOperation(operationData);
             System.out.println("waiting");
             Thread.sleep(20000);
             System.out.println("Operation is finished");
@@ -91,10 +86,6 @@ public class OperationRunController implements Initializable, MainJobController 
     }
 
     public void runOperation(OperationData operationData) throws InterruptedException {
-        String operationName = operationData.getOperation().getOperationName();
-        changeOperationRunName(operationName);
-        System.out.println("Start running operation: " + operationName);
-
         boolean pass = false;
         for (TaskData taskData : operationData.getTaskDataList()) {
             Task currentTask = taskData.getTask();
@@ -104,7 +95,7 @@ public class OperationRunController implements Initializable, MainJobController 
                 System.out.println("Previous is passed, Skipping task " + taskName);
                 continue;
             }
-            pass = currentTaskRunController.runTask(taskData);
+            pass = currentTaskRunController.startTask(taskData);
             if (!currentTask.isRequired())
                 pass = true;
             else if (!pass) { // task is required but failed
@@ -130,6 +121,4 @@ public class OperationRunController implements Initializable, MainJobController 
             System.out.println("Fail to load task run pane");
         }
     }
-
-
 }

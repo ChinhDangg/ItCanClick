@@ -16,19 +16,18 @@ import org.dev.Operation.Data.TaskData;
 import org.dev.Operation.MainJobController;
 import org.dev.Operation.Task.Task;
 import org.dev.SideMenuController;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class TaskRunController implements Initializable, MainJobController {
+public class TaskRunController extends RunActivity implements Initializable, MainJobController {
 
     @FXML
     private Group mainTaskRunGroup;
     @FXML @Getter
     private Label taskRunNameLabel;
-    @FXML
+    @FXML @Getter
     private VBox mainTaskRunVBox;
 
     @Getter
@@ -36,14 +35,14 @@ public class TaskRunController implements Initializable, MainJobController {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        actionRunVBoxSideContent.setPadding(new Insets(0, 0, 0, 35));
+        actionRunVBoxSideContent.setPadding(new Insets(0, 0, 0, 15));
     }
 
     @Override
     public void takeToDisplay() {
         AppScene.currentLoadedOperationRunController.takeToDisplay();
         System.out.println("Task Run take To Display");
-        AppScene.currentLoadedOperationRunController.changeOperationRunScrollPaneView(mainTaskRunGroup);
+        changeScrollPaneVValueView(AppScene.currentLoadedOperationRunController.getOperationRunScrollPane(), null, mainTaskRunGroup);
     }
 
     private void changeTaskRunName(String newName) {
@@ -51,7 +50,7 @@ public class TaskRunController implements Initializable, MainJobController {
     }
 
     // ------------------------------------------------------
-    public boolean runTask(TaskData taskData) throws InterruptedException {
+    public boolean startTask(TaskData taskData) throws InterruptedException {
         if (taskData == null) {
             System.out.println("Task Data not found in run task - bug");
             return false;
@@ -92,7 +91,7 @@ public class TaskRunController implements Initializable, MainJobController {
             }
             loadAndAddNewActionRunPane();
             System.out.println("Start running action: " + actionName);
-            pass = currentActionRunController.runAction(actionData);
+            pass = currentActionRunController.startAction(actionData);
             if (!currentAction.isRequired())
                 pass = true;
             else if (!pass) { // action is required but failed
@@ -109,7 +108,6 @@ public class TaskRunController implements Initializable, MainJobController {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("actionRunPane.fxml"));
             Group actionRunPaneGroup = fxmlLoader.load();
             currentActionRunController = fxmlLoader.getController();
-            currentActionRunController.setParentTaskRunController(this);
             VBox conditionRunVBox = currentActionRunController.getConditionRunVBoxSideContent();
             HBox actionRunLabelHBox = SideMenuController.getDropDownHBox(conditionRunVBox,
                     new Label(currentActionRunController.getActionRunNameLabel().getText()),

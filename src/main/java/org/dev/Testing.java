@@ -62,7 +62,6 @@ public class Testing extends Application {
 
 
     private OperationData getOperationData() throws IOException {
-        ActionData actionData = new ActionData();
         ActionKeyClick actionKeyClick = new ActionKeyClick();
         actionKeyClick.setActionOptions(
                 1,
@@ -76,7 +75,6 @@ public class Testing extends Application {
                 new Rectangle(10, 10, 200, 200),
                 50
         );
-        actionData.setAction(actionKeyClick);
         PixelCondition condition = new PixelCondition(
                 ReadingCondition.Pixel,
                 ImageIO.read(new File("src/main/resources/org/dev/images/folderIcon.png")),
@@ -95,10 +93,40 @@ public class Testing extends Application {
                 2.0,
                 new HashSet<>(List.of("Something", "Something2", "Something3"))
         );
+        PixelCondition condition2 = new PixelCondition(
+                ReadingCondition.Pixel,
+                ImageIO.read(new File("src/main/resources/org/dev/images/folderIcon.png")),
+                new Rectangle(10, 10, 200, 200),
+                false,
+                false,
+                ImageIO.read(new File("src/main/resources/org/dev/images/folderIcon.png")),
+                false
+        );
+        TextCondition textCondition2 = new TextCondition(
+                ReadingCondition.Text,
+                ImageIO.read(new File("src/main/resources/org/dev/images/folderIcon.png")),
+                new Rectangle(10, 10, 200, 200),
+                false,
+                false,
+                2.0,
+                new HashSet<>(List.of("Something", "Something2", "Something3"))
+        );
+
         List<Condition> conditions = new ArrayList<>();
         conditions.add(condition);
         conditions.add(textCondition);
+
+        ActionData actionData = new ActionData();
+        actionData.setAction(actionKeyClick);
         actionData.setEntryConditionList(conditions);
+
+        List<Condition> conditions2 = new ArrayList<>();
+        conditions2.add(condition2);
+        conditions2.add(textCondition2);
+
+        ActionData actionData2 = new ActionData();
+        actionData2.setAction(actionKeyClick);
+        actionData2.setEntryConditionList(conditions2);
 
         TaskData taskData = new TaskData();
         Task task = new Task();
@@ -108,13 +136,13 @@ public class Testing extends Application {
         taskData.setTask(task);
         List<ActionData> actionDataList = new ArrayList<>();
         actionDataList.add(actionData);
-        actionDataList.add(actionData);
+        actionDataList.add(actionData2);
+        actionDataList.add(actionData2);
         taskData.setActionDataList(actionDataList);
 
         OperationData operationData = new OperationData();
         operationData.setOperation(new Operation());
         List<TaskData> taskDataList = new ArrayList<>();
-        taskDataList.add(taskData);
         taskDataList.add(taskData);
         operationData.setTaskDataList(taskDataList);
         return operationData;
