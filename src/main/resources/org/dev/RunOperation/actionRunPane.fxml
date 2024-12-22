@@ -103,7 +103,7 @@
                                     <Font size="10.0" />
                                  </font>
                               </Label>
-                              <ScrollPane fx:id="exitConditionScrollPane" hbarPolicy="NEVER" maxWidth="496.0" vbarPolicy="NEVER">
+                              <ScrollPane fx:id="exitConditionScrollPane" maxWidth="496.0" vbarPolicy="NEVER">
                                  <content>
                                     <HBox fx:id="exitConditionHBox" />
                                  </content>

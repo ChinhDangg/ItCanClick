@@ -12,6 +12,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
+import org.dev.Enum.LogLevel;
 import org.dev.Operation.ActionController;
 import org.dev.Operation.ActivityController;
 
@@ -24,15 +25,17 @@ public class ActionMenuController extends MenuController implements Initializabl
     private ChoiceBox<ActionTypes> actionTypeChoice;
     private ActionController actionController;
 
+    private final String className = this.getClass().getSimpleName();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
     }
 
     protected void loadTypeChoices() {
-        System.out.println("Loading Action types");
         actionTypeChoice.getItems().addAll(ActionTypes.values());
         actionTypeChoice.setValue(ActionTypes.MouseClick);
+        AppScene.addLog(LogLevel.TRACE, className, "Action types loaded");
     }
     @Override
     protected void closeMenuControllerAction(MouseEvent event) {
@@ -41,16 +44,18 @@ public class ActionMenuController extends MenuController implements Initializabl
             actionPerformMenuController.backToPreviousMenu(event);
         GlobalScreen.removeNativeKeyListener(this);
         isKeyListening = false;
+        AppScene.addLog(LogLevel.DEBUG, className, "Action menu closed");
+        AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
     }
     @Override
     protected void startRegisteringAction(MouseEvent event) {
-        System.out.println("Click on start registering");
         if (actionPerformMenuController == null)
             loadActionPerformMenu();
         actionController.setChosenActionPerform(actionTypeChoice.getValue());
         actionPerformMenuController.loadMenu(actionController);
         GlobalScreen.removeNativeKeyListener(this);
         isKeyListening = false;
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start registering");
     }
     public void loadMenu(ActivityController activityController) {
         if (!isKeyListening) {
@@ -67,39 +72,47 @@ public class ActionMenuController extends MenuController implements Initializabl
         }
         else
             mainImageView.setImage(null);
+        AppScene.addLog(LogLevel.DEBUG, className, "Loaded action menu");
+        AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
+        AppScene.addLog(LogLevel.TRACE, className, "Current action is set: " + controllerSet);
     }
 
     // ------------------------------------------------------
     protected void recheck() {
-        System.out.println("Rechecking action");
+        AppScene.addLog(LogLevel.DEBUG, className, "Rechecking action");
         if (!actionController.isSet()) {
-            System.out.println("Action Controller is not set - bug");
+            AppScene.addLog(LogLevel.WARN, className, "Action controller is not set");
             return;
         }
         try {
-            System.out.println("Test performing action without conditions");
+            AppScene.addLog(LogLevel.INFO, className, "Test performing action without conditions");
             Thread thread = new Thread(this::runRecheckAction);
             thread.start();
         } catch (Exception e) {
-            System.out.println("Fail rechecking action");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail rechecking action");
         }
     }
-    protected void recheck(MouseEvent event) { recheck(); }
+    protected void recheck(MouseEvent event) {
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on recheck button");
+        recheck();
+    }
     private void runRecheckAction() {
         try {
-            System.out.println("Performing action in 3s");
-            Thread.sleep(2700);
+            AppScene.addLog(LogLevel.INFO, className, "Performing action in 3s");
+            Thread.sleep(3000);
             actionController.getAction().performAction();
-            System.out.println("Action performed");
+            AppScene.addLog(LogLevel.INFO, className, "Action performed");
             Platform.runLater(() -> recheckResultLabel.setText("Action finished performing"));
         } catch (InterruptedException e) {
-            System.out.println("Fail run recheck action with sleep");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail run recheck action with sleep");
         }
     }
     public void nativeKeyReleased(NativeKeyEvent e) {
         int nativeKeyCode = e.getKeyCode();
-        if (nativeKeyCode == NativeKeyEvent.VC_F2)
+        if (nativeKeyCode == NativeKeyEvent.VC_F2) {
+            AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to recheck");
             recheck();
+        }
     }
 
     // ------------------------------------------------------
@@ -111,7 +124,7 @@ public class ActionMenuController extends MenuController implements Initializabl
             actionPerformMenuController = loader.getController();
             mainMenuStackPane.getChildren().add(actionPerformMenuPane);
         } catch (IOException e) {
-            System.out.println("Fail loading action perform menu pane");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail loading action perform menu pane");
         }
     }
 }

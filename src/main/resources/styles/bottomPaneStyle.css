@@ -1,0 +1,8 @@
+.minimize-stackpane-button:hover {
+    -fx-background-color: rgb(220,220,220);
+    -fx-background-radius: 5px;
+}
+
+.bottom-text-vbox {
+    -fx-background-color: white;
+}

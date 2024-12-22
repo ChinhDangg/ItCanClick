@@ -12,6 +12,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import org.dev.AppScene;
+import org.dev.Enum.LogLevel;
 import org.dev.Operation.ActivityController;
 
 import javax.swing.*;
@@ -23,6 +25,7 @@ import java.util.ResourceBundle;
 
 public abstract class OptionsMenuController implements ActionListener, Initializable, NativeKeyListener {
     protected boolean visible = false;
+    private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -47,18 +50,19 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
     protected Pane zoomMinusButton, zoomPlusButton;
     protected double currentZoomValue = 1.00;
     protected void increaseZoom(MouseEvent event) {
-        System.out.println("Clicked on zoom plus button");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on zoom plus button");
         double step = 0.25, max = 5.00;
         updateZoomValue(Math.min((currentZoomValue+step), max));
     }
     protected void decreaseZoom(MouseEvent event) {
-        System.out.println("Clicked on zoom minus button");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on zoom minus button");
         double step = 0.25, min = 0.25;
         updateZoomValue(Math.max((currentZoomValue-step), min));
     }
     protected void updateZoomValue(double value) {
         currentZoomValue = value;
         currentZoomLabel.setText(Double.toString(currentZoomValue));
+        AppScene.addLog(LogLevel.DEBUG, className, "Zoom value updated: " + currentZoomValue);
     }
     protected BufferedImage getZoomedImage(BufferedImage imageWithEdges) {
         if (currentZoomValue != 1.00) {
@@ -70,6 +74,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
             }
             adjustMainImageWidth((int) (currentMainImage.getWidth() * currentZoomValue));
             adjustMainImageHeight((int) (currentMainImage.getHeight() * currentZoomValue));
+            AppScene.addLog(LogLevel.TRACE, className, "Get Zoomed Image");
             return getScaledImage(currentMainImage, currentZoomValue);
         }
         return null;
@@ -96,16 +101,19 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
             adjustMainImageHeight(currentDisplayImage.getHeight());
             displayMainImageView(currentDisplayImage);
         }
+        AppScene.addLog(LogLevel.DEBUG, className, "Fill Image option toggled: " + fitImageCheckBox.isSelected());
     }
     protected void displayMainImageView(BufferedImage image) {
         if (image != null)
             mainImageView.setImage(SwingFXUtils.toFXImage(image, null));
         else
             mainImageView.setImage(null);
+        AppScene.addLog(LogLevel.TRACE, className, "Main image view updated");
     }
     protected int imageWidth = 100, imageHeight = 100;
     protected void resetImageWidthHeight() {
         imageWidth = 100; imageHeight = 100;
+        AppScene.addLog(LogLevel.TRACE, className, "Image width and Image height reset to 100");
     }
     protected void adjustMainImageWidth(int checkingWidth) {
         if (fitImageCheckBox.isSelected()) {
@@ -114,6 +122,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
                 mainImageView.setFitWidth(maxViewWidth);
             else if (checkingWidth < maxViewWidth && mainImageView.getFitWidth() != 0)
                 mainImageView.setFitWidth(0);
+            AppScene.addLog(LogLevel.TRACE, className, "Image width is adjusted to fit");
         }
     }
     protected void adjustMainImageHeight(int checkingHeight) {
@@ -123,6 +132,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
                 mainImageView.setFitHeight(maxViewHeight);
             else if (checkingHeight < maxViewHeight && mainImageView.getFitHeight() != 0)
                 mainImageView.setFitHeight(0);
+            AppScene.addLog(LogLevel.TRACE, className, "Image height is adjusted to fit");
         }
     }
 
@@ -130,24 +140,24 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
     @FXML
     protected Pane xMinusButton, xPlusButton, yMinusButton, yPlusButton;
     protected void increaseImageWidth(MouseEvent event) {
-        System.out.println("Clicked on x plus button");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on x plus button");
         int step = 10;
         imageWidth += step;
         adjustMainImageWidth(imageWidth);
     }
     protected void decreaseImageWidth(MouseEvent event) {
-        System.out.println("Clicked on x minus button");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on x minus button");
         int step = 10;
         imageWidth = Math.max((imageWidth-step), 1);
     }
     protected void increaseImageHeight(MouseEvent event) {
-        System.out.println("Clicked on y plus button");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on y plus button");
         int step = 10;
         imageHeight += step;
         adjustMainImageHeight(imageHeight);
     }
     protected void decreaseImageHeight(MouseEvent event) {
-        System.out.println("Clicked on y minus button");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on y minus button");
         int step = 10;
         imageHeight = Math.max((imageHeight-step), 1);
     }
@@ -162,6 +172,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
             g.drawImage(mainImage, outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);
             g.dispose();
+            AppScene.addLog(LogLevel.TRACE, className, "Get image with edges");
             return imageWithEdges;
         }
         return null;
@@ -184,18 +195,20 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
     protected Pane outsideBoxMinusButton, outsideBoxPlusButton;
     protected int outsideBoxWidth = 10;
     protected void increaseOutsideBox(MouseEvent event) {
-        System.out.println("Clicked on extending outside box plus button");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on extending outside box plus button");
         int step = 10;
         outsideBoxWidth += step;
-        int totalOutsideWidth = outsideBoxWidth*2;
+        int totalOutsideWidth = outsideBoxWidth * 2;
+        AppScene.addLog(LogLevel.INFO, className, "Edges width updated: " + totalOutsideWidth);
         adjustMainImageWidth(imageWidth + totalOutsideWidth);
         adjustMainImageHeight(imageHeight + totalOutsideWidth);
     }
     protected void decreaseOutsideBox(MouseEvent event) {
-        System.out.println("Clicked on extending outside box minus button");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on extending outside box minus button");
         int step = 10;
         outsideBoxWidth = Math.max((outsideBoxWidth-step), 0);
-        int totalOutsideWidth = outsideBoxWidth*2;
+        int totalOutsideWidth = outsideBoxWidth * 2;
+        AppScene.addLog(LogLevel.INFO, className, "Edges width updated: " + totalOutsideWidth);
         adjustMainImageWidth(imageWidth + totalOutsideWidth);
         adjustMainImageHeight(imageHeight + totalOutsideWidth);
     }
@@ -206,16 +219,16 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
     protected boolean mouseStopped = true;
     protected void startMouseMotionListening() {
         if (mouseStopped) {
-            System.out.println("Start mouse motion listening");
             mouseTimer.start();
             mouseStopped = false;
+            AppScene.addLog(LogLevel.DEBUG, className, "Started mouse motion listening");
         }
     }
     protected void stopMouseMotionListening() {
         if (!mouseStopped) {
-            System.out.println("Stop mouse motion listening");
             mouseTimer.stop();
             mouseStopped = true;
+            AppScene.addLog(LogLevel.DEBUG, className, "Stopped mouse motion listening");
         }
     }
     @FXML
@@ -226,9 +239,9 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
         try {
             GlobalScreen.removeNativeKeyListener(this);
             stopMouseMotionListening();
-            System.out.println("Stopped tracking mouse and keyboard");
+            AppScene.addLog(LogLevel.DEBUG, className, "Stopped tracking mouse and keyboard");
         } catch (Exception e) {
-            System.out.println("Problem with remove all listener");
+            AppScene.addLog(LogLevel.ERROR, className, "Error with removing all listener");
         }
     }
 
@@ -244,5 +257,6 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
         resetImageWidthHeight();
         outsideBoxWidth = 10;
         fitImageCheckBox.setSelected(true);
+        AppScene.addLog(LogLevel.TRACE, className, "Shared menu content is reset");
     }
 }

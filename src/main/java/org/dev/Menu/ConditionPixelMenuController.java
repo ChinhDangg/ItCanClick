@@ -7,8 +7,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import org.dev.App;
 import org.dev.AppScene;
+import org.dev.Enum.LogLevel;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Condition.PixelCondition;
 import org.dev.Operation.ConditionController;
@@ -27,7 +27,9 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     private CheckBox showHideLineCheckBox, blackWhiteLineCheckBox;
     @FXML
     private CheckBox notOptionCheckBox, requiredOptionCheckBox, globalSearchCheckBox;
+
     private ConditionController conditionController;
+    private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -35,23 +37,22 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
         loadPixelTypeChoiceBox();
     }
     private void loadPixelTypeChoiceBox() {
-        System.out.println("Loading pixel menu pixel type choice");
         showHideLineCheckBox.setOnAction(this::showHideBoxAction);
         blackWhiteLineCheckBox.setOnAction(this::changePixelLineColor);
+        AppScene.addLog(LogLevel.TRACE, className, "Pixel menu pixel type choice loaded");
     }
 
     // ------------------------------------------------------
     @Override
     public void loadMenu(ActivityController activityController) {
         if (activityController == null) {
-            System.out.println("Condition Controller is not set pixel menu - bug");
+            AppScene.addLog(LogLevel.WARN, className, "Condition controller is not set - loadMenu");
             return;
         }
         this.conditionController = (ConditionController) activityController;
         Condition condition = conditionController.getCondition();
         if (condition != null && condition.getChosenReadingCondition() == ReadingCondition.Pixel) {
             PixelCondition pixelCondition = (PixelCondition) conditionController.getCondition();
-            System.out.println("Loading preset reading pixel");
             currentMainImage = pixelCondition.getMainImage();
             displayMainImageView(pixelCondition.getDisplayImage());
             mainImageBoundingBox = pixelCondition.getMainImageBoundingBox();
@@ -61,6 +62,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             imageWidth = currentMainImage.getWidth();
             imageHeight = currentMainImage.getHeight();
             outsideBoxWidth = (currentDisplayImage.getHeight() - imageHeight)/2;
+            AppScene.addLog(LogLevel.TRACE, className, "Loaded preset reading pixel");
         }
         else
             resetPixelMenu();
@@ -73,35 +75,38 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
         requiredOptionCheckBox.setSelected(true);
         showHideLineCheckBox.setSelected(true);
         blackWhiteLineCheckBox.setSelected(true);
+        AppScene.addLog(LogLevel.TRACE, className, "Menu reset");
     }
     public void showMenu(boolean show) {
-        pixelMenuPane.setVisible(show);
         visible = show;
+        pixelMenuPane.setVisible(visible);
+        AppScene.addLog(LogLevel.TRACE, className, "Menu showed: " + visible);
     }
 
     // ------------------------------------------------------
     @Override
     protected void save(MouseEvent event) {
         if (conditionController == null) {
-            System.out.println("Condition Controller is not set - bug");
+            AppScene.addLog(LogLevel.WARN, className, "Condition controller is not set - save");
             return;
         }
-        System.out.println("Clicked on save button");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on save button");
         if (currentMainImage == null) {
-            System.out.println("Reading pixel condition is not set - save failed");
+            AppScene.addLog(LogLevel.WARN, className, "Reading pixel condition is not set - save failed");
             return;
         }
         conditionController.registerReadingCondition(new PixelCondition(ReadingCondition.Pixel, currentMainImage,
                 mainImageBoundingBox, notOptionCheckBox.isSelected(), requiredOptionCheckBox.isSelected(),
                 currentDisplayImage, globalSearchCheckBox.isSelected()));
+        AppScene.addLog(LogLevel.INFO, className, "Pixel - saved");
     }
     @Override
     protected void backToPreviousMenu(MouseEvent event) {
         if (visible) {
-            System.out.println("Backed to main menu");
             stopAllListeners();
             showMenu(false);
             AppScene.conditionMenuController.loadMenu(conditionController);
+            AppScene.addLog(LogLevel.DEBUG, className, "Backed to main condition menu");
         }
     }
 
@@ -109,6 +114,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     private BufferedImage getDisplayImageForReadingPixel(int x, int y) throws AWTException {
         mainImageBoundingBox = new Rectangle(x, y, imageWidth, imageHeight);
         currentMainImage = captureCurrentScreen(mainImageBoundingBox);
+        AppScene.addLog(LogLevel.TRACE, className, "Current screen is captured");
         BufferedImage box = (showHideLineCheckBox.isSelected()) ? drawBox(imageWidth, imageHeight, getPixelColor()) : null;
         BufferedImage imageWithEdges = (box == null) ? getImageWithEdges(currentMainImage, x, y, 1.0f) :
                 getImageWithEdges(box, x, y, 1.0f);
@@ -148,6 +154,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     private void changePixelLineColor(javafx.event.ActionEvent event) {
         if (mouseStopped) {
             showHideLineCheckBox.setSelected(true);
+            AppScene.addLog(LogLevel.DEBUG, className, "Change pixel line color");
             Graphics2D g = currentDisplayImage.createGraphics();
             g.drawImage(drawBox(imageWidth, imageHeight, getPixelColor()),
                     outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);
@@ -159,7 +166,9 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
         }
     }
     private Color getPixelColor() {
-        return (blackWhiteLineCheckBox.isSelected()) ? Color.BLACK : Color.WHITE;
+        Color color = blackWhiteLineCheckBox.isSelected() ? Color.BLACK : Color.WHITE;
+        AppScene.addLog(LogLevel.DEBUG, className, "New pixel color box: " + color.toString());
+        return color;
     }
 
     @Override
@@ -173,16 +182,20 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             try {
                 displayMainImageView(getDisplayImageForReadingPixel(p.x, p.y));
             } catch (Exception ex) {
-                System.out.println("Error at mose displaying captured image at pixel menu");
+                AppScene.addLog(LogLevel.ERROR, className, "Error at displaying captured image at mouse pointer");
             }
         }
     }
 
     public void nativeKeyReleased(NativeKeyEvent e) {
-        System.out.println("Key Pressed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-        if (e.getKeyCode() == NativeKeyEvent.VC_F2)
+        AppScene.addLog(LogLevel.TRACE, className, "Key Released: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+        if (e.getKeyCode() == NativeKeyEvent.VC_F2) {
+            AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to start mouse listening");
             startMouseMotionListening();
-        else if (e.getKeyCode() == NativeKeyEvent.VC_F1)
+        }
+        else if (e.getKeyCode() == NativeKeyEvent.VC_F1) {
+            AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F1 key to stop mouse listening");
             stopMouseMotionListening();
+        }
     }
 }

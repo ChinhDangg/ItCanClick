@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+
+<StackPane stylesheets="@../../../styles/sideBarStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.LeftSideMenu.SideMenuController">
+   <children>
+      <VBox styleClass="left-border-only">
+         <children>
+            <Group>
+               <children>
+                  <StackPane fx:id="mainSideHierarchyStackPane" alignment="TOP_CENTER">
+                     <children>
+                        <ScrollPane fx:id="runSideHierarchyScrollPane" hbarPolicy="NEVER" minHeight="200.0" minWidth="220.0" vbarPolicy="NEVER">
+                           <content>
+                              <VBox fx:id="runSideHierarchyVBox" />
+                           </content>
+                        </ScrollPane>
+                        <ScrollPane fx:id="sideHierarchyScrollPane" hbarPolicy="NEVER" minHeight="200.0" minWidth="220.0" vbarPolicy="NEVER">
+                           <content>
+                              <VBox fx:id="sideHierarchyVBox" />
+                           </content>
+                        </ScrollPane>
+                        <Group fx:id="newOperationGroupButton">
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="24.0" stroke="BLACK" strokeType="INSIDE" width="91.0" />
+                              <Label layoutX="5.3333282470703125" layoutY="3.3333332538604736" text="New Operation" />
+                           </children>
+                           <StackPane.margin>
+                              <Insets top="20.0" />
+                           </StackPane.margin>
+                        </Group>
+                     </children>
+                  </StackPane>
+               </children>
+            </Group>
+         </children>
+      </VBox>
+   </children>
+</StackPane>

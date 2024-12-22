@@ -9,9 +9,9 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import org.dev.App;
 import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
+import org.dev.Enum.LogLevel;
 import org.dev.Operation.Action.*;
 import org.dev.Operation.ActionController;
 import org.dev.Operation.ActivityController;
@@ -37,6 +37,8 @@ public class ActionPerformMenuController extends OptionsMenuController {
     private Label registeredKeyLabel, progressiveSearchTimeLabel, waitBeforeTimeLabel, waitAfterTimeLabel;
     private ActionController actionController;
 
+    private final String className = this.getClass().getSimpleName();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
@@ -54,17 +56,17 @@ public class ActionPerformMenuController extends OptionsMenuController {
 
     protected void save(MouseEvent event) {
         if (actionController == null) {
-            System.out.println("Action controller is not set - bug");
+            AppScene.addLog(LogLevel.WARN, className, "save - Action controller is not set");
             return;
         }
-        System.out.println("Clicked on saved button");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on save button");
         if (currentMainImage == null) {
-            System.out.println("Please save an image for the action for future reference");
+            AppScene.addLog(LogLevel.INFO, className, "Please save an image for the action for future reference");
             return;
         }
         ActionTypes actionTypes = actionController.getChosenActionPerform();
         if (actionTypes.isKeyAction() && registeredKey == -1) {
-            System.out.println("A key have not been registered");
+            AppScene.addLog(LogLevel.INFO, className, "A key has not been registered for key action");
             return;
         }
         Action newAction = getCorrespondAction(actionTypes);
@@ -84,10 +86,10 @@ public class ActionPerformMenuController extends OptionsMenuController {
 
     protected void backToPreviousMenu(MouseEvent event) {
         if (visible) {
-            System.out.println("Backed");
             stopAllListeners();
             showMenu(false);
             AppScene.actionMenuController.loadMenu(actionController);
+            AppScene.addLog(LogLevel.DEBUG, className, "Backed to action menu");
         }
     }
     @Override
@@ -98,6 +100,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         updateWaitBeforeTimeLabel(1000);
         updateWaitAfterTimeLabel(1000);
         updateAttemptLabel(1);
+        AppScene.addLog(LogLevel.TRACE, className, "Menu is reset");
     }
     protected void showMenu(boolean show) {
         actionPerformMenu.setVisible(show);
@@ -105,7 +108,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     }
     protected void loadMenu(ActivityController activityController) {
         if (activityController == null) {
-            System.out.println("Action controller is not set - bug");
+            AppScene.addLog(LogLevel.WARN, className, "loadMenu - Action is not set");
             return;
         }
         GlobalScreen.addNativeKeyListener(this);
@@ -116,6 +119,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         if (!loadPresetAction())
             resetMenu();
         showMenu(true);
+        AppScene.addLog(LogLevel.TRACE, className, "Menu is loaded");
     }
     private boolean loadPresetAction() {
         if (!actionController.isSet())
@@ -135,6 +139,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         displayMainImageView(currentDisplayImage);
         currentMainImage = action.getMainImage();
         mainImageBoundingBox = action.getMainImageBoundingBox();
+        AppScene.addLog(LogLevel.TRACE, className, "Preset action is loaded");
         return true;
     }
 
@@ -153,12 +158,15 @@ public class ActionPerformMenuController extends OptionsMenuController {
     private void updateAttemptLabel(int newAttempt) {
         attempt = newAttempt;
         attemptNumberLabel.setText(Integer.toString(attempt));
+        AppScene.addLog(LogLevel.TRACE, className, "Attempt updated to: " + newAttempt);
     }
 
     private final int timeStep = 500;
     // ------------------------------------------------------
     private void toggleProgressiveSearchCheckBox(javafx.event.ActionEvent event) {
         progressiveSearchButtonsPane.setVisible(progressiveSearchCheckBox.isSelected());
+        AppScene.addLog(LogLevel.TRACE, className, "Progressive Search Checkbox is selected: " + progressiveSearchCheckBox.isSelected());
+        AppScene.addLog(LogLevel.TRACE, className, "Progressive Search Button visible: " + progressiveSearchButtonsPane.isVisible());
     }
     private int progressiveSearchTime = 1000;
     private void increaseProgressiveSearchTime(MouseEvent event) {
@@ -170,6 +178,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     private void updateProgressiveSearchTimeLabel(int newProgressiveTime) {
         progressiveSearchTime = newProgressiveTime;
         progressiveSearchTimeLabel.setText(convertMilliToSecond(progressiveSearchTime) + "s");
+        AppScene.addLog(LogLevel.TRACE, className, "Progressive Search Time updated to: " + newProgressiveTime);
     }
     private double convertMilliToSecond(int milli) { return (double) milli / 1000.0; }
 
@@ -184,6 +193,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     private void updateWaitBeforeTimeLabel(int newWaitBeforeTime) {
         waitBeforeTime = newWaitBeforeTime;
         waitBeforeTimeLabel.setText(convertMilliToSecond(waitBeforeTime) + "s");
+        AppScene.addLog(LogLevel.TRACE, className, "Wait Before Time updated to: " + newWaitBeforeTime);
     }
 
     // ------------------------------------------------------
@@ -197,12 +207,14 @@ public class ActionPerformMenuController extends OptionsMenuController {
     private void updateWaitAfterTimeLabel(int newWaitAfterTime) {
         waitAfterTime = newWaitAfterTime;
         waitAfterTimeLabel.setText(convertMilliToSecond(waitAfterTime) + "s");
+        AppScene.addLog(LogLevel.TRACE, className, "Wait After Time updated to: " + newWaitAfterTime);
     }
 
     // ------------------------------------------------------
     private BufferedImage getDisplayImage(int x, int y) throws AWTException {
         mainImageBoundingBox = new Rectangle(x, y, imageWidth, imageHeight);
         currentMainImage = captureCurrentScreen(mainImageBoundingBox);
+        AppScene.addLog(LogLevel.TRACE, className, "Current screen is captured");
         BufferedImage imageWithEdges = getImageWithEdges(currentMainImage, x, y, 0.5f);
         currentDisplayImage = (imageWithEdges == null) ? currentMainImage : imageWithEdges;
         BufferedImage zoomedImage = getZoomedImage(imageWithEdges);
@@ -222,7 +234,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
             try {
                 displayMainImageView(getDisplayImage(p.x, p.y));
             } catch (Exception ex) {
-                System.out.println("Error at mose displaying captured image at pixel menu");
+                AppScene.addLog(LogLevel.ERROR, className, "Error at displaying captured image at mouse pointer");
             }
         }
     }
@@ -235,6 +247,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         keyIsListening = true;
         GlobalScreen.addNativeKeyListener(this);
         registeredKeyLabelPane.setDisable(false);
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start registering key button");
     }
     @Override
     protected void stopMouseMotion(MouseEvent event) {
@@ -244,27 +257,34 @@ public class ActionPerformMenuController extends OptionsMenuController {
             registeredKeyLabelPane.setDisable(true);
             keyIsListening = false;
         }
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on stop capturing image at mouse button");
     }
     private int registeredKey = -1;
     public void nativeKeyReleased(NativeKeyEvent e) {
-        System.out.println("Key Pressed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+        AppScene.addLog(LogLevel.TRACE, className, "Key pressed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
         int nativeKeyCode = e.getKeyCode();
         if (keyIsListening) {
             int keyEvent = mapNativeKeyToKeyEvent(nativeKeyCode);
             if (keyEvent == -1) {
-                System.out.println("Key is not supported, please try another key");
+                AppScene.addLog(LogLevel.WARN, className, "Key is not supported, please try another key");
                 return;
             }
             updateRegisteredKeyLabel(keyEvent);
         }
-        if (nativeKeyCode == NativeKeyEvent.VC_F2)
+        if (nativeKeyCode == NativeKeyEvent.VC_F2) {
+            AppScene.addLog(LogLevel.DEBUG, className, "F2 key is clicked");
             startMouseMotionListening();
-        else if (nativeKeyCode == NativeKeyEvent.VC_F1)
+        }
+        else if (nativeKeyCode == NativeKeyEvent.VC_F1) {
+            AppScene.addLog(LogLevel.DEBUG, className, "F1 key is clicked");
             stopMouseMotionListening();
+        }
     }
     private void updateRegisteredKeyLabel(int keyEvent) {
         registeredKey = keyEvent;
-        Platform.runLater(() -> registeredKeyLabel.setText(KeyEvent.getKeyText(registeredKey)));
+        String keyText = KeyEvent.getKeyText(registeredKey);
+        Platform.runLater(() -> registeredKeyLabel.setText(keyText));
+        AppScene.addLog(LogLevel.TRACE, className, "Updated registered key: " + keyText);
     }
     private int mapNativeKeyToKeyEvent(int nativeKey) {
         if (nativeKey > 1 && nativeKey < 12) // 0-9

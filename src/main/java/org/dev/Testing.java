@@ -41,18 +41,18 @@ public class Testing extends Application {
         FXMLLoader operationRunLoader = new FXMLLoader(getClass().getResource("RunOperation/operationRunPane.fxml"));
         Group operationRunGroup = operationRunLoader.load();
         OperationRunController opRunController = operationRunLoader.getController();
-        opRunController.runOperation(opData);
+        //opRunController.runOperation(opData);
 
         FXMLLoader operationLoader = new FXMLLoader(getClass().getResource("Operation/operationPane.fxml"));
         operationLoader.load();
         OperationController opController = operationLoader.getController();
         opController.loadSavedOperationData(opData);
         AppScene.currentLoadedOperationController = opController;
-        AppScene.loadSideMenuHierarchy();
+        AppScene.updateOperationSideMenuHierarchy();
 
         AppScene.currentLoadedOperationRunController = opRunController;
         AppScene.primaryCenterStackPane.getChildren().add(operationRunGroup);
-        AppScene.sideMenuController.loadRunSideHierarchy(opRunController);
+        AppScene.sideBarController.loadRunSideHierarchy(opRunController);
 
         stage.setScene(scene);
         stage.show();

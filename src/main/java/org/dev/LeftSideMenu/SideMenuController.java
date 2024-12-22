@@ -1,4 +1,4 @@
-package org.dev;
+package org.dev.LeftSideMenu;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -14,11 +15,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
+import org.dev.AppScene;
+import org.dev.Enum.CurrentTab;
+import org.dev.Enum.LogLevel;
 import org.dev.Operation.*;
 import org.dev.RunOperation.OperationRunController;
-import java.io.IOException;
+
 import java.net.URL;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 /**
@@ -40,42 +43,54 @@ import java.util.ResourceBundle;
 public class SideMenuController implements Initializable {
 
     @FXML
-    private Group folderIconGroupButton;
-    @FXML
     private StackPane mainSideHierarchyStackPane;
+    @FXML
+    private ScrollPane runSideHierarchyScrollPane, sideHierarchyScrollPane;
     @FXML
     private VBox runSideHierarchyVBox, sideHierarchyVBox;
     @FXML
     private Group newOperationGroupButton;
 
+    private final String className = this.getClass().getSimpleName();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        folderIconGroupButton.setOnMouseClicked(this::toggleSideHierarchy);
         setScaleHierarchyVBox();
         newOperationGroupButton.setOnMouseClicked(this::getNewOperationPane);
     }
 
     private void getNewOperationPane(MouseEvent event) {
-        try {
-            AppScene.loadNewEmptyOperation();
-            AppScene.loadSideMenuHierarchy();
-        } catch (IOException e) {
-            System.out.println("Fail loading empty operation at side menu hierarchy");
-        }
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on new operation button");
+        AppScene.loadEmptyOperation();
+        AppScene.updateOperationSideMenuHierarchy();
     }
 
     private void setScaleHierarchyVBox() {
         double currentScale = 1.3;
         mainSideHierarchyStackPane.getTransforms().add(new Scale(currentScale, currentScale, 0, 0));
+        AppScene.addLog(LogLevel.TRACE, className, "Menu scaled: " + currentScale);
     }
 
-    private void toggleSideHierarchy(MouseEvent mouseEvent) {
+    public void showSideMenuContent(CurrentTab whatTab) {
+        if (whatTab == CurrentTab.Operation) {
+            sideHierarchyScrollPane.setVisible(true);
+            runSideHierarchyScrollPane.setVisible(false);
+        }
+        else {
+            sideHierarchyScrollPane.setVisible(false);
+            runSideHierarchyScrollPane.setVisible(true);
+        }
+        AppScene.addLog(LogLevel.DEBUG, className, "Showing tab: " + whatTab.name());
+    }
+
+    public void toggleSideMenuHierarchy() {
         boolean newSet = !mainSideHierarchyStackPane.isVisible();
         mainSideHierarchyStackPane.setVisible(newSet);
         mainSideHierarchyStackPane.setManaged(newSet);
+        AppScene.addLog(LogLevel.DEBUG, className, "Side menu showed: " + newSet);
     }
 
-    public void loadSideHierarchy(OperationController operationController) {
+    public void loadOperationSideHierarchy(OperationController operationController) {
         newOperationGroupButton.setVisible(false);
 
         ObservableList<Node> sideHierarchyChildren = sideHierarchyVBox.getChildren();
@@ -85,10 +100,9 @@ public class SideMenuController implements Initializable {
         HBox operationSideLabelHBox = getDropDownHBox(operationTaskVBox, operationController.getOperationNameLabel(), operationController);
         sideHierarchyChildren.add(operationSideLabelHBox);
         sideHierarchyChildren.add(operationTaskVBox);
+        AppScene.addLog(LogLevel.DEBUG, className, "Operation side hierarchy loaded");
     }
-
-    public void loadRunSideHierarchy(OperationRunController operationRunController) {
-        sideHierarchyVBox.setVisible(false);
+    public void loadOperationRunSideHierarchy(OperationRunController operationRunController) {
         ObservableList<Node> runSideHierarchyChildren = runSideHierarchyVBox.getChildren();
         runSideHierarchyChildren.clear();
 
@@ -98,7 +112,9 @@ public class SideMenuController implements Initializable {
                 operationRunController);
         runSideHierarchyChildren.add(operationRunSideLabelHBox);
         runSideHierarchyChildren.add(operationRunTaskVBox);
+        AppScene.addLog(LogLevel.DEBUG, className, "Operation run side hierarchy loaded");
     }
+
 
     private static void sideLabelDoubleClick(MouseEvent event, MainJobController jobController) {
         if (event.getClickCount() == 2)
@@ -114,7 +130,7 @@ public class SideMenuController implements Initializable {
             dropDownHBox.getChildren().add(displayLabel);
             return dropDownHBox;
         }
-        Image iconImage = new Image(Objects.requireNonNull(SideMenuController.class.getResourceAsStream("images/arrowDownIcon.png")));
+        Image iconImage = new Image(String.valueOf(SideMenuController.class.getResource("/images/icons/arrowDownIcon.png")));
         ImageView iconImageView = new ImageView(iconImage);
         StackPane group = getStackPane(dropDownContent, iconImageView);
         iconImageView.setFitHeight(7);

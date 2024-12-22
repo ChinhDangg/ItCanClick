@@ -1,0 +1,14 @@
+.left-border-only {
+    -fx-border-color: transparent rgb(220, 220, 220) transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+}
+
+.icon-stack-pane {
+    -fx-background-radius: 5px;
+}
+.icon-stack-pane:hover {
+    -fx-background-color: rgb(220,220,220);
+}
+:highlighted {
+    -fx-background-color: rgb(220,220,220);
+}

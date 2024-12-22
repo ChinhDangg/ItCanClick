@@ -1,5 +1,6 @@
 package org.dev.RunOperation;
 
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -30,7 +31,7 @@ public abstract class RunActivity {
     }
 
     public void changeLabelText(Label label, String labelText) {
-        label.setText(labelText);
+        Platform.runLater(() -> label.setText(labelText));
     }
 
     public void updatePaneStatusColor(Pane whichPane, boolean pass) {

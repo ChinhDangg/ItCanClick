@@ -15,8 +15,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public abstract class MenuController implements Initializable, NativeKeyListener {
-    @Getter
-    @FXML
+    @FXML @Getter
     protected StackPane mainMenuStackPane;
     @FXML
     protected StackPane backButton, recheckButton;

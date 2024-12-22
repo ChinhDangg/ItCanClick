@@ -1,5 +1,6 @@
 package org.dev.RunOperation;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,11 +16,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import org.dev.AppScene;
+import org.dev.Enum.ConditionType;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.MainJobController;
-import org.dev.SideMenuController;
+import org.dev.LeftSideMenu.SideMenuController;
 
 import java.io.IOException;
 import java.net.URL;
@@ -79,7 +81,9 @@ public class ActionRunController extends RunActivity implements Initializable, M
         actionRunVBox.setManaged(visible);
     }
 
-    private void changeActionRunStatus(RunningStatus newStatus) { actionStatusLabel.setText(newStatus.name()); }
+    private void changeActionRunStatus(RunningStatus newStatus) {
+        Platform.runLater(() -> actionStatusLabel.setText(newStatus.name()));
+    }
     private void updateActionRunStatus(boolean pass) {
         if (pass) {
             changeActionRunStatus(RunningStatus.Passed);
@@ -126,7 +130,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
         while (count > 0) {
             count--;
             Thread.sleep(action.getWaitBeforeTime());
-            entryPassed = checkAllConditions(entryConditionHBox, entryConditionScrollPane, actionData.getEntryConditionList());
+            entryPassed = checkAllConditions(actionData.getEntryConditionList(), ConditionType.Entry);
             if (!entryPassed) {
                 System.out.println("Not found entry with " + actionName + " " + count);
                 continue;
@@ -134,7 +138,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
             System.out.println("Found entry with " + actionName);
             performAction(action);
             Thread.sleep(action.getWaitAfterTime());
-            if (checkAllConditions(exitConditionHBox, exitConditionScrollPane, actionData.getExitConditionList())) {
+            if (checkAllConditions(actionData.getExitConditionList(), ConditionType.Exit)) {
                 System.out.println("Found exit with " + actionName);
                 return true;
             }
@@ -152,11 +156,12 @@ public class ActionRunController extends RunActivity implements Initializable, M
         boolean entryPassed;
         System.out.println("Starting progressive search: " + actionName);
         while (System.currentTimeMillis() - startTime < duration) {
-            entryPassed = checkAllConditions(entryConditionHBox, entryConditionScrollPane, actionData.getEntryConditionList());
+            entryPassed = checkAllConditions(actionData.getEntryConditionList(), ConditionType.Entry);
             if (!entryPassed)
                 continue;
             performAction(action);
-            if (checkAllConditions(exitConditionHBox, exitConditionScrollPane, actionData.getExitConditionList()))
+            conditionRunExitVBoxContainer.setVisible(true);
+            if (checkAllConditions(actionData.getExitConditionList(), ConditionType.Exit))
                 return true;
         }
         System.out.println("Exceeded progressive search time with " + actionName);
@@ -167,18 +172,18 @@ public class ActionRunController extends RunActivity implements Initializable, M
         showActionRunPane(true);
         updateImageView(actionSavedImageView, action.getDisplayImage());
         updateImageView(actionPerformedImageView, action.getMainImageBoundingBox());
-        //action.performAction();
+        action.performAction();
         System.out.println("Performed action: " + action.getActionName());
     }
 
-    private boolean checkAllConditions(HBox whichRunConditionHBox, ScrollPane whichScrollPane, List<Condition> conditions) {
+    private boolean checkAllConditions(List<Condition> conditions, ConditionType conditionType) {
         if (conditions == null || conditions.isEmpty())
             return true;
+        Platform.runLater(() -> clearConditionHBox(conditionType));
         // all conditions are optional therefore only need one condition to pass
-        System.out.println(conditions.size());
         if (checkAllConditionsIsNotRequired(conditions)) {
             for (Condition c : conditions) {
-                loadConditionRunPane(whichRunConditionHBox, whichScrollPane);
+                loadConditionRunPane(conditionType);
                 if (currentConditionRunController.checkCondition(c))
                     return true;
             }
@@ -186,7 +191,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
         }
         else { // only check required condition and they must pass
             for (Condition c : conditions) {
-                loadConditionRunPane(whichRunConditionHBox, whichScrollPane);
+                loadConditionRunPane(conditionType);
                 if (c.isRequired() && !currentConditionRunController.checkCondition(c))
                     return false;
             }
@@ -204,18 +209,57 @@ public class ActionRunController extends RunActivity implements Initializable, M
 
     // ------------------------------------------------------
     private ConditionRunController currentConditionRunController;
-    private void loadConditionRunPane(HBox whichRunConditionHBox, ScrollPane whichScrollPane) {
+    private void loadConditionRunPane(ConditionType conditionType) {
+        if (conditionType == ConditionType.Entry)
+            loadEntryConditionRunPane();
+        else
+            loadExitConditionRunPane();
+    }
+
+    private void loadEntryConditionRunPane() {
+        Node conditionRunPane = loadConditionRunPane();
+        if (conditionRunPane == null) {
+            System.out.println("Error loading condition run pane");
+            return;
+        }
+        Platform.runLater(() -> conditionRunVBoxSideContent.getChildren().clear());
+        currentConditionRunController.setParentScrollPane(entryConditionScrollPane);
+        HBox entryConditionSideMenuHbox = SideMenuController.getDropDownHBox(null, new Label(ConditionType.Entry.name()), currentConditionRunController);
+        // update side hierarchy
+        Platform.runLater(() -> conditionRunVBoxSideContent.getChildren().add(entryConditionSideMenuHbox));
+        Platform.runLater(() -> entryConditionHBox.getChildren().add(conditionRunPane));
+    }
+
+    private void loadExitConditionRunPane() {
+        Node conditionRunPane = loadConditionRunPane();
+        if (conditionRunPane == null) {
+            System.out.println("Error loading condition run pane");
+            return;
+        }
+        conditionRunExitVBoxContainer.setVisible(true);
+        currentConditionRunController.setParentScrollPane(exitConditionScrollPane);
+        HBox exitConditionSideMenuHbox = SideMenuController.getDropDownHBox(null, new Label(ConditionType.Exit.name()), currentConditionRunController);
+        // update side hierarchy
+        Platform.runLater(() -> conditionRunVBoxSideContent.getChildren().add(exitConditionSideMenuHbox));
+        Platform.runLater(() -> exitConditionHBox.getChildren().add(conditionRunPane));
+    }
+
+    private Node loadConditionRunPane() {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("conditionRunPane.fxml"));
             Node conditionRunPane = fxmlLoader.load();
             currentConditionRunController = fxmlLoader.getController();
-            currentConditionRunController.setParentScrollPane(whichScrollPane);
-            HBox conditionHBox = SideMenuController.getDropDownHBox(null,
-                    new Label("Condition"), currentConditionRunController);
-            conditionRunVBoxSideContent.getChildren().add(conditionHBox);
-            whichRunConditionHBox.getChildren().add(conditionRunPane);
+            return conditionRunPane;
         } catch (IOException e) {
             System.out.println("Fail loading condition run pane");
         }
+        return null;
+    }
+
+    private void clearConditionHBox(ConditionType conditionType) {
+        if (conditionType == ConditionType.Entry)
+            entryConditionHBox.getChildren().clear();
+        else
+            exitConditionHBox.getChildren().clear();
     }
 }

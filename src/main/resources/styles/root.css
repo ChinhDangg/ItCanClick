@@ -1,0 +1,4 @@
+ScrollPane {
+    -fx-background-color: transparent; /* Set your desired background color */
+    -fx-background-insets: 0, 0, 0, 0;
+}

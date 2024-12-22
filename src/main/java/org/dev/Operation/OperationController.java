@@ -20,7 +20,7 @@ import lombok.Getter;
 import org.dev.AppScene;
 import org.dev.Operation.Data.OperationData;
 import org.dev.Operation.Data.TaskData;
-import org.dev.SideMenuController;
+import org.dev.LeftSideMenu.SideMenuController;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -81,15 +81,7 @@ public class OperationController implements Initializable, Serializable, MainJob
         System.out.println("Operation take to display");
         AppScene.closeActionMenuPane();
         AppScene.closeConditionMenuPane();
-        if (mainOperationVBox.getScene() != null) {
-            if (AppScene.currentDisplayNode != null && AppScene.currentDisplayNode.getScene() != null)
-                AppScene.backToOperationScene();
-            return;
-        }
-        System.out.println("This will probably never get reached. If seen then recheck");
-        loadMainOperationVBox();
-        AppScene.primaryCenterStackPane.getChildren().clear();
-        AppScene.primaryCenterStackPane.getChildren().add(mainOperaiontGroup);
+        AppScene.backToOperationScene();
     }
     private void loadMainOperationVBox() {
         double offset = ((VBox) mainOperationVBox.getChildren().getFirst()).getPrefHeight();
@@ -123,10 +115,10 @@ public class OperationController implements Initializable, Serializable, MainJob
             System.out.println("Operation is running, cannot modify");
             return;
         }
-        if (!taskList.isEmpty() && !taskList.getLast().isSet()) {
-            System.out.println("Recent minimized task is not set");
-            return;
-        }
+//        if (!taskList.isEmpty() && !taskList.getLast().isSet()) {
+//            System.out.println("Recent minimized task is not set");
+//            return;
+//        }
         try {
             addNewMinimizedTask(null);
         } catch (Exception e) {

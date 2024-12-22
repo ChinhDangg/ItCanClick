@@ -24,4 +24,7 @@ module org.dev {
     opens org.dev.Operation.Task to javafx.fxml;
     exports org.dev.RunOperation;
     opens org.dev.RunOperation to javafx.fxml;
+    opens org.dev.Enum to javafx.fxml;
+    exports org.dev.LeftSideMenu;
+    opens org.dev.LeftSideMenu to javafx.fxml;
 }

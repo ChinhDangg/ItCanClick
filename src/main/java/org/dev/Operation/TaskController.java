@@ -19,7 +19,7 @@ import lombok.Getter;
 import org.dev.AppScene;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.Data.TaskData;
-import org.dev.SideMenuController;
+import org.dev.LeftSideMenu.SideMenuController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class TaskController implements Initializable, MainJobController {
         taskScrollPane.setPrefHeight(newScrollHeight - 25);
     }
 
-    public void openTaskPane() { AppScene.displayNewNode(mainTaskGroup); }
+    public void openTaskPane() { AppScene.displayNewCenterNode(mainTaskGroup); }
 
     private void backToPreviousAction(MouseEvent event) { AppScene.backToOperationScene(); }
     public void changeTaskName(String name) { taskNameLabel.setText(name); }

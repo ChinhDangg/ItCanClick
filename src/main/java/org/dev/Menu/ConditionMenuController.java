@@ -11,8 +11,8 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import org.dev.App;
 import org.dev.AppScene;
+import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Operation.ActivityController;
 import org.dev.Operation.Condition.Condition;
@@ -26,7 +26,9 @@ public class ConditionMenuController extends MenuController implements Initializ
     private ChoiceBox<ReadingCondition> readingTypeChoice;
     @FXML
     private StackPane removeButton;
+
     private ConditionController conditionController;
+    private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -35,9 +37,9 @@ public class ConditionMenuController extends MenuController implements Initializ
     }
 
     protected void loadTypeChoices() {
-        System.out.println("Loading Condition reading type");
         readingTypeChoice.getItems().addAll(ReadingCondition.values());
         readingTypeChoice.setValue(ReadingCondition.Text);
+        AppScene.addLog(LogLevel.TRACE, className, "Condition reading types loaded");
     }
     @Override
     protected void closeMenuControllerAction(MouseEvent event) {
@@ -48,10 +50,11 @@ public class ConditionMenuController extends MenuController implements Initializ
             pixelMenuController.backToPreviousMenu(event);
         GlobalScreen.removeNativeKeyListener(this);
         isKeyListening = false;
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on close menu button");
+        AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
     }
     @Override
     protected void startRegisteringAction(MouseEvent event) {
-        System.out.println("Click on start registering");
         if (readingTypeChoice.getValue() == ReadingCondition.Text) {
             if (textMenuController == null)
                 loadReadingTextConditionMenu();
@@ -62,6 +65,8 @@ public class ConditionMenuController extends MenuController implements Initializ
                 loadReadingPixelConditionMenu();
             pixelMenuController.loadMenu(conditionController);
         }
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start registering button");
+        AppScene.addLog(LogLevel.DEBUG, className, "Reading type chosen: " + readingTypeChoice.getValue());
     }
     public void loadMenu(ActivityController activityController) {
         if (!isKeyListening) {
@@ -78,24 +83,31 @@ public class ConditionMenuController extends MenuController implements Initializ
         }
         else
             mainImageView.setImage(null);
+        AppScene.addLog(LogLevel.TRACE, className, "Loaded Menu");
+        AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
+        AppScene.addLog(LogLevel.TRACE, className, "Controller is set: " + isControllerSet);
     }
 
     // ------------------------------------------------------
     protected void recheck() {
-        System.out.println("Rechecking condition");
+        AppScene.addLog(LogLevel.DEBUG, className, "Rechecking condition");
         if (!conditionController.isSet()) {
-            System.out.println("Condition Controller is not set - bug");
+            AppScene.addLog(LogLevel.WARN, className, "Condition controller is not set");
             return;
         }
         try {
             Condition condition = conditionController.getCondition();
             boolean checkedCondition = condition.checkCondition();
             Platform.runLater(() -> updateRecheckResultLabel(checkedCondition, condition.getChosenReadingCondition().name()));
+            AppScene.addLog(LogLevel.TRACE, className, "Condition recheck result: " + checkedCondition);
         } catch(Exception e) {
-            System.out.println("Fail rechecking condition");
+            AppScene.addLog(LogLevel.WARN, className, "Fail rechecking condition");
         }
     }
-    protected void recheck(MouseEvent event) { recheck(); }
+    protected void recheck(MouseEvent event) {
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on recheck button");
+        recheck();
+    }
     private void updateRecheckResultLabel(boolean pass, String newReadText) {
         if (newReadText == null)
             recheckResultLabel.setText("Result");
@@ -106,8 +118,10 @@ public class ConditionMenuController extends MenuController implements Initializ
     }
     public void nativeKeyReleased(NativeKeyEvent e) {
         int nativeKeyCode = e.getKeyCode();
-        if (nativeKeyCode == NativeKeyEvent.VC_F2)
+        if (nativeKeyCode == NativeKeyEvent.VC_F2) {
+            AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to recheck");
             recheck();
+        }
     }
 
     private ConditionTextMenuController textMenuController;
@@ -119,7 +133,7 @@ public class ConditionMenuController extends MenuController implements Initializ
             textMenuController = loader.getController();
             mainMenuStackPane.getChildren().add(textMenuPane);
         } catch (IOException e) {
-            System.out.println("Fail loading reading text menu pane");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail loading reading text condition menu pane");
         }
     }
     private void loadReadingPixelConditionMenu() {
@@ -129,13 +143,13 @@ public class ConditionMenuController extends MenuController implements Initializ
             pixelMenuController = loader.getController();
             mainMenuStackPane.getChildren().add(pixelMenuPane);
         } catch (IOException e) {
-            System.out.println("Fail loading reading pixel menu pane");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail loading reading pixel condition menu pane");
         }
     }
 
     private void removeSelectedCondition(MouseEvent event) {
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on remove condition button");
         conditionController.removeThisConditionFromParent();
         closeMenuControllerAction(event);
-        System.out.println("Removed selected condition from action");
     }
 }

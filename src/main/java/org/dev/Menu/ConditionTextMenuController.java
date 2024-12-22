@@ -16,6 +16,7 @@ import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.dev.App;
 import org.dev.AppScene;
+import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Operation.ActivityController;
 import org.dev.Operation.Condition.Condition;
@@ -41,7 +42,9 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     private TextField addTextTextField;
     @FXML
     private CheckBox notOptionCheckBox, requiredOptionCheckBox;
+
     private ConditionController conditionController;
+    private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -57,14 +60,13 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     @Override
     public void loadMenu(ActivityController activityController) {
         if (activityController == null) {
-            System.out.println("Condition Controller is not set text menu- bug");
+            AppScene.addLog(LogLevel.WARN, className, "Condition controller is not set - loadMenu");
             return;
         }
         this.conditionController = (ConditionController) activityController;
         Condition condition = conditionController.getCondition();
         if (condition != null && condition.getChosenReadingCondition() == ReadingCondition.Text) {
             TextCondition textCondition = (TextCondition) conditionController.getCondition();
-            System.out.println("Loading preset reading text");
             updateTextScaleValue(textCondition.getCurrentTextScale());
             currentMainImage = condition.getMainImage();
             displayMainImageView(currentMainImage);
@@ -73,6 +75,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             notOptionCheckBox.setSelected(textCondition.isNot());
             requiredOptionCheckBox.setSelected(textCondition.isRequired());
             mainImageBoundingBox = textCondition.getMainImageBoundingBox();
+            AppScene.addLog(LogLevel.TRACE, className, "Loaded preset reading text condition");
         }
         else
             resetTextMenu();
@@ -88,34 +91,37 @@ public class ConditionTextMenuController extends OptionsMenuController implement
         registeredTextLabel.setText("None");
         addTextTextField.setText("");
         readTexts = new HashSet<>();
+        AppScene.addLog(LogLevel.TRACE, className, "Menu reset");
     }
     public void showMenu(boolean show) {
-        textMenuPane.setVisible(show);
         visible = show;
+        textMenuPane.setVisible(visible);
+        AppScene.addLog(LogLevel.TRACE, className, "Menu showed: " + visible);
     }
 
     @Override
     protected void save(MouseEvent event) {
         if (conditionController == null) {
-            System.out.println("Condition Controller is not set - bug");
+            AppScene.addLog(LogLevel.WARN, className, "Condition controller is not set - save");
             return;
         }
-        System.out.println("Clicked on save button");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on save button");
         if (readTexts.isEmpty()) {
-            System.out.println("Reading text condition is not set - save failed");
+            AppScene.addLog(LogLevel.WARN, className, "Reading text condition is not set - save failed");
             return;
         }
         conditionController.registerReadingCondition(new TextCondition(ReadingCondition.Text, currentMainImage,
                 mainImageBoundingBox, notOptionCheckBox.isSelected(), requiredOptionCheckBox.isSelected(),
                 currentTextScaleValue, readTexts));
+        AppScene.addLog(LogLevel.INFO, className, "Saved");
     }
     @Override
     protected void backToPreviousMenu(MouseEvent event) {
         if (visible) {
-            System.out.println("Backed to main menu");
             stopAllListeners();
             showMenu(false);
             AppScene.conditionMenuController.loadMenu(conditionController);
+            AppScene.addLog(LogLevel.DEBUG, className, "Backed to main menu");
         }
     }
 
@@ -127,22 +133,26 @@ public class ConditionTextMenuController extends OptionsMenuController implement
         double step = 0.25, max = 5.00;
         updateTextScaleValue(Math.min((currentTextScaleValue+step), max));
         updateZoomValue(1.00);
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on increase text scale");
     }
     private void decreaseTextScale(MouseEvent event) {
         System.out.println("Clicked on decrease text scale");
         double step = 0.25, min = 0.25;
         updateTextScaleValue(Math.max((currentTextScaleValue-step), min));
         updateZoomValue(1.00);
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on decrease text scale");
     }
     private void updateTextScaleValue(double value) {
         currentTextScaleValue = value;
         currentTextScaleLabel.setText(Double.toString(currentTextScaleValue));
+        AppScene.addLog(LogLevel.DEBUG, className, "Text reading scale updated: " + currentTextScaleValue);
     }
 
     // ------------------------------------------------------
     private BufferedImage getDisplayImageForReadingText(int x, int y) throws AWTException {
         mainImageBoundingBox = new Rectangle(x, y, imageWidth, imageHeight);
         currentMainImage = captureCurrentScreen(mainImageBoundingBox);
+        AppScene.addLog(LogLevel.TRACE, className, "Current screen is captured: " + mainImageBoundingBox.toString());
         BufferedImage imageWithEdges = getImageWithEdges(currentMainImage, x, y, 0.5f);
         if (currentTextScaleValue != 1.00) {
             currentMainImage = getScaledImage(currentMainImage, currentTextScaleValue);
@@ -169,36 +179,36 @@ public class ConditionTextMenuController extends OptionsMenuController implement
         tess.setDatapath("tessdata");
         return tess.doOCR(image);
     }
-    private void readAndUpdateReadTextLabel() {
-        if (currentMainImage != null) {
-            try {
-                String readText = readTextFromImage(currentMainImage);
-                Platform.runLater(() -> readingResultLabel.setText(readText));
-            } catch (TesseractException e) {
-                System.out.println("Error reading text from image or updating read text label");
-            }
-        }
-    }
     public static String readTextFromCurrentScreen(Rectangle boundingBox, double scale) throws AWTException, TesseractException {
         BufferedImage image = captureCurrentScreen(boundingBox);
         if (scale != 1.00)
              image = getScaledImage(image, scale);
         return readTextFromImage(image);
     }
+    private void readAndUpdateReadTextLabel() {
+        if (currentMainImage != null) {
+            try {
+                String readText = readTextFromImage(currentMainImage);
+                Platform.runLater(() -> readingResultLabel.setText(readText));
+            } catch (TesseractException e) {
+                AppScene.addLog(LogLevel.ERROR, className, "Error reading from image or updating read text label");
+            }
+        }
+    }
 
     // ------------------------------------------------------
     private Set<String> readTexts = new LinkedHashSet<>();
     private void addText(MouseEvent event) {
-        System.out.println("Add text");
         String newText = addTextTextField.getText();
         if (!newText.isBlank()) {
             newText = newText.replace("\n", "");
             addNewReadingText(newText);
             updateRegisteredTextLabel();
             addTextTextField.setText("");
+            AppScene.addLog(LogLevel.DEBUG, className, "Added new reading text: " + newText);
         }
         else
-            System.out.println("No text entered");
+            AppScene.addLog(LogLevel.TRACE, className, "No text entered");
     }
     public String getAllReadText(Set<String> texts) {
         StringBuilder builder = new StringBuilder();
@@ -209,12 +219,12 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     private void addTextFromReadImage(MouseEvent event) {
         String readText = readingResultLabel.getText();
         if (!readText.isEmpty() && !readText.equals(initialReadingResult)) {
-            System.out.println("Add text from read Image");
             addNewReadingText(readText);
             updateRegisteredTextLabel();
+            AppScene.addLog(LogLevel.DEBUG, className, "Added text from read Image: " + readText);
         }
         else
-            System.out.println("No text is read");
+            AppScene.addLog(LogLevel.DEBUG, className, "No text is read from image");
     }
     public void addNewReadingText(String text) {
         text = text.replace("\n", "");
@@ -223,14 +233,14 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     private void removeRecentAddedText(MouseEvent event) {
         int index = readTexts.size() - 1;
         if (index <= 0)
-            System.out.println("No text found to remove");
+            AppScene.addLog(LogLevel.DEBUG, className, "No text found to remove");
         else {
             String lastElement = null;
             for (String readText : readTexts)
                 lastElement = readText;
             readTexts.remove(lastElement);
             updateRegisteredTextLabel();
-            System.out.println("Recent text removed");
+            AppScene.addLog(LogLevel.DEBUG, className, "Recent text removed: " + lastElement);
         }
     }
     private void updateRegisteredTextLabel() { registeredTextLabel.setText(getAllReadText(readTexts)); }
@@ -246,16 +256,19 @@ public class ConditionTextMenuController extends OptionsMenuController implement
                     currentDisplayImage = getDisplayImageForReadingText(p.x, p.y);
                     displayMainImageView(currentDisplayImage);
                 } catch (Exception ex) {
-                    System.out.println("Error at mouse displaying captured image");
+                    AppScene.addLog(LogLevel.ERROR, className, "Error at display captured image at mouse pointer");
                 }
             }
         }
     }
     public void nativeKeyReleased(NativeKeyEvent e) {
-        System.out.println("Key Pressed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-        if (e.getKeyCode() == NativeKeyEvent.VC_F2)
+        AppScene.addLog(LogLevel.TRACE, className, "Key Released: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+        if (e.getKeyCode() == NativeKeyEvent.VC_F2) {
+            AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to start mouse listening");
             startMouseMotionListening();
+        }
         else if (e.getKeyCode() == NativeKeyEvent.VC_F1) {
+            AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F1 key to stop mouse listening");
             stopMouseMotionListening();
             readAndUpdateReadTextLabel();
         }

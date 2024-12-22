@@ -1,5 +1,6 @@
 package org.dev.RunOperation;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,7 +16,7 @@ import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.Data.TaskData;
 import org.dev.Operation.MainJobController;
 import org.dev.Operation.Task.Task;
-import org.dev.SideMenuController;
+import org.dev.LeftSideMenu.SideMenuController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -112,8 +113,9 @@ public class TaskRunController extends RunActivity implements Initializable, Mai
             HBox actionRunLabelHBox = SideMenuController.getDropDownHBox(conditionRunVBox,
                     new Label(currentActionRunController.getActionRunNameLabel().getText()),
                     currentActionRunController);
-            actionRunVBoxSideContent.getChildren().add(new VBox(actionRunLabelHBox, conditionRunVBox));
-            mainTaskRunVBox.getChildren().add(actionRunPaneGroup);
+            // update side hierarchy
+            Platform.runLater(() -> actionRunVBoxSideContent.getChildren().add(new VBox(actionRunLabelHBox, conditionRunVBox)));
+            Platform.runLater(() -> mainTaskRunVBox.getChildren().add(actionRunPaneGroup));
         } catch (IOException e) {
             System.out.println("Fail to load action run pane");
         }

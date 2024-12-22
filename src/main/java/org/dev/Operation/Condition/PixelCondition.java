@@ -65,17 +65,29 @@ public class PixelCondition extends Condition {
 //        System.out.println(img2.getColorModel());
 //        System.out.println(img1.getColorModel());
 
+//        if (img1.getType() == img2.getType())
+//            System.out.println("Same type");
+//        if (img1.getColorModel() == img2.getColorModel())
+//            System.out.println("Same color model");
+
         if (img1.getWidth() != img2.getWidth() || img1.getHeight() != img2.getHeight())
             return false;
+//        else
+//            System.out.println("Same height and width");
+
         DataBuffer db1 = img1.getRaster().getDataBuffer();
         DataBuffer db2 = img2.getRaster().getDataBuffer();
         int size1 = db1.getSize();
         int size2 = db2.getSize();
         if (size1 != size2)
             return false;
+//        else
+//            System.out.println("Same size");
         for (int i = 0; i < size1; i++)
             if (db1.getElem(i) != db2.getElem(i))
                 return false;
+//            else
+//                System.out.println("Same total " + size1 + " " + i);
         return true;
     }
 
