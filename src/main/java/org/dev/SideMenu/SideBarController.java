@@ -1,26 +1,32 @@
-package org.dev.LeftSideMenu;
+package org.dev.SideMenu;
 
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
-import lombok.Setter;
+import lombok.Getter;
 import org.dev.AppScene;
 import org.dev.Enum.CurrentTab;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.OperationController;
 import org.dev.RunOperation.OperationRunController;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class SideBarController implements Initializable {
 
     @FXML
+    private StackPane sideBarMainStackPane;
+    @FXML
     private StackPane folderIconStackPane, runIconStackPane, logIconStackPane;
 
-    @Setter
+    @Getter
+    private Node sideMenuParentOuterNode;
     private SideMenuController sideMenuController;
     private CurrentTab currentTab;
     private final String className = this.getClass().getSimpleName();
@@ -30,6 +36,7 @@ public class SideBarController implements Initializable {
         folderIconStackPane.setOnMouseClicked(this::folderIconClickAction);
         runIconStackPane.setOnMouseClicked(this::runIconClickAction);
         logIconStackPane.setOnMouseClicked(this::logIconClickAction);
+        loadLeftSideMenu();
     }
 
     // ------------------------------------------------------
@@ -92,4 +99,15 @@ public class SideBarController implements Initializable {
         sideMenuController.loadOperationRunSideHierarchy(operationRunController);
     }
 
+    private void loadLeftSideMenu() {
+        AppScene.addLog(LogLevel.TRACE, className, "Loading Left Side Menu");
+        try {
+            FXMLLoader sideMenuLoader = new FXMLLoader(this.getClass().getResource("sideMenuPane.fxml"));
+            sideMenuParentOuterNode = sideMenuLoader.load();
+            sideMenuController = sideMenuLoader.getController();
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Left Side Menu");
+        } catch (IOException e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading left side menu pane");
+        }
+    }
 }

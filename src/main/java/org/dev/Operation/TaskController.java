@@ -1,5 +1,6 @@
 package org.dev.Operation;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,9 +18,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import lombok.Getter;
 import org.dev.AppScene;
+import org.dev.Enum.LogLevel;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.Data.TaskData;
-import org.dev.LeftSideMenu.SideMenuController;
+import org.dev.SideMenu.SideMenuController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,12 +29,11 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class TaskController implements Initializable, MainJobController {
-    @FXML
-    private Group mainTaskGroup;
-    @FXML
-    private Label taskNameLabel;
+
     @FXML
     private ScrollPane taskScrollPane;
+    @FXML
+    private Label taskNameLabel;
     @FXML
     private VBox mainTaskOuterVBox, taskVBox;
     @FXML
@@ -43,9 +44,9 @@ public class TaskController implements Initializable, MainJobController {
     @Getter
     private final List<ActionController> actionList = new ArrayList<>();
     private double currentGlobalScale = 1;
-
     @Getter
     private VBox actionGroupVBoxSideContent = new VBox();
+    private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -56,22 +57,19 @@ public class TaskController implements Initializable, MainJobController {
         backButton.setOnMouseClicked(this::backToPreviousAction);
         loadMainTaskVBox();
         actionGroupVBoxSideContent.setPadding(new Insets(0, 0, 0, 35));
+        taskVBox.heightProperty().addListener((_, _, _) -> Platform.runLater(() -> taskScrollPane.setVvalue(1.0)));
     }
 
     public boolean isSet() { return (!actionList.isEmpty() && actionList.getFirst().isSet()); }
 
     private void loadMainTaskVBox() {
-        double offset = ((VBox) mainTaskOuterVBox.getChildren().getFirst()).getPrefHeight();
-        double newScrollHeight = taskScrollPane.getPrefHeight() - offset;
         if (currentGlobalScale != AppScene.currentGlobalScale) {
             currentGlobalScale = AppScene.currentGlobalScale;
             mainTaskOuterVBox.getTransforms().add(new Scale(currentGlobalScale, currentGlobalScale, 0, 0));
-            newScrollHeight = (AppScene.primaryBorderPane.getPrefHeight() - offset * currentGlobalScale) / currentGlobalScale;
         }
-        taskScrollPane.setPrefHeight(newScrollHeight - 25);
     }
 
-    public void openTaskPane() { AppScene.displayNewCenterNode(mainTaskGroup); }
+    public void openTaskPane() { AppScene.displayNewCenterNode(taskScrollPane); }
 
     private void backToPreviousAction(MouseEvent event) { AppScene.backToOperationScene(); }
     public void changeTaskName(String name) { taskNameLabel.setText(name); }
@@ -79,56 +77,52 @@ public class TaskController implements Initializable, MainJobController {
     // ------------------------------------------------------
     private void addNewActionPane(MouseEvent event) {
         if (AppScene.isOperationRunning) {
-            System.out.println("Operation is running, cannot modify");
+            AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
         if (!actionList.isEmpty() && !actionList.getLast().isSet()) {
-            System.out.println("Recent action is not set");
+            AppScene.addLog(LogLevel.INFO, className, "Recent action is not set");
             return;
         }
+        addNewAction(null);
+    }
+    private void addNewAction(ActionData actionData) {
         try {
-            addNewAction(null);
+            AppScene.addLog(LogLevel.TRACE, className, "Loading Action Pane");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("actionPane.fxml"));
+            Pane actionPane = loader.load();
+            actionPane.setOnMouseClicked(this::selectTheActionPaneAction);
+            ActionController actionController = loader.getController();
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Action Pane");
+            if (actionData != null)
+                actionController.loadSavedActionData(actionData);
+            int numberOfActions = taskVBox.getChildren().size();
+            if (numberOfActions == 0)
+                actionController.disablePreviousOptions();
+            taskVBox.getChildren().add(numberOfActions, actionPane);
+            actionList.add(actionController);
+            // update side menu
+            HBox actionLabelHBox = SideMenuController.getDropDownHBox(null, actionController.getActionNameLabel(), actionController);
+            actionGroupVBoxSideContent.getChildren().add(actionLabelHBox);
         } catch (IOException e) {
-            System.out.println("Fail loading action pane in task controller");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail loading and adding action pane");
         }
-    }
-    private void addNewAction(ActionData actionData) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("actionPane.fxml"));
-        Pane actionPane = loader.load();
-        actionPane.setOnMouseClicked(this::selectTheActionPane);
-        ActionController actionController = loader.getController();
-        if (actionData != null)
-            actionController.loadSavedActionData(actionData);
-        int numberOfActions = taskVBox.getChildren().size();
-        if (numberOfActions == 0)
-            actionController.disablePreviousOptions();
-        taskVBox.getChildren().add(numberOfActions, actionPane);
-        addNewActionController(actionController);
-        // update side menu
-        HBox actionLabelHBox = SideMenuController.getDropDownHBox(null, actionController.getActionNameLabel(), actionController);
-        actionGroupVBoxSideContent.getChildren().add(actionLabelHBox);
-    }
-    public void addNewActionController(ActionController actionController) {
-        actionList.add(actionController);
     }
 
     public void changeTaskScrollPaneView(Pane mainActionPane) {
-        double targetPaneY = mainActionPane.getBoundsInParent().getMinY();
+        selectTheActionPane(mainActionPane);
+        double targetPaneY = mainActionPane.getBoundsInParent().getMinY() * currentGlobalScale;
         double contentHeight = taskScrollPane.getContent().getBoundsInLocal().getHeight();
         double scrollPaneHeight = taskScrollPane.getViewportBounds().getHeight();
         double vValue = Math.min(targetPaneY / (contentHeight - scrollPaneHeight), 1.00);
         taskScrollPane.setVvalue(vValue);
-        selectTheActionPane(mainActionPane);
+        AppScene.addLog(LogLevel.TRACE, className, "Task scroll pane v value changed: " + vValue);
     }
 
     // ------------------------------------------------------
     private Pane currentSelectedActionPane = null;
-    private void selectTheActionPane(MouseEvent event) { 
-        try {
-            selectTheActionPane((Pane) event.getSource());
-        } catch (Exception e) {
-            System.out.println("Fail assigning current selected action pane");
-        }
+    private void selectTheActionPaneAction(MouseEvent event) {
+        selectTheActionPane((Pane) event.getSource());
     }
     private void selectTheActionPane(Pane actionPane) {
         if (currentSelectedActionPane != null)
@@ -139,12 +133,13 @@ public class TaskController implements Initializable, MainJobController {
     private void removeSelectedActionPane(MouseEvent event) {
         if (currentSelectedActionPane == null)
             return;
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on remove selected action");
         int changeIndex = taskVBox.getChildren().indexOf(currentSelectedActionPane);
         actionList.remove(changeIndex);
         if (changeIndex == 0 && !actionList.isEmpty())
             actionList.getFirst().disablePreviousOptions();
         taskVBox.getChildren().remove(currentSelectedActionPane);
-        System.out.println("Removed the selected action pane");
+        AppScene.addLog(LogLevel.DEBUG, className, "Removed selected action: " + changeIndex);
         currentSelectedActionPane = null;
         //update side menu
         actionGroupVBoxSideContent.getChildren().remove(changeIndex);
@@ -163,15 +158,10 @@ public class TaskController implements Initializable, MainJobController {
         int changeIndex = selectedActionPaneIndex+1;
         if (changeIndex == numberOfActions)
             return;
-        actionList.add(changeIndex, actionList.remove(selectedActionPaneIndex));
-        changeActionPreviousOptions(changeIndex);
-        children.remove(currentSelectedActionPane);
-        children.add(changeIndex, currentSelectedActionPane);
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on move-up selected action: " + changeIndex);
+        updateActionPaneList(children, selectedActionPaneIndex, changeIndex);
         //update side menu
-        ObservableList<Node> actionSideContent = actionGroupVBoxSideContent.getChildren();
-        Node temp = actionSideContent.get(selectedActionPaneIndex);
-        actionSideContent.remove(selectedActionPaneIndex);
-        actionSideContent.add(changeIndex, temp);
+        updateActionSideContent(selectedActionPaneIndex, changeIndex);
     }
     private void moveActionDown(MouseEvent event) {
         if (currentSelectedActionPane == null)
@@ -184,11 +174,18 @@ public class TaskController implements Initializable, MainJobController {
         if (selectedActionPaneIndex == 0)
             return;
         int changeIndex = selectedActionPaneIndex-1;
-        actionList.add(changeIndex, actionList.remove(selectedActionPaneIndex));
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on move-down selected action: " + changeIndex);
+        updateActionPaneList(children, selectedActionPaneIndex, changeIndex);
+        //update side menu
+        updateActionSideContent(selectedActionPaneIndex, changeIndex);
+    }
+    private void updateActionPaneList(ObservableList<Node> children, int selectedIndex, int changeIndex) {
+        actionList.add(changeIndex, actionList.remove(selectedIndex));
         changeActionPreviousOptions(changeIndex);
         children.remove(currentSelectedActionPane);
         children.add(changeIndex, currentSelectedActionPane);
-        //update side menu
+    }
+    private void updateActionSideContent(int selectedActionPaneIndex, int changeIndex) {
         ObservableList<Node> actionSideContent = actionGroupVBoxSideContent.getChildren();
         Node temp = actionSideContent.get(selectedActionPaneIndex);
         actionSideContent.remove(selectedActionPaneIndex);
@@ -208,17 +205,22 @@ public class TaskController implements Initializable, MainJobController {
         for (ActionController actionController : actionList)
             actionData.add(actionController.getActionData());
         taskData.setActionDataList(actionData);
+        AppScene.addLog(LogLevel.TRACE, className, "Got task data");
         return taskData;
     }
 
-    public void loadSavedTaskData(TaskData taskData) throws IOException {
-        if (taskData == null)
-            throw new NullPointerException("Task data is null");
+    public void loadSavedTaskData(TaskData taskData) {
+        if (taskData == null) {
+            AppScene.addLog(LogLevel.ERROR, className, "Task data is null - cannot load from save");
+            return;
+        }
         taskNameLabel.setText(taskData.getTask().getTaskName());
         for (ActionData actionData : taskData.getActionDataList())
             addNewAction(actionData);
     }
 
     @Override
-    public void takeToDisplay() {}
+    public void takeToDisplay() {
+        AppScene.addLog(LogLevel.WARN, className, "Empty take to display is called - advice to recheck");
+    }
 }

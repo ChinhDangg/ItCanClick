@@ -10,7 +10,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import lombok.Setter;
 import org.dev.AppScene;
+import org.dev.Enum.LogLevel;
 import org.dev.Operation.Condition.Condition;
+import org.dev.Operation.Condition.ImageCheckResult;
 import org.dev.Operation.MainJobController;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -30,6 +32,7 @@ public class ConditionRunController extends RunActivity implements Initializable
 
     @Setter
     private ScrollPane parentScrollPane;
+    private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -43,15 +46,15 @@ public class ConditionRunController extends RunActivity implements Initializable
 
     @Override
     public void takeToDisplay() {
-        changeScrollPaneVValueView(AppScene.currentLoadedOperationRunController.getOperationRunScrollPane(),
-                AppScene.currentLoadedOperationRunController.getRunVBox(), parentScrollPane);
-        System.out.println("Condition Run Controller Take To Display");
+        AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(parentScrollPane);
+        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
     public boolean checkCondition(Condition condition) {
         updateImageView(conditionExpectedImageView, condition.getMainDisplayImage());
         changeLabelText(expectedResultLabel, condition.getExpectedResult());
-        boolean passed = condition.checkCondition();
+        ImageCheckResult checkedResult = condition.checkCondition();
+        boolean passed = checkedResult.isPass();
         changeLabelText(readResultLabel, condition.getActualResult());
         updateImageView(conditionReadImageView, condition.getMainImageBoundingBox());
 

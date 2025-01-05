@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.shape.Rectangle?>
+
+<HBox fx:id="topMenuBarMainHBox" spacing="10.0" styleClass="menu-bar-hbox-container" stylesheets="@../../../styles/menuBarStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.MenuBarController">
+   <children>
+      <MenuBar>
+         <menus>
+            <Menu mnemonicParsing="false" text="File">
+               <items>
+                  <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" text="Save" />
+                  <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" text="Exit" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Operation">
+               <items>
+                  <MenuItem fx:id="newOperationMenuItem" mnemonicParsing="false" text="New" />
+                  <MenuItem fx:id="openSavedOperationMenuItem" mnemonicParsing="false" text="Open Saved" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="About" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="View">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Zoom In" />
+                  <MenuItem mnemonicParsing="false" text="Zoom Out" />
+                  <MenuItem mnemonicParsing="false" text="Zoom Reset" />
+              </items>
+            </Menu>
+         </menus>
+      </MenuBar>
+      <HBox spacing="50.0">
+         <children>
+            <StackPane>
+               <children>
+                  <Group>
+                     <children>
+                        <HBox spacing="10.0">
+                           <children>
+                              <StackPane id="start-stackpane-button" fx:id="startRunStackPaneButton">
+                                 <children>
+                                    <Polygon fill="WHITE" points="38.0, -40.75, 51.75, -48.5, 38.0, -55.75" stroke="#738f77" strokeType="INSIDE" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </StackPane>
+                              <StackPane id="stop-stackpane-button" fx:id="stopRunStackPaneButton">
+                                 <children>
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="15.0" stroke="#a90808" strokeType="INSIDE" width="15.0" />
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </StackPane>
+                           </children>
+                        </HBox>
+                     </children>
+                  </Group>
+               </children>
+            </StackPane>
+            <HBox fx:id="operationRunningIndicationHBox" spacing="20.0">
+               <children>
+                  <StackPane>
+                     <children>
+                        <Label text="Operation is Running" />
+                     </children>
+                  </StackPane>
+                  <StackPane>
+                     <children>
+                        <Label text="Editing is disabled" />
+                     </children>
+                  </StackPane>
+                  <StackPane>
+                     <children>
+                        <Label text="Navigating is disabled" />
+                     </children>
+                  </StackPane>
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="5.0" top="5.0" />
+   </padding>
+</HBox>

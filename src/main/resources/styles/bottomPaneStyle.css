@@ -1,4 +1,4 @@
-.minimize-stackpane-button:hover {
+.stackpane-button:hover {
     -fx-background-color: rgb(220,220,220);
     -fx-background-radius: 5px;
 }

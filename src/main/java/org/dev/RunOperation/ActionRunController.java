@@ -11,18 +11,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import org.dev.AppScene;
 import org.dev.Enum.ConditionType;
+import org.dev.Enum.LogLevel;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.MainJobController;
-import org.dev.LeftSideMenu.SideMenuController;
-
+import org.dev.SideMenu.SideMenuController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -39,9 +38,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
     @FXML @Getter
     private Label actionRunNameLabel;
     @FXML
-    private Label actionSavedResultLabel, actionPerformedResultLabel, actionStatusLabel;
-    @FXML
-    private Pane actionSavedPane, actionPerformedPane;
+    private Label actionStatusLabel;
     @FXML
     private StackPane actionStackPaneImageContainer;
     @FXML
@@ -51,6 +48,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
 
     @Getter
     private VBox conditionRunVBoxSideContent = new VBox();
+    private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -71,9 +69,8 @@ public class ActionRunController extends RunActivity implements Initializable, M
 
     @Override
     public void takeToDisplay() {
-        AppScene.currentLoadedOperationRunController.takeToDisplay();
-        System.out.println("Action run take To Display");
-        changeScrollPaneVValueView(AppScene.currentLoadedOperationRunController.getOperationRunScrollPane(), null, mainActionRunGroup);
+        AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(mainActionRunGroup);
+        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
     private void showActionRunPane(boolean visible) {
@@ -98,12 +95,12 @@ public class ActionRunController extends RunActivity implements Initializable, M
     // ------------------------------------------------------
     public boolean startAction(ActionData actionData) throws InterruptedException {
         if (actionData == null) {
-            System.out.println("Action data not found - bug");
+            AppScene.addLog(LogLevel.ERROR, className, "Action data is null - cannot start");
             return false;
         }
         Action action = actionData.getAction();
         if (action == null) {
-            System.out.println("No action is found");
+            AppScene.addLog(LogLevel.ERROR, className, "Action is null - cannot start");
             return false;
         }
         changeLabelText(actionRunNameLabel, action.getActionName());
@@ -125,26 +122,35 @@ public class ActionRunController extends RunActivity implements Initializable, M
     private boolean performActionWithAttempt(ActionData actionData) throws InterruptedException {
         Action action = actionData.getAction();
         String actionName = action.getActionName();
-        int count = action.getAttempt();
-        boolean entryPassed;
+        int totalAttempt = action.getAttempt();
+        int count = totalAttempt;
+        boolean entryPassed, actionPerformed = false;
         while (count > 0) {
             count--;
+            AppScene.addLog(LogLevel.INFO, className, "Waiting " + action.getWaitBeforeTime()/1000 + " seconds");
             Thread.sleep(action.getWaitBeforeTime());
             entryPassed = checkAllConditions(actionData.getEntryConditionList(), ConditionType.Entry);
             if (!entryPassed) {
-                System.out.println("Not found entry with " + actionName + " " + count);
-                continue;
+                AppScene.addLog(LogLevel.INFO, className, "Not found entry at action: " + actionName + " : " + count + "/" + totalAttempt);
+                if (!actionPerformed)
+                    continue;
+                actionPerformed = false;
             }
-            System.out.println("Found entry with " + actionName);
-            performAction(action);
+            else {
+                AppScene.addLog(LogLevel.INFO, className, "Found entry at action: " + actionName + " : " + count + "/" + totalAttempt);
+                performAction(action);
+                actionPerformed = true;
+            }
+            AppScene.addLog(LogLevel.INFO, className, "Waiting " + action.getWaitAfterTime()/1000 + " seconds");
             Thread.sleep(action.getWaitAfterTime());
             if (checkAllConditions(actionData.getExitConditionList(), ConditionType.Exit)) {
-                System.out.println("Found exit with " + actionName);
+                AppScene.addLog(LogLevel.INFO, className, "Found exit at action: " + actionName + " : " + count + "/" + totalAttempt);
                 return true;
             }
-            System.out.println("Can't find exit");
+            AppScene.addLog(LogLevel.INFO, className, "Not found exit at action: " + actionName + " : " + count + "/" + totalAttempt);
         }
         System.out.println("Exceeded number of attempt for performing " + actionName);
+        AppScene.addLog(LogLevel.INFO, className, "Exceeded number of attempt at action: " + actionName);
         return false;
     }
 
@@ -153,18 +159,24 @@ public class ActionRunController extends RunActivity implements Initializable, M
         String actionName = action.getActionName();
         long startTime = System.currentTimeMillis();
         int duration = action.getProgressiveSearchTime();
-        boolean entryPassed;
-        System.out.println("Starting progressive search: " + actionName);
+        boolean entryPassed, actionPerformed = false;
+        AppScene.addLog(LogLevel.INFO, className, "Start progressive search at action: " + actionName + " for: " + duration);
         while (System.currentTimeMillis() - startTime < duration) {
             entryPassed = checkAllConditions(actionData.getEntryConditionList(), ConditionType.Entry);
-            if (!entryPassed)
-                continue;
-            performAction(action);
+            if (!entryPassed) {
+                if (!actionPerformed)
+                    continue;
+                actionPerformed = false;
+            }
+            else {
+                performAction(action);
+                actionPerformed = true;
+            }
             conditionRunExitVBoxContainer.setVisible(true);
             if (checkAllConditions(actionData.getExitConditionList(), ConditionType.Exit))
                 return true;
         }
-        System.out.println("Exceeded progressive search time with " + actionName);
+        AppScene.addLog(LogLevel.INFO, className, "Exceeded progressive search time at action: " + actionName);
         return false;
     }
 
@@ -173,10 +185,11 @@ public class ActionRunController extends RunActivity implements Initializable, M
         updateImageView(actionSavedImageView, action.getDisplayImage());
         updateImageView(actionPerformedImageView, action.getMainImageBoundingBox());
         action.performAction();
-        System.out.println("Performed action: " + action.getActionName());
+        AppScene.addLog(LogLevel.INFO, className, "Performed action: " + action.getActionName());
     }
 
     private boolean checkAllConditions(List<Condition> conditions, ConditionType conditionType) {
+        AppScene.addLog(LogLevel.INFO, className, "Start checking condition: " + conditionType);
         if (conditions == null || conditions.isEmpty())
             return true;
         Platform.runLater(() -> clearConditionHBox(conditionType));
@@ -219,9 +232,10 @@ public class ActionRunController extends RunActivity implements Initializable, M
     private void loadEntryConditionRunPane() {
         Node conditionRunPane = loadConditionRunPane();
         if (conditionRunPane == null) {
-            System.out.println("Error loading condition run pane");
+            AppScene.addLog(LogLevel.ERROR, className, "Could not load entry condition run pane");
             return;
         }
+        conditionRunEntryVBoxContainer.setVisible(true);
         Platform.runLater(() -> conditionRunVBoxSideContent.getChildren().clear());
         currentConditionRunController.setParentScrollPane(entryConditionScrollPane);
         HBox entryConditionSideMenuHbox = SideMenuController.getDropDownHBox(null, new Label(ConditionType.Entry.name()), currentConditionRunController);
@@ -233,7 +247,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
     private void loadExitConditionRunPane() {
         Node conditionRunPane = loadConditionRunPane();
         if (conditionRunPane == null) {
-            System.out.println("Error loading condition run pane");
+            AppScene.addLog(LogLevel.ERROR, className, "Could not load exit condition run pane");
             return;
         }
         conditionRunExitVBoxContainer.setVisible(true);
@@ -251,9 +265,9 @@ public class ActionRunController extends RunActivity implements Initializable, M
             currentConditionRunController = fxmlLoader.getController();
             return conditionRunPane;
         } catch (IOException e) {
-            System.out.println("Fail loading condition run pane");
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition run pane");
+            return null;
         }
-        return null;
     }
 
     private void clearConditionHBox(ConditionType conditionType) {

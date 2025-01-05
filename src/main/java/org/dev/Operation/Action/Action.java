@@ -2,19 +2,19 @@ package org.dev.Operation.Action;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
-import org.dev.ImageSerialization;
-
-import javax.imageio.ImageIO;
+import org.dev.Enum.LogLevel;
+import org.dev.Operation.ImageSerialization;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Base64;
 
 @Getter
 public abstract class Action implements Serializable {
+
     @Setter
     protected String actionName = "Action Name";
     @Setter
@@ -28,6 +28,10 @@ public abstract class Action implements Serializable {
     protected int progressiveSearchTime, waitBeforeTime, waitAfterTime;
     @Setter
     protected boolean required, previousPass;
+    private final String className = this.getClass().getSimpleName();
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public abstract void performAction();
 
@@ -40,7 +44,7 @@ public abstract class Action implements Serializable {
         robot.mousePress(InputEvent.BUTTON1_DOWN_MASK); // left mouse
         robot.delay(50 + (int) (Math.random() * 100));
         robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-        System.out.println("Mouse clicked at (" + randomX + ", " + randomY + ")");
+        AppScene.addLog(LogLevel.DEBUG, className, "Mouse clicked at (" + randomX + ", " + randomY + ")");
     }
 
     protected void performMouseDoubleClick(Rectangle box) throws AWTException {
@@ -56,14 +60,14 @@ public abstract class Action implements Serializable {
         robot.mousePress(InputEvent.BUTTON1_DOWN_MASK); // left mouse
         robot.delay(50 + (int) (Math.random() * 100));
         robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-        System.out.println("Mouse clicked at (" + randomX + ", " + randomY + ")");
+        AppScene.addLog(LogLevel.DEBUG, className, "Mouse double clicked at (" + randomX + ", " + randomY + ")");
     }
 
     protected void performKeyPress(Robot robot, int eventKey) throws AWTException {
         if (robot == null)
             throw new NullPointerException();
         robot.keyPress(eventKey);
-        System.out.println("Key pressed " + KeyEvent.getKeyText(eventKey));
+        AppScene.addLog(LogLevel.DEBUG, className, "Key pressed: " + KeyEvent.getKeyText(eventKey));
     }
 
     public void setActionOptions(int attempt, boolean progressive, int progressiveSearchTime, int beforeTime, int afterTime, ActionTypes actionTypes,
@@ -86,6 +90,7 @@ public abstract class Action implements Serializable {
         out.defaultWriteObject();
         ImageSerialization.serializeBufferedImageWriteObject(out, mainImage);   // Serialize mainImage
         ImageSerialization.serializeBufferedImageWriteObject(out, displayImage);// Serialize displayImage
+        AppScene.addLog(LogLevel.TRACE, className, "Serialized main image and display image");
     }
 
     @Serial
@@ -95,5 +100,6 @@ public abstract class Action implements Serializable {
         mainImage = ImageSerialization.deserializeBufferedImageReadObject(in, mainImageString, false);
         String displayImageString = (String) in.readObject();
         displayImage = ImageSerialization.deserializeBufferedImageReadObject(in, displayImageString, false);
+        AppScene.addLog(LogLevel.TRACE, className, "Deserialized main image and display image");
     }
 }

@@ -4,6 +4,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -16,6 +17,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
+import org.dev.Enum.LogLevel;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
@@ -56,6 +58,7 @@ public class ActionController implements Initializable, MainJobController, Activ
     private final List<ConditionController> entryConditionList = new ArrayList<>();
     @Getter
     private final List<ConditionController> exitConditionList = new ArrayList<>();
+    private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -73,15 +76,17 @@ public class ActionController implements Initializable, MainJobController, Activ
 
     @Override
     public void takeToDisplay() {
-        System.out.println("Action take to display");
         AppScene.closeActionMenuPane();
         AppScene.closeConditionMenuPane();
         TaskController parentTaskController = findParentTaskController();
-        if (parentTaskController == null)
-            throw new IllegalStateException("Parent task controller is null for action controller - bug");
+        if (parentTaskController == null) {
+            AppScene.addLog(LogLevel.ERROR, className, "Parent task controller is null - takeToDisplay");
+            return;
+        }
         if (mainActionPane.getScene() == null)
             parentTaskController.openTaskPane();
         parentTaskController.changeTaskScrollPaneView(mainActionPane);
+        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
     private TaskController findParentTaskController() {
         for (MinimizedTaskController taskController : AppScene.currentLoadedOperationController.getTaskList()) {
@@ -108,19 +113,20 @@ public class ActionController implements Initializable, MainJobController, Activ
     private void updateActionName(String name) {
         renameTextField.setText(name);
         actionNameLabel.setText(name);
+        AppScene.addLog(LogLevel.DEBUG, className, "Renamed action: " + name);
     }
 
     public void disablePreviousOptions() {
         previousPassCheckBox.setSelected(false);
         previousPassCheckBox.setVisible(false);
     }
-    public void enablePreviousOptions() {
-        previousPassCheckBox.setVisible(true);
-    }
+    public void enablePreviousOptions() { previousPassCheckBox.setVisible(true); }
 
     public void registerActionPerform(Action action) {
-        if (action == null)
-            throw new NullPointerException();
+        if (action == null) {
+            AppScene.addLog(LogLevel.ERROR, className, "Action is null - registerActionPerform");
+            return;
+        }
         isSet = true;
         this.action = action;
         if (action.getActionName() == null || action.getActionName().isBlank())
@@ -134,70 +140,69 @@ public class ActionController implements Initializable, MainJobController, Activ
 
     private void openActionMenuPane(MouseEvent event) {
         if (AppScene.isOperationRunning) {
-            System.out.println("Operation is running, cannot modify");
+            AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
         AppScene.openActionMenuPane(this);
     }
-    private FXMLLoader getConditionPaneLoader() {
-        return new FXMLLoader(getClass().getResource("conditionPane.fxml"));
-    }
-    public int getNumberOfCondition(HBox conditionBox) {
-        return conditionBox.getChildren().size();
-    }
+    public int getNumberOfCondition(HBox conditionBox) { return conditionBox.getChildren().size(); }
 
     private void addNewEntryCondition(MouseEvent event) {
-        System.out.println("Entry add clicked");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on add entry condition");
         if (AppScene.isOperationRunning) {
-            System.out.println("Operation is running, cannot modify");
+            AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
         int numberOfCondition = getNumberOfCondition(entryConditionHBox);
         if (numberOfCondition > 0 && !entryConditionList.get(numberOfCondition - 1).isSet()) {
-            System.out.println("Previous Entry Condition is not set yet");
+            AppScene.addLog(LogLevel.INFO, className, "Previous Entry Condition is not set");
             return;
         }
-        try {
-            if (numberOfCondition < 5)
-                addNewCondition(entryConditionList, entryConditionHBox);
-        } catch (IOException e) {
-            System.out.println("Fail loading and adding entry condition panes");
-        }
+        if (numberOfCondition < 5)
+            addNewCondition(entryConditionList, entryConditionHBox);
     }
 
     private void addNewExitCondition(MouseEvent event) {
-        System.out.println("Exit add clicked");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on add exit condition");
         if (AppScene.isOperationRunning) {
-            System.out.println("Operation is running, cannot modify");
+            AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
         int numberOfCondition = getNumberOfCondition(exitConditionHBox);
         if (numberOfCondition > 0 && !exitConditionList.get(numberOfCondition - 1).isSet()) {
-            System.out.println("Previous Exit Condition is not set yet");
+            AppScene.addLog(LogLevel.INFO, className, "Previous Exit Condition is not set");
             return;
         }
+        if (numberOfCondition < 5)
+            addNewCondition(exitConditionList, exitConditionHBox);
+    }
+
+    private void addNewCondition(List<ConditionController> whichController, HBox whichPane) {
+        AppScene.addLog(LogLevel.TRACE, className, "Loading Condition Pane");
         try {
-            if (numberOfCondition < 5)
-                addNewCondition(exitConditionList, exitConditionHBox);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("conditionPane.fxml"));
+            Node pane = loader.load();
+            whichController.add(loader.getController());
+            whichPane.getChildren().add(pane);
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Condition Pane");
         } catch (IOException e) {
-            System.out.println("Fail loading and adding exit condition panes");
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition pane - addNewCondition");
         }
     }
 
-    private void addNewCondition(List<ConditionController> whichController, HBox whichPane) throws IOException {
-        FXMLLoader loader = getConditionPaneLoader();
-        StackPane pane = loader.load();
-        whichController.add(loader.getController());
-        whichPane.getChildren().add(pane);
-    }
-
-    private void addSavedCondition(List<ConditionController> whichController, HBox whichPane, Condition condition) throws IOException {
-        FXMLLoader loader = getConditionPaneLoader();
-        StackPane pane = loader.load();
-        ConditionController controller = loader.getController();
-        controller.loadSavedCondition(condition);
-        whichController.add(controller);
-        whichPane.getChildren().add(pane);
+    private void addSavedCondition(List<ConditionController> whichController, HBox whichPane, Condition condition) {
+        AppScene.addLog(LogLevel.TRACE, className, "Loading Condition Pane");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("conditionPane.fxml"));
+            Node pane = loader.load();
+            ConditionController controller = loader.getController();
+            controller.loadSavedCondition(condition);
+            whichController.add(controller);
+            whichPane.getChildren().add(pane);
+            AppScene.addLog(LogLevel.DEBUG, className, "Loading Condition Pane");
+        } catch (IOException e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition pane - addSavedCondition");
+        }
     }
 
     // ------------------------------------------------------
@@ -214,12 +219,15 @@ public class ActionController implements Initializable, MainJobController, Activ
             exitConditions.add(c.getCondition());
         actionData.setEntryConditionList(entryConditions);
         actionData.setExitConditionList(exitConditions);
+        AppScene.addLog(LogLevel.TRACE, className, "Got action data");
         return actionData;
     }
 
-    public void loadSavedActionData(ActionData actionData) throws IOException {
-        if (actionData == null)
-            throw new NullPointerException("Can't load from saved action data");
+    public void loadSavedActionData(ActionData actionData) {
+        if (actionData == null) {
+            AppScene.addLog(LogLevel.ERROR, className, "Action data is null - cannot load from save");
+            return;
+        }
         registerActionPerform(actionData.getAction());
         updateActionName(action.getActionName());
         requiredCheckBox.setSelected(action.isRequired());

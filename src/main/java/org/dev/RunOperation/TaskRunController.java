@@ -11,12 +11,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import org.dev.AppScene;
+import org.dev.Enum.LogLevel;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.Data.TaskData;
 import org.dev.Operation.MainJobController;
 import org.dev.Operation.Task.Task;
-import org.dev.LeftSideMenu.SideMenuController;
+import org.dev.SideMenu.SideMenuController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -33,6 +34,7 @@ public class TaskRunController extends RunActivity implements Initializable, Mai
 
     @Getter
     private VBox actionRunVBoxSideContent = new VBox();
+    private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -41,9 +43,8 @@ public class TaskRunController extends RunActivity implements Initializable, Mai
 
     @Override
     public void takeToDisplay() {
-        AppScene.currentLoadedOperationRunController.takeToDisplay();
-        System.out.println("Task Run take To Display");
-        changeScrollPaneVValueView(AppScene.currentLoadedOperationRunController.getOperationRunScrollPane(), null, mainTaskRunGroup);
+        AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(mainTaskRunGroup);
+        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
     private void changeTaskRunName(String newName) {
@@ -53,12 +54,12 @@ public class TaskRunController extends RunActivity implements Initializable, Mai
     // ------------------------------------------------------
     public boolean startTask(TaskData taskData) throws InterruptedException {
         if (taskData == null) {
-            System.out.println("Task Data not found in run task - bug");
+            AppScene.addLog(LogLevel.ERROR, className, "Task data is null - cannot start");
             return false;
         }
         Task currentTask = taskData.getTask();
         if (currentTask == null) {
-            System.out.println("Task not found in run task - bug");
+            AppScene.addLog(LogLevel.ERROR, className, "Task is null - cannot start");
             return false;
         }
         String taskName = currentTask.getTaskName();
@@ -66,7 +67,7 @@ public class TaskRunController extends RunActivity implements Initializable, Mai
 
         int repeatNumber = currentTask.getRepeatNumber();
         if (repeatNumber == -1) {
-            System.out.println("Running task 'infinitely'");
+            AppScene.addLog(LogLevel.INFO, className, "Task is set to run Infinitely");
             for (int j = 0; j < Integer.MAX_VALUE; j++)
                 if (!runTask(taskData.getActionDataList(), taskName))
                     return false;
@@ -79,7 +80,7 @@ public class TaskRunController extends RunActivity implements Initializable, Mai
     }
 
     private boolean runTask(List<ActionData> actionDataList, String taskName) throws InterruptedException {
-        System.out.println("Start running task: " + taskName);
+        AppScene.addLog(LogLevel.INFO, className, "Start running task: " + taskName);
         boolean pass = false;
         for (ActionData actionData : actionDataList) {
             Action currentAction = actionData.getAction();
@@ -87,16 +88,16 @@ public class TaskRunController extends RunActivity implements Initializable, Mai
                 continue;
             String actionName = currentAction.getActionName();
             if (pass && currentAction.isPreviousPass()) {
-                System.out.println("Skipping action " + actionName + " as previous is passed");
+                AppScene.addLog(LogLevel.INFO, className, "Skipping action as previous is passed: " + actionName);
                 continue;
             }
             loadAndAddNewActionRunPane();
-            System.out.println("Start running action: " + actionName);
+            AppScene.addLog(LogLevel.INFO, className, "Start running action: " + actionName);
             pass = currentActionRunController.startAction(actionData);
             if (!currentAction.isRequired())
                 pass = true;
             else if (!pass) { // action is required but failed
-                System.out.println("Fail performing action: " + actionName);
+                AppScene.addLog(LogLevel.DEBUG, className, "Fail performing action: " + actionName);
                 return false;
             }
         }
@@ -117,7 +118,7 @@ public class TaskRunController extends RunActivity implements Initializable, Mai
             Platform.runLater(() -> actionRunVBoxSideContent.getChildren().add(new VBox(actionRunLabelHBox, conditionRunVBox)));
             Platform.runLater(() -> mainTaskRunVBox.getChildren().add(actionRunPaneGroup));
         } catch (IOException e) {
-            System.out.println("Fail to load action run pane");
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading action run pane");
         }
     }
 }

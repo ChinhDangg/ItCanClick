@@ -1,17 +1,23 @@
 package org.dev.Operation.Action;
 
+import org.dev.AppScene;
+import org.dev.Enum.LogLevel;
+
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 
 public class ActionKeyPressMouseClick extends Action {
+
+    private final String className = this.getClass().getSimpleName();
+
     @Override
     public void performAction() {
         try {
             Robot robot = new Robot();
             performKeyPressAndMouseClick(robot, keyCode);
         } catch (AWTException e) {
-            System.out.println("Error with action perform key press mouse click");
+            AppScene.addLog(LogLevel.DEBUG, className, "Error with action perform key press mouse click");
         }
     }
 
@@ -20,6 +26,6 @@ public class ActionKeyPressMouseClick extends Action {
         performMouseClick(mainImageBoundingBox);
         robot.delay(70 + (int) (Math.random() * 50));
         robot.keyRelease(eventKey);
-        System.out.println("Key released: " + KeyEvent.getKeyText(eventKey));
+        AppScene.addLog(LogLevel.DEBUG, className, "Key released: " + KeyEvent.getKeyText(eventKey));
     }
 }

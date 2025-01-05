@@ -1,66 +1,124 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
 <StackPane fx:id="mainMenuStackPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Menu.ActionMenuController">
    <children>
       <Pane fx:id="backgroundPane" opacity="0.5" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" />
-      <Pane maxHeight="600.0" maxWidth="500.0" prefHeight="600.0" prefWidth="500.0" style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1px;">
+      <Group>
          <children>
-            <Pane layoutX="200.0" layoutY="1.0">
+            <Pane style="-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1px;">
                <children>
-                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="27.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
-                  <Label layoutX="34.0" layoutY="5.0" text="Action" />
-               </children>
-            </Pane>
-            <ChoiceBox fx:id="actionTypeChoice" layoutX="208.0" layoutY="56.0" prefHeight="25.0" prefWidth="83.0" />
-            <Pane layoutX="5.0" layoutY="118.0" prefHeight="244.0" prefWidth="491.0" style="-fx-border-color: black; -fx-border-width: 1px;">
-               <children>
-                  <StackPane prefHeight="242.0" prefWidth="489.0">
+                  <VBox layoutY="1.0" spacing="20.0">
                      <children>
-                        <ImageView fx:id="mainImageView" pickOnBounds="true" preserveRatio="true" />
+                        <StackPane alignment="TOP_CENTER">
+                           <children>
+                              <Group>
+                                 <children>
+                                    <StackPane>
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="27.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                                          <Label text="Action" />
+                                       </children>
+                                    </StackPane>
+                                 </children>
+                              </Group>
+                           </children>
+                        </StackPane>
+                        <HBox alignment="CENTER_LEFT" spacing="25.0">
+                           <children>
+                              <ChoiceBox fx:id="readingTypeChoice" prefHeight="25.0" prefWidth="83.0" />
+                              <StackPane fx:id="startRegisteringButton">
+                                 <children>
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="34.0" stroke="BLACK" strokeType="INSIDE" width="161.0" />
+                                    <Label text="Start Registering">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </StackPane>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" />
+                           </padding>
+                        </HBox>
+                        <VBox spacing="10.0">
+                           <children>
+                              <Pane style="-fx-border-color: black; -fx-border-width: 1px;">
+                                 <children>
+                                    <StackPane prefHeight="220.0" prefWidth="489.0">
+                                       <children>
+                                          <ImageView fx:id="mainImageView" pickOnBounds="true" preserveRatio="true" />
+                                       </children>
+                                    </StackPane>
+                                 </children>
+                              </Pane>
+                              <VBox fx:id="recheckContentVBox" spacing="10.0">
+                                 <children>
+                                    <Pane style="-fx-border-color: black; -fx-border-width: 1px;">
+                                       <children>
+                                          <StackPane prefHeight="220.0" prefWidth="489.0">
+                                             <children>
+                                                <ImageView fx:id="recheckResultImageView" pickOnBounds="true" preserveRatio="true" />
+                                             </children>
+                                          </StackPane>
+                                       </children>
+                                    </Pane>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                       <children>
+                                          <StackPane fx:id="recheckButton">
+                                             <children>
+                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="34.0" stroke="BLACK" strokeType="INSIDE" width="68.0" />
+                                                <Label text="Recheck">
+                                                   <font>
+                                                      <Font size="14.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </StackPane>
+                                          <Label fx:id="recheckResultLabel" prefHeight="17.0" prefWidth="385.0" text="Result" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                           <padding>
+                              <Insets left="6.0" right="4.0" />
+                           </padding>
+                        </VBox>
+                        <StackPane alignment="BOTTOM_LEFT">
+                           <children>
+                              <Group>
+                                 <children>
+                                    <StackPane fx:id="backButton">
+                                       <children>
+                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="41.0" />
+                                          <Label text="Back" />
+                                       </children>
+                                    </StackPane>
+                                 </children>
+                              </Group>
+                           </children>
+                           <padding>
+                              <Insets bottom="3.0" left="5.0" />
+                           </padding>
+                        </StackPane>
                      </children>
-                  </StackPane>
+                  </VBox>
                </children>
             </Pane>
-            <Pane fx:id="recheckPane" layoutX="5.0" layoutY="370.0">
-               <children>
-                  <StackPane fx:id="recheckButton">
-                     <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="44.0" stroke="BLACK" strokeType="INSIDE" width="91.0" />
-                        <Label text="Recheck">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </StackPane>
-                  <Label fx:id="recheckResultLabel" layoutX="108.0" layoutY="14.0" prefHeight="17.0" prefWidth="277.0" text="Result" />
-               </children>
-            </Pane>
-            <StackPane fx:id="startRegisteringButton" layoutX="152.0" layoutY="542.0">
-               <children>
-                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="44.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
-                  <Label text="Start Registering">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Label>
-               </children>
-            </StackPane>
-            <StackPane fx:id="backButton" layoutX="14.0" layoutY="558.0">
-               <children>
-                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="41.0" />
-                  <Label text="Back" />
-               </children>
-            </StackPane>
          </children>
-      </Pane>
+      </Group>
    </children>
 </StackPane>

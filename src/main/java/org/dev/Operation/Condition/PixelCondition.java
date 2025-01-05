@@ -2,22 +2,27 @@ package org.dev.Operation.Condition;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.dev.AppScene;
+import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
-import org.dev.ImageSerialization;
+import org.dev.Menu.ConditionPixelMenuController;
+import org.dev.Operation.ImageSerialization;
 import org.dev.RunOperation.RunningStatus;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.io.*;
-import java.util.Base64;
 
 @Getter @Setter
 public class PixelCondition extends Condition {
 
     private transient BufferedImage displayImage;
     private boolean globalSearch;
+    private transient final String className = this.getClass().getSimpleName();
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public PixelCondition(ReadingCondition chosenReadingCondition, BufferedImage mainImage,
                           Rectangle mainImageBoundingBox, boolean not, boolean required,
@@ -31,67 +36,60 @@ public class PixelCondition extends Condition {
     public BufferedImage getMainDisplayImage() { return displayImage; }
 
     @Override
-    public boolean checkCondition() {
+    public String getExpectedResult() { return ReadingCondition.Pixel.name(); }
+
+    @Override
+    public String getActualResult() { return readResult; }
+
+    @Override
+    public ImageCheckResult checkCondition() {
         try {
-            boolean pass = (globalSearch) ? checkPixelFromCurrentScreen(mainImage)
+            ImageCheckResult imageResult = (globalSearch) ? checkPixelFromCurrentScreen(mainImage)
                     : checkPixelFromBoundingBox(mainImageBoundingBox, mainImage);
-            readResult = pass ? RunningStatus.Passed.name() : RunningStatus.Failed.name();
+            readResult = imageResult.getReadResult();
             if (not)
-                return !pass;
-            return pass;
-        } catch (Exception e) {
-            System.out.println("Fail checking pixel condition");
+                imageResult.setPass(!imageResult.isPass());
+            return imageResult;
+        } catch (AWTException e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Fail checking pixel condition");
+            return null;
         }
-        return false;
     }
 
-    @Override
-    public String getExpectedResult() {
-        return ReadingCondition.Pixel.name();
-    }
+    private ImageCheckResult checkPixelFromBoundingBox(Rectangle boundingBox, BufferedImage img2) throws AWTException {
+        BufferedImage img1 = ConditionPixelMenuController.captureCurrentScreen(boundingBox);
+        BufferedImage seenImageWithEdges = getImageWithEdges(boundingBox, displayImage);
 
-    @Override
-    public String getActualResult() {
-        return readResult;
-    }
-
-    private boolean checkPixelFromBoundingBox(Rectangle boundingBox, BufferedImage img2) throws AWTException, IOException {
-        BufferedImage img1 = new Robot().createScreenCapture(boundingBox);
 //        ImageIO.write(img1, "png", new File("img1.png"));
 //        ImageIO.write(img2, "png", new File("img2.png"));
-//
-//        System.out.println(img2.getType()); //BGR
-//        System.out.println(img1.getType()); //RGB
-//        System.out.println(img2.getColorModel());
-//        System.out.println(img1.getColorModel());
-
-//        if (img1.getType() == img2.getType())
-//            System.out.println("Same type");
-//        if (img1.getColorModel() == img2.getColorModel())
-//            System.out.println("Same color model");
-
-        if (img1.getWidth() != img2.getWidth() || img1.getHeight() != img2.getHeight())
-            return false;
-//        else
-//            System.out.println("Same height and width");
-
         DataBuffer db1 = img1.getRaster().getDataBuffer();
         DataBuffer db2 = img2.getRaster().getDataBuffer();
         int size1 = db1.getSize();
         int size2 = db2.getSize();
-        if (size1 != size2)
-            return false;
-//        else
-//            System.out.println("Same size");
+
+        AppScene.addLog(LogLevel.TRACE, className, "Img1 type: " + img1.getType() + " | Img2 type: " + img2.getType());
+        AppScene.addLog(LogLevel.TRACE, className, "Img1 color model: " + img1.getColorModel() + " | Img2 color model: " + img2.getColorModel());
+        AppScene.addLog(LogLevel.TRACE, className, "Img1 width: " + img1.getWidth() + " | Img2 width: " + img2.getWidth());
+        AppScene.addLog(LogLevel.TRACE, className, "Img1 height: " + img1.getHeight() + " | Img2 height: " + img2.getHeight());
+        AppScene.addLog(LogLevel.TRACE, className, "Img1 size: " + size1 + " | Img2 size: " + size2);
+
+        boolean pass = true;
+        if (img1.getWidth() != img2.getWidth() || img1.getHeight() != img2.getHeight())
+            pass = false;
+        else if (size1 != size2)
+            pass = false;
         for (int i = 0; i < size1; i++)
             if (db1.getElem(i) != db2.getElem(i))
-                return false;
-//            else
-//                System.out.println("Same total " + size1 + " " + i);
-        return true;
+                pass = false;
+        RunningStatus readResult = pass ? RunningStatus.Passed : RunningStatus.Failed;
+        return new ImageCheckResult(readResult.name(), createImageWithEdges(img1, seenImageWithEdges), pass);
     }
 
-    private boolean checkPixelFromCurrentScreen(BufferedImage img2) throws AWTException {
+    // TODO : check pixel in entire screen
+    private ImageCheckResult checkPixelFromCurrentScreen(BufferedImage img2) {
+        return new ImageCheckResult(RunningStatus.Failed.name(), null, false);
+    }
+    private boolean checkPixelFromCurrentScreen(BufferedImage img2, BufferedImage NOT_USED) throws AWTException {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         BufferedImage currentScreen = new Robot().createScreenCapture(new Rectangle(0, 0, screenSize.width-1, screenSize.height-1));
 
@@ -120,16 +118,18 @@ public class PixelCondition extends Condition {
     @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
-        ImageSerialization.serializeBufferedImageWriteObject(out, mainImage);   // Serialize mainImage
-        ImageSerialization.serializeBufferedImageWriteObject(out, displayImage);// Serialize displayImage
+        ImageSerialization.serializeBufferedImageWriteObject(out, mainImage);
+        ImageSerialization.serializeBufferedImageWriteObject(out, displayImage);
+        AppScene.addLog(LogLevel.TRACE, className, "Serialized main image and display image");
     }
 
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         String mainImageString = (String) in.readObject();
-        mainImage = ImageSerialization.deserializeBufferedImageReadObject(in, mainImageString, true);        // Deserialize mainImage
+        mainImage = ImageSerialization.deserializeBufferedImageReadObject(in, mainImageString, true);
         String displayImageString = (String) in.readObject();
-        displayImage = ImageSerialization.deserializeBufferedImageReadObject(in, displayImageString, true);  // Deserialize mainImage
+        displayImage = ImageSerialization.deserializeBufferedImageReadObject(in, displayImageString, true);
+        AppScene.addLog(LogLevel.TRACE, className, "Deserialized main image and display image");
     }
 }

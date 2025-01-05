@@ -26,6 +26,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        stage.setMinWidth(740.0);
         stage.setScene(AppScene.getAppMainScene());
         stage.setOnCloseRequest(_ -> System.exit(0));
         stage.show();

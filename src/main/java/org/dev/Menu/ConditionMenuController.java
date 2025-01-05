@@ -16,6 +16,7 @@ import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Operation.ActivityController;
 import org.dev.Operation.Condition.Condition;
+import org.dev.Operation.Condition.ImageCheckResult;
 import org.dev.Operation.ConditionController;
 import java.io.IOException;
 import java.net.URL;
@@ -36,11 +37,13 @@ public class ConditionMenuController extends MenuController implements Initializ
         removeButton.setOnMouseClicked(this::removeSelectedCondition);
     }
 
+    @Override
     protected void loadTypeChoices() {
         readingTypeChoice.getItems().addAll(ReadingCondition.values());
         readingTypeChoice.setValue(ReadingCondition.Text);
         AppScene.addLog(LogLevel.TRACE, className, "Condition reading types loaded");
     }
+
     @Override
     protected void closeMenuControllerAction(MouseEvent event) {
         AppScene.closeConditionMenuPane();
@@ -53,6 +56,7 @@ public class ConditionMenuController extends MenuController implements Initializ
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on close menu button");
         AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
     }
+
     @Override
     protected void startRegisteringAction(MouseEvent event) {
         if (readingTypeChoice.getValue() == ReadingCondition.Text) {
@@ -68,6 +72,8 @@ public class ConditionMenuController extends MenuController implements Initializ
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start registering button");
         AppScene.addLog(LogLevel.DEBUG, className, "Reading type chosen: " + readingTypeChoice.getValue());
     }
+
+    @Override
     public void loadMenu(ActivityController activityController) {
         if (!isKeyListening) {
             isKeyListening = true;
@@ -75,7 +81,7 @@ public class ConditionMenuController extends MenuController implements Initializ
         }
         this.conditionController = (ConditionController) activityController;
         boolean isControllerSet = conditionController.isSet();
-        recheckPane.setVisible(isControllerSet);
+        recheckContentVBox.setVisible(isControllerSet);
         updateRecheckResultLabel(false, null);
         if (isControllerSet) {
             mainImageView.setImage(SwingFXUtils.toFXImage(conditionController.getCondition().getMainDisplayImage(), null));
@@ -83,12 +89,14 @@ public class ConditionMenuController extends MenuController implements Initializ
         }
         else
             mainImageView.setImage(null);
+        recheckResultImageView.setImage(null);
         AppScene.addLog(LogLevel.TRACE, className, "Loaded Menu");
         AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
         AppScene.addLog(LogLevel.TRACE, className, "Controller is set: " + isControllerSet);
     }
 
     // ------------------------------------------------------
+    @Override
     protected void recheck() {
         AppScene.addLog(LogLevel.DEBUG, className, "Rechecking condition");
         if (!conditionController.isSet()) {
@@ -97,13 +105,14 @@ public class ConditionMenuController extends MenuController implements Initializ
         }
         try {
             Condition condition = conditionController.getCondition();
-            boolean checkedCondition = condition.checkCondition();
-            Platform.runLater(() -> updateRecheckResultLabel(checkedCondition, condition.getChosenReadingCondition().name()));
-            AppScene.addLog(LogLevel.TRACE, className, "Condition recheck result: " + checkedCondition);
+            ImageCheckResult checkedConditionResult = condition.checkCondition();
+            Platform.runLater(() -> updateRecheckResultLabel(checkedConditionResult.isPass(), condition.getChosenReadingCondition().name()));
+            AppScene.addLog(LogLevel.TRACE, className, "Condition recheck result: " + checkedConditionResult.getReadResult());
         } catch(Exception e) {
             AppScene.addLog(LogLevel.WARN, className, "Fail rechecking condition");
         }
     }
+    @Override
     protected void recheck(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on recheck button");
         recheck();

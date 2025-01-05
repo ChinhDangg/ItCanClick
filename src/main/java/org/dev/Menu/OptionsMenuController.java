@@ -62,7 +62,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
     protected void updateZoomValue(double value) {
         currentZoomValue = value;
         currentZoomLabel.setText(Double.toString(currentZoomValue));
-        AppScene.addLog(LogLevel.DEBUG, className, "Zoom value updated: " + currentZoomValue);
+        AppScene.addLog(LogLevel.DEBUG, className, "Updated Zoom value: " + currentZoomValue);
     }
     protected BufferedImage getZoomedImage(BufferedImage imageWithEdges) {
         if (currentZoomValue != 1.00) {
@@ -74,7 +74,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
             }
             adjustMainImageWidth((int) (currentMainImage.getWidth() * currentZoomValue));
             adjustMainImageHeight((int) (currentMainImage.getHeight() * currentZoomValue));
-            AppScene.addLog(LogLevel.TRACE, className, "Get Zoomed Image");
+            //AppScene.addLog(LogLevel.TRACE, className, "Get Zoomed Image");
             return getScaledImage(currentMainImage, currentZoomValue);
         }
         return null;
@@ -108,7 +108,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
             mainImageView.setImage(SwingFXUtils.toFXImage(image, null));
         else
             mainImageView.setImage(null);
-        AppScene.addLog(LogLevel.TRACE, className, "Main image view updated");
+        //AppScene.addLog(LogLevel.TRACE, className, "Updated Main image view");
     }
     protected int imageWidth = 100, imageHeight = 100;
     protected void resetImageWidthHeight() {
@@ -172,7 +172,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
             g.drawImage(mainImage, outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);
             g.dispose();
-            AppScene.addLog(LogLevel.TRACE, className, "Get image with edges");
+            //AppScene.addLog(LogLevel.TRACE, className, "Get image with edges");
             return imageWithEdges;
         }
         return null;
@@ -180,7 +180,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
     public static BufferedImage captureCurrentScreen(Rectangle rectangle) throws AWTException {
         return new Robot().createScreenCapture(rectangle);
     }
-    protected static BufferedImage getScaledImage(BufferedImage image, double scaleValue) {
+    public static BufferedImage getScaledImage(BufferedImage image, double scaleValue) {
         int w = (int) ((double) image.getWidth() * scaleValue);
         int h = (int) ((double) image.getHeight() * scaleValue);
         BufferedImage tempImage = new BufferedImage(w, h, image.getType());
@@ -199,7 +199,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
         int step = 10;
         outsideBoxWidth += step;
         int totalOutsideWidth = outsideBoxWidth * 2;
-        AppScene.addLog(LogLevel.INFO, className, "Edges width updated: " + totalOutsideWidth);
+        AppScene.addLog(LogLevel.INFO, className, "Updated Edges width: " + totalOutsideWidth);
         adjustMainImageWidth(imageWidth + totalOutsideWidth);
         adjustMainImageHeight(imageHeight + totalOutsideWidth);
     }
@@ -208,7 +208,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
         int step = 10;
         outsideBoxWidth = Math.max((outsideBoxWidth-step), 0);
         int totalOutsideWidth = outsideBoxWidth * 2;
-        AppScene.addLog(LogLevel.INFO, className, "Edges width updated: " + totalOutsideWidth);
+        AppScene.addLog(LogLevel.INFO, className, "Updated Edges width: " + totalOutsideWidth);
         adjustMainImageWidth(imageWidth + totalOutsideWidth);
         adjustMainImageHeight(imageHeight + totalOutsideWidth);
     }

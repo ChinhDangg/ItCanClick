@@ -9,9 +9,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
-import org.dev.App;
 import org.dev.AppScene;
 import org.dev.Enum.ConditionRequirement;
+import org.dev.Enum.LogLevel;
 import org.dev.Operation.Condition.Condition;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -27,9 +27,9 @@ public class ConditionController implements Initializable, ActivityController {
 
     @Getter
     private Condition condition;
-
     @Getter
     private boolean isSet = false;
+    private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -38,8 +38,10 @@ public class ConditionController implements Initializable, ActivityController {
     }
 
     public void registerReadingCondition(Condition condition) {
-        if (condition == null)
-            throw new NullPointerException("Condition is null");
+        if (condition == null) {
+            AppScene.addLog(LogLevel.ERROR, className, "Condition is null - registerReadingCondition");
+            return;
+        }
         isSet = true;
         this.condition = condition;
         readingConditionLabel.setText(condition.getChosenReadingCondition().name());
@@ -50,24 +52,23 @@ public class ConditionController implements Initializable, ActivityController {
 
     private void openConditionOptionPane(MouseEvent event) {
         if (AppScene.isOperationRunning) {
-            System.out.println("Operation is running, cannot modify");
+            AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
         AppScene.openConditionMenuPane(this);
     }
 
     public void removeThisConditionFromParent() {
-        try {
-            HBox parent = (HBox) conditionStackPane.getParent();
-            parent.getChildren().remove(conditionStackPane);
-        } catch (Exception e) {
-            System.out.println("Fail removing condition pane from parent");
-        }
+        HBox parent = (HBox) conditionStackPane.getParent();
+        parent.getChildren().remove(conditionStackPane);
+        AppScene.addLog(LogLevel.DEBUG, className, "Condition removed");
     }
 
     public void loadSavedCondition(Condition condition) {
-        if (condition == null)
-            throw new NullPointerException("Can't load null Condition");
+        if (condition == null) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error cannot load null saved condition");
+            return;
+        }
         registerReadingCondition(condition);
     }
 }

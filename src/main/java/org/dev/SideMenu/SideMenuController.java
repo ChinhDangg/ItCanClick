@@ -1,4 +1,4 @@
-package org.dev.LeftSideMenu;
+package org.dev.SideMenu;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -43,9 +43,9 @@ import java.util.ResourceBundle;
 public class SideMenuController implements Initializable {
 
     @FXML
-    private StackPane mainSideHierarchyStackPane;
+    private ScrollPane sideMenuMainScrollPane;
     @FXML
-    private ScrollPane runSideHierarchyScrollPane, sideHierarchyScrollPane;
+    private StackPane mainSideHierarchyStackPane;
     @FXML
     private VBox runSideHierarchyVBox, sideHierarchyVBox;
     @FXML
@@ -68,26 +68,26 @@ public class SideMenuController implements Initializable {
     private void setScaleHierarchyVBox() {
         double currentScale = 1.3;
         mainSideHierarchyStackPane.getTransforms().add(new Scale(currentScale, currentScale, 0, 0));
-        AppScene.addLog(LogLevel.TRACE, className, "Menu scaled: " + currentScale);
+        AppScene.addLog(LogLevel.TRACE, className, "Scaled side menu: " + currentScale);
     }
 
     public void showSideMenuContent(CurrentTab whatTab) {
         if (whatTab == CurrentTab.Operation) {
-            sideHierarchyScrollPane.setVisible(true);
-            runSideHierarchyScrollPane.setVisible(false);
+            sideHierarchyVBox.setVisible(true);
+            runSideHierarchyVBox.setVisible(false);
         }
         else {
-            sideHierarchyScrollPane.setVisible(false);
-            runSideHierarchyScrollPane.setVisible(true);
+            sideHierarchyVBox.setVisible(false);
+            runSideHierarchyVBox.setVisible(true);
         }
         AppScene.addLog(LogLevel.DEBUG, className, "Showing tab: " + whatTab.name());
     }
 
     public void toggleSideMenuHierarchy() {
-        boolean newSet = !mainSideHierarchyStackPane.isVisible();
-        mainSideHierarchyStackPane.setVisible(newSet);
-        mainSideHierarchyStackPane.setManaged(newSet);
-        AppScene.addLog(LogLevel.DEBUG, className, "Side menu showed: " + newSet);
+        boolean newSet = !sideMenuMainScrollPane.isVisible();
+        sideMenuMainScrollPane.setVisible(newSet);
+        sideMenuMainScrollPane.setManaged(newSet);
+        AppScene.addLog(LogLevel.DEBUG, className, "Showed Side menu: " + newSet);
     }
 
     public void loadOperationSideHierarchy(OperationController operationController) {
@@ -100,7 +100,7 @@ public class SideMenuController implements Initializable {
         HBox operationSideLabelHBox = getDropDownHBox(operationTaskVBox, operationController.getOperationNameLabel(), operationController);
         sideHierarchyChildren.add(operationSideLabelHBox);
         sideHierarchyChildren.add(operationTaskVBox);
-        AppScene.addLog(LogLevel.DEBUG, className, "Operation side hierarchy loaded");
+        AppScene.addLog(LogLevel.DEBUG, className, "Loaded Operation side hierarchy");
     }
     public void loadOperationRunSideHierarchy(OperationRunController operationRunController) {
         ObservableList<Node> runSideHierarchyChildren = runSideHierarchyVBox.getChildren();
@@ -112,7 +112,7 @@ public class SideMenuController implements Initializable {
                 operationRunController);
         runSideHierarchyChildren.add(operationRunSideLabelHBox);
         runSideHierarchyChildren.add(operationRunTaskVBox);
-        AppScene.addLog(LogLevel.DEBUG, className, "Operation run side hierarchy loaded");
+        AppScene.addLog(LogLevel.DEBUG, className, "Loaded Operation run side hierarchy");
     }
 
 

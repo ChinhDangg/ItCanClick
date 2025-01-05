@@ -6,6 +6,7 @@ module org.dev {
     requires tess4j;
     requires com.github.kwhat.jnativehook;
     requires jdk.unsupported.desktop;
+    requires jdk.compiler;
 
     exports org.dev;
     exports org.dev.Enum;
@@ -25,6 +26,6 @@ module org.dev {
     exports org.dev.RunOperation;
     opens org.dev.RunOperation to javafx.fxml;
     opens org.dev.Enum to javafx.fxml;
-    exports org.dev.LeftSideMenu;
-    opens org.dev.LeftSideMenu to javafx.fxml;
+    exports org.dev.SideMenu;
+    opens org.dev.SideMenu to javafx.fxml;
 }

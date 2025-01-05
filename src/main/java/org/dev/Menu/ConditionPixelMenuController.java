@@ -65,12 +65,13 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             AppScene.addLog(LogLevel.TRACE, className, "Loaded preset reading pixel");
         }
         else
-            resetPixelMenu();
+            resetMenu();
         GlobalScreen.addNativeKeyListener(this);
         showMenu(true);
     }
-    private void resetPixelMenu() {
-        resetMenu();
+    @Override
+    protected void resetMenu() {
+        super.resetMenu();
         notOptionCheckBox.setSelected(false);
         requiredOptionCheckBox.setSelected(true);
         showHideLineCheckBox.setSelected(true);
@@ -126,7 +127,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             return imageWithEdges;
         return (box == null) ? currentMainImage : box;
     }
-    public BufferedImage drawBox(int width, int height, Color color) {
+    private BufferedImage drawBox(int width, int height, Color color) {
         BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = temp.createGraphics();
         g.setColor(color);

@@ -1,0 +1,31 @@
+.center-main-stackpane {
+    -fx-effect: dropshadow(gaussian, rgb(35,35,35), 5, 0.5, 4, 4);
+}
+
+.top-heading-hbox {
+    -fx-border-color: transparent transparent rgb(100, 100, 100) transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-color: rgb(48,44,52);
+    -fx-background-radius: 5 5 0 0;
+}
+
+.x-stackpane-button:hover {
+    -fx-background-color: rgb(220, 0, 0);
+    -fx-background-radius: 0 5px 0 0;
+}
+
+.bottom-content-vbox {
+    -fx-background-color: rgb(48,44,52);
+    -fx-background-radius: 0 0 5 5;
+}
+
+#confirm-button-stackpane {
+    -fx-background-color: rgba(43,45,48,255);
+    -fx-border-color: rgb(150,150,150);
+    -fx-border-radius: 3 3 3 3;
+}
+
+#cancel-button-stackpane {
+    -fx-background-color: rgba(53,116,240,255);
+    -fx-background-radius: 3 3 3 3;
+}

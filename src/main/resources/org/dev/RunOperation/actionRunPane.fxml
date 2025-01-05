@@ -38,7 +38,7 @@
                                     <Font size="10.0" />
                                  </font>
                               </Label>
-                              <ScrollPane fx:id="entryConditionScrollPane" maxWidth="496.0" vbarPolicy="NEVER">
+                              <ScrollPane fx:id="entryConditionScrollPane" vbarPolicy="NEVER">
                                  <content>
                                     <HBox fx:id="entryConditionHBox" spacing="10.0" />
                                  </content>
@@ -56,7 +56,7 @@
                                  <children>
                                     <VBox>
                                        <children>
-                                          <Pane fx:id="actionSavedPane" prefWidth="242.0" style="-fx-border-color: black; -fx-border-width: 1px;">
+                                          <Pane prefWidth="242.0" style="-fx-border-color: black; -fx-border-width: 1px;">
                                              <children>
                                                 <StackPane fx:id="actionStackPaneImageContainer" prefHeight="130.0" prefWidth="240.0">
                                                    <children>
@@ -65,17 +65,16 @@
                                                 </StackPane>
                                              </children>
                                           </Pane>
-                                          <HBox spacing="5.0">
+                                          <StackPane>
                                              <children>
-                                                <Label text="Saved:" />
-                                                <Label fx:id="actionSavedResultLabel" prefWidth="150.0" text="result" wrapText="true" />
+                                                <Label text="Saved" />
                                              </children>
-                                          </HBox>
+                                          </StackPane>
                                        </children>
                                     </VBox>
                                     <VBox>
                                        <children>
-                                          <Pane fx:id="actionPerformedPane" style="-fx-border-color: black; -fx-border-width: 1px;">
+                                          <Pane style="-fx-border-color: black; -fx-border-width: 1px;">
                                              <children>
                                                 <StackPane layoutX="1.0" layoutY="1.0" prefHeight="130.0" prefWidth="240.0">
                                                    <children>
@@ -84,12 +83,11 @@
                                                 </StackPane>
                                              </children>
                                           </Pane>
-                                          <HBox spacing="5.0">
+                                          <StackPane>
                                              <children>
-                                                <Label text="Seen:" />
-                                                <Label fx:id="actionPerformedResultLabel" prefWidth="150.0" text="result" wrapText="true" />
+                                                <Label text="Seen" />
                                              </children>
-                                          </HBox>
+                                          </StackPane>
                                        </children>
                                     </VBox>
                                  </children>
@@ -103,7 +101,7 @@
                                     <Font size="10.0" />
                                  </font>
                               </Label>
-                              <ScrollPane fx:id="exitConditionScrollPane" maxWidth="496.0" vbarPolicy="NEVER">
+                              <ScrollPane fx:id="exitConditionScrollPane" vbarPolicy="NEVER">
                                  <content>
                                     <HBox fx:id="exitConditionHBox" />
                                  </content>

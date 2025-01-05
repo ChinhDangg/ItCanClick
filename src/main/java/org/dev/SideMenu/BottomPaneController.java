@@ -1,7 +1,9 @@
-package org.dev.LeftSideMenu;
+package org.dev.SideMenu;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -11,9 +13,12 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class BottomPaneController implements Initializable {
@@ -21,23 +26,38 @@ public class BottomPaneController implements Initializable {
     @FXML
     private StackPane bottomMainStackPane;
     @FXML
-    private StackPane resizeStackPane, minimizeStackPaneButton;
+    private StackPane resizeStackPane, minimizeStackPaneButton, trashStackPaneButton;
     @FXML
-    private VBox bottomTextVBox;
+    private ScrollPane logScrollPane;
+    @FXML
+    private VBox topVBoxHeader, bottomTextVBox;
 
     private final String className = this.getClass().getSimpleName();
+    private boolean isTrace, isDebug;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         bottomTextVBox.setPrefHeight(bottomMainStackPane.getMaxHeight() - resizeStackPane.getPrefHeight() - 30);
-        resizeStackPane.setOnMouseDragged(event -> {
-            double newHeight = bottomMainStackPane.getMaxHeight() - event.getY();
-            bottomMainStackPane.setMaxHeight(newHeight);
-            bottomMainStackPane.setPrefHeight(newHeight);
-            bottomTextVBox.setPrefHeight(newHeight - resizeStackPane.getPrefHeight() - 30);
-        });
+        resizeStackPane.setOnMouseDragged(this::resizeBottomPane);
+        trashStackPaneButton.setOnMouseClicked(this::clearLog);
         minimizeStackPaneButton.setOnMouseClicked(this::minimizeStackPaneButtonEvent);
+        bottomTextVBox.heightProperty().addListener((_, _, _) -> logScrollPane.setVvalue(1.0));
         bottomMainStackPane.setVisible(false);
+        bottomMainStackPane.setManaged(false);
+        readProperties();
+    }
+
+    private double maxHeight = Double.MAX_VALUE;
+    private void resizeBottomPane(MouseEvent event) {
+        double newHeight = bottomMainStackPane.getMaxHeight() - event.getY();
+        if (newHeight > maxHeight || newHeight < topVBoxHeader.getHeight())
+            return;
+        if (bottomMainStackPane.getLayoutY() <= topVBoxHeader.getHeight())
+            maxHeight = newHeight;
+        bottomMainStackPane.setMaxHeight(newHeight);
+        bottomMainStackPane.setPrefHeight(newHeight);
+        bottomMainStackPane.setMinHeight(newHeight);
+        bottomTextVBox.setPrefHeight(newHeight - topVBoxHeader.getHeight());
     }
 
     private void minimizeStackPaneButtonEvent(MouseEvent event) {
@@ -48,18 +68,39 @@ public class BottomPaneController implements Initializable {
     public void switchBottomPaneVisible() {
         boolean newVisible = !bottomMainStackPane.isVisible();
         bottomMainStackPane.setVisible(newVisible);
+        bottomMainStackPane.setManaged(newVisible);
         AppScene.addLog(LogLevel.DEBUG, className, "Bottom pane visible switched: " + newVisible);
     }
 
     Font monospacedFont = Font.font("Courier New", 14);
     public void addToLog(LogLevel logLevel, String className, String content) {
+        if (logLevel == LogLevel.TRACE && !isTrace)
+            return;
+        if (logLevel == LogLevel.DEBUG && !isDebug)
+            return;
+
+        if (logLevel == LogLevel.INFO)
+            Platform.runLater(() -> AppScene.showNotification(content));
+        else if (logLevel == LogLevel.WARN || logLevel == LogLevel.ERROR)
+            AppScene.openCenterBanner(logLevel.name(), content);
+
+        TextFlow line = getLogLine(logLevel, className, content);
+        System.out.println(logLevel + " " + className + " " + content);
+        Platform.runLater(() -> bottomTextVBox.getChildren().add(line));
+    }
+
+    private void clearLog(MouseEvent event) {
+        Platform.runLater(() -> bottomTextVBox.getChildren().clear());
+    }
+
+    private TextFlow getLogLine(LogLevel logLevel, String className, String content) {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedTimestamp = now.format(formatter);
 
         String timeStampStr = String.format("%-" + 20 + "s", formattedTimestamp);
         String levelStr = String.format("%-" + 7 + "s", logLevel);
-        String loggerStr = String.format("%-" + 25 + "s", "[" + className + "]");
+        String loggerStr = String.format("%-" + 30 + "s", "[" + className + "]");
 
         Text timeStampText = new Text(timeStampStr);
         timeStampText.setFont(monospacedFont);
@@ -82,7 +123,7 @@ public class BottomPaneController implements Initializable {
         contentText.setFont(monospacedFont);
         contentText.setFill(Color.BLACK);
         line.getChildren().addAll(timeStampText, logLevelText, loggerText, colonText, contentText);
-        bottomTextVBox.getChildren().add(line);
+        return line;
     }
 
     private Color getLogLevelColor(LogLevel level) {
@@ -93,5 +134,18 @@ public class BottomPaneController implements Initializable {
             case LogLevel.ERROR -> Color.DARKRED;
             default -> Color.BLACK;
         };
+    }
+
+    private void readProperties() {
+        Properties properties = new Properties();
+        try (InputStream input = getClass().getResourceAsStream("/application.properties")) {
+            if (input == null)
+                throw new IOException("Unable to find application.properties");
+            properties.load(input);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        isTrace = Boolean.parseBoolean(properties.getProperty("app.config.log-trace"));
+        isDebug = Boolean.parseBoolean(properties.getProperty("app.config.log-debug"));
     }
 }

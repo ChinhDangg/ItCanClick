@@ -14,7 +14,6 @@ import javafx.scene.layout.StackPane;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
-import org.dev.App;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
@@ -78,12 +77,13 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             AppScene.addLog(LogLevel.TRACE, className, "Loaded preset reading text condition");
         }
         else
-            resetTextMenu();
+            resetMenu();
         GlobalScreen.addNativeKeyListener(this);
         showMenu(true);
     }
-    private void resetTextMenu() {
-        resetMenu();
+    @Override
+    protected void resetMenu() {
+        super.resetMenu();
         updateTextScaleValue(1);
         notOptionCheckBox.setSelected(false);
         requiredOptionCheckBox.setSelected(true);
@@ -93,6 +93,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
         readTexts = new HashSet<>();
         AppScene.addLog(LogLevel.TRACE, className, "Menu reset");
     }
+    @Override
     public void showMenu(boolean show) {
         visible = show;
         textMenuPane.setVisible(visible);
@@ -145,7 +146,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     private void updateTextScaleValue(double value) {
         currentTextScaleValue = value;
         currentTextScaleLabel.setText(Double.toString(currentTextScaleValue));
-        AppScene.addLog(LogLevel.DEBUG, className, "Text reading scale updated: " + currentTextScaleValue);
+        AppScene.addLog(LogLevel.DEBUG, className, "Updated text reading scale: " + currentTextScaleValue);
     }
 
     // ------------------------------------------------------
@@ -171,20 +172,6 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             return zoomedImage;
         return (imageWithEdges == null) ? currentMainImage : imageWithEdges;
     }
-    public static String readTextFromImage(BufferedImage image) throws TesseractException {
-        System.out.println("Read texts from an image");
-        ITesseract tess = new Tesseract();
-        // deprecated but usable to remove warning variable or just import all languages in tessdata
-        tess.setTessVariable("debug_file", "/dev/null");
-        tess.setDatapath("tessdata");
-        return tess.doOCR(image);
-    }
-    public static String readTextFromCurrentScreen(Rectangle boundingBox, double scale) throws AWTException, TesseractException {
-        BufferedImage image = captureCurrentScreen(boundingBox);
-        if (scale != 1.00)
-             image = getScaledImage(image, scale);
-        return readTextFromImage(image);
-    }
     private void readAndUpdateReadTextLabel() {
         if (currentMainImage != null) {
             try {
@@ -194,6 +181,15 @@ public class ConditionTextMenuController extends OptionsMenuController implement
                 AppScene.addLog(LogLevel.ERROR, className, "Error reading from image or updating read text label");
             }
         }
+    }
+
+    public static String readTextFromImage(BufferedImage image) throws TesseractException {
+        System.out.println("Read texts from an image");
+        ITesseract tess = new Tesseract();
+        // deprecated but usable to remove warning variable or just import all languages in tessdata
+        tess.setTessVariable("debug_file", "/dev/null");
+        tess.setDatapath("tessdata");
+        return tess.doOCR(image);
     }
 
     // ------------------------------------------------------
@@ -261,6 +257,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             }
         }
     }
+
     public void nativeKeyReleased(NativeKeyEvent e) {
         AppScene.addLog(LogLevel.TRACE, className, "Key Released: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
         if (e.getKeyCode() == NativeKeyEvent.VC_F2) {
@@ -273,6 +270,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             readAndUpdateReadTextLabel();
         }
     }
+
     @Override
     protected void stopMouseMotion(MouseEvent event) {
         stopMouseMotionListening();

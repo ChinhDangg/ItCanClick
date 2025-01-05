@@ -3,19 +3,26 @@ package org.dev;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import org.dev.Enum.LogLevel;
 import org.dev.Operation.Data.OperationData;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 public class MenuBarController implements Initializable {
 
+    @FXML
+    private HBox topMenuBarMainHBox;
     @FXML
     private MenuItem saveMenuItem, exitMenuItem;
     @FXML
@@ -24,6 +31,9 @@ public class MenuBarController implements Initializable {
     private StackPane startRunStackPaneButton, stopRunStackPaneButton;
     @FXML
     private HBox operationRunningIndicationHBox;
+
+    private final String className = this.getClass().getSimpleName();
+    private Path savedDirectory;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -37,38 +47,66 @@ public class MenuBarController implements Initializable {
         operationRunningIndicationHBox.setVisible(false);
     }
 
-    private final String savedRootPath = "SavedOp/";
     public void save(ActionEvent event) {
         try {
-            System.out.println("Clicked on saved all");
+            AppScene.addLog(LogLevel.DEBUG, className, "Clicked on save all");
             if (AppScene.currentLoadedOperationController == null)
                 return;
             OperationData operationData = AppScene.currentLoadedOperationController.getOperationData();
-            FileOutputStream fileOut = new FileOutputStream(savedRootPath + operationData.getOperation().getOperationName()+".ser");
+            String fileName = operationData.getOperation().getOperationName() + ".ser";
+            Path savedPath = getSavePath(fileName);
+            AppScene.addLog(LogLevel.DEBUG, className, "Saving path: " + savedPath);
+            if (savedPath == null)
+                return;
+            FileOutputStream fileOut = new FileOutputStream(savedPath.toString());
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(operationData);
-            System.out.println("Saved");
+            AppScene.addLog(LogLevel.INFO, className, "Saved All");
         } catch (Exception e) {
-            System.out.println("Fail saving all operation data");
+            AppScene.addLog(LogLevel.ERROR, className, "Error saving all operation data");
         }
     }
+    private Path getSavePath(String fileName) {
+        if (savedDirectory != null)
+            return Paths.get(savedDirectory.toString(), fileName);
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Select a Directory");
+        directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        File selectedDirectory = directoryChooser.showDialog(topMenuBarMainHBox.getScene().getWindow());
+        if (selectedDirectory != null)
+            return Paths.get(selectedDirectory.getAbsolutePath(), fileName);
+        return null;
+    }
+
     public void exit(ActionEvent event) {
         System.out.println("Exit all");
+        System.exit(0);
     }
 
     public void createNewOperationEvent(ActionEvent event) {
-        System.out.println("Opening new operation");
         AppScene.loadEmptyOperation();
         AppScene.updateOperationSideMenuHierarchy();
     }
 
     public void openSavedOperationEvent(ActionEvent event) {
-        System.out.println("Opening saved operation");
-        AppScene.loadSavedOperation(savedRootPath + "Operation Name.ser");
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on open saved operation");
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select a File");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Serialized Files", "*.ser")
+        );
+        File selectedFile = fileChooser.showOpenDialog(topMenuBarMainHBox.getScene().getWindow());
+        if (selectedFile == null)
+            return;
+        boolean saveLoaded = AppScene.loadSavedOperation(selectedFile.getAbsolutePath());
+        if (saveLoaded)
+            savedDirectory = Paths.get(selectedFile.getAbsolutePath()).getParent();
         AppScene.updateOperationSideMenuHierarchy();
     }
 
     public void startOperationRunEvent(MouseEvent event) {
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start operation");
         boolean loadedOperationRun = AppScene.loadAndDisplayOperationRun();
         if (!loadedOperationRun)
             return;

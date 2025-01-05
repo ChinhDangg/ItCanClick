@@ -15,14 +15,13 @@ import org.dev.Enum.ActionTypes;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.ActionController;
 import org.dev.Operation.ActivityController;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class ActionMenuController extends MenuController implements Initializable {
     @FXML
-    private ChoiceBox<ActionTypes> actionTypeChoice;
+    private ChoiceBox<ActionTypes> readingTypeChoice;
     private ActionController actionController;
 
     private final String className = this.getClass().getSimpleName();
@@ -33,10 +32,11 @@ public class ActionMenuController extends MenuController implements Initializabl
     }
 
     protected void loadTypeChoices() {
-        actionTypeChoice.getItems().addAll(ActionTypes.values());
-        actionTypeChoice.setValue(ActionTypes.MouseClick);
+        readingTypeChoice.getItems().addAll(ActionTypes.values());
+        readingTypeChoice.setValue(ActionTypes.MouseClick);
         AppScene.addLog(LogLevel.TRACE, className, "Action types loaded");
     }
+
     @Override
     protected void closeMenuControllerAction(MouseEvent event) {
         AppScene.closeActionMenuPane();
@@ -47,16 +47,19 @@ public class ActionMenuController extends MenuController implements Initializabl
         AppScene.addLog(LogLevel.DEBUG, className, "Action menu closed");
         AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
     }
+
     @Override
     protected void startRegisteringAction(MouseEvent event) {
         if (actionPerformMenuController == null)
             loadActionPerformMenu();
-        actionController.setChosenActionPerform(actionTypeChoice.getValue());
+        actionController.setChosenActionPerform(readingTypeChoice.getValue());
         actionPerformMenuController.loadMenu(actionController);
         GlobalScreen.removeNativeKeyListener(this);
         isKeyListening = false;
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start registering");
     }
+
+    @Override
     public void loadMenu(ActivityController activityController) {
         if (!isKeyListening) {
             isKeyListening = true;
@@ -64,11 +67,11 @@ public class ActionMenuController extends MenuController implements Initializabl
         }
         this.actionController = (ActionController) activityController;
         boolean controllerSet = actionController.isSet();
-        recheckPane.setVisible(controllerSet);
+        recheckContentVBox.setVisible(controllerSet);
         recheckResultLabel.setText("");
         if (controllerSet) {
             mainImageView.setImage(SwingFXUtils.toFXImage(actionController.getAction().getDisplayImage(), null));
-            actionTypeChoice.setValue(actionController.getAction().getChosenActionPerform());
+            readingTypeChoice.setValue(actionController.getAction().getChosenActionPerform());
         }
         else
             mainImageView.setImage(null);
@@ -78,6 +81,7 @@ public class ActionMenuController extends MenuController implements Initializabl
     }
 
     // ------------------------------------------------------
+    @Override
     protected void recheck() {
         AppScene.addLog(LogLevel.DEBUG, className, "Rechecking action");
         if (!actionController.isSet()) {
@@ -92,6 +96,7 @@ public class ActionMenuController extends MenuController implements Initializabl
             AppScene.addLog(LogLevel.ERROR, className, "Fail rechecking action");
         }
     }
+    @Override
     protected void recheck(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on recheck button");
         recheck();

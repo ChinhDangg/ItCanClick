@@ -1,5 +1,7 @@
 package org.dev.Operation.Action;
 
+import org.dev.AppScene;
+import org.dev.Enum.LogLevel;
 import java.awt.AWTException;
 
 public class ActionMouseClick extends Action {
@@ -8,7 +10,7 @@ public class ActionMouseClick extends Action {
         try {
             performMouseClick(mainImageBoundingBox);
         } catch (AWTException e) {
-            System.out.println("Fail performing mouse click action");
+            AppScene.addLog(LogLevel.ERROR, this.getClass().getSimpleName(), "Fail performing mouse click action");
         }
     }
 }

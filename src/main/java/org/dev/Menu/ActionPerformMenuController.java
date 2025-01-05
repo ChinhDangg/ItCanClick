@@ -54,6 +54,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         waitAfterPlusButton.setOnMouseClicked(this::increaseWaitAfterTime);
     }
 
+    @Override
     protected void save(MouseEvent event) {
         if (actionController == null) {
             AppScene.addLog(LogLevel.WARN, className, "save - Action controller is not set");
@@ -73,6 +74,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         newAction.setActionOptions(attempt, progressiveSearchCheckBox.isSelected(), progressiveSearchTime, waitBeforeTime,
                 waitAfterTime, actionTypes, currentMainImage, currentDisplayImage, mainImageBoundingBox, registeredKey);
         actionController.registerActionPerform(newAction);
+        AppScene.addLog(LogLevel.INFO, className, "Saved registered action");
     }
     private Action getCorrespondAction(ActionTypes actionTypes) {
         return switch (actionTypes) {
@@ -84,6 +86,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         };
     }
 
+    @Override
     protected void backToPreviousMenu(MouseEvent event) {
         if (visible) {
             stopAllListeners();
@@ -92,6 +95,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
             AppScene.addLog(LogLevel.DEBUG, className, "Backed to action menu");
         }
     }
+
     @Override
     protected void resetMenu() {
         super.resetMenu();
@@ -102,10 +106,14 @@ public class ActionPerformMenuController extends OptionsMenuController {
         updateAttemptLabel(1);
         AppScene.addLog(LogLevel.TRACE, className, "Menu is reset");
     }
+
+    @Override
     protected void showMenu(boolean show) {
         actionPerformMenu.setVisible(show);
         visible = show;
     }
+
+    @Override
     protected void loadMenu(ActivityController activityController) {
         if (activityController == null) {
             AppScene.addLog(LogLevel.WARN, className, "loadMenu - Action is not set");
@@ -158,7 +166,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     private void updateAttemptLabel(int newAttempt) {
         attempt = newAttempt;
         attemptNumberLabel.setText(Integer.toString(attempt));
-        AppScene.addLog(LogLevel.TRACE, className, "Attempt updated to: " + newAttempt);
+        AppScene.addLog(LogLevel.TRACE, className, "Updated action attempt: " + newAttempt);
     }
 
     private final int timeStep = 500;
@@ -178,7 +186,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     private void updateProgressiveSearchTimeLabel(int newProgressiveTime) {
         progressiveSearchTime = newProgressiveTime;
         progressiveSearchTimeLabel.setText(convertMilliToSecond(progressiveSearchTime) + "s");
-        AppScene.addLog(LogLevel.TRACE, className, "Progressive Search Time updated to: " + newProgressiveTime);
+        AppScene.addLog(LogLevel.TRACE, className, "Updated progressive Search Time: " + newProgressiveTime);
     }
     private double convertMilliToSecond(int milli) { return (double) milli / 1000.0; }
 
@@ -193,7 +201,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     private void updateWaitBeforeTimeLabel(int newWaitBeforeTime) {
         waitBeforeTime = newWaitBeforeTime;
         waitBeforeTimeLabel.setText(convertMilliToSecond(waitBeforeTime) + "s");
-        AppScene.addLog(LogLevel.TRACE, className, "Wait Before Time updated to: " + newWaitBeforeTime);
+        AppScene.addLog(LogLevel.TRACE, className, "Updated Wait Before Time: " + newWaitBeforeTime);
     }
 
     // ------------------------------------------------------
@@ -207,7 +215,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     private void updateWaitAfterTimeLabel(int newWaitAfterTime) {
         waitAfterTime = newWaitAfterTime;
         waitAfterTimeLabel.setText(convertMilliToSecond(waitAfterTime) + "s");
-        AppScene.addLog(LogLevel.TRACE, className, "Wait After Time updated to: " + newWaitAfterTime);
+        AppScene.addLog(LogLevel.TRACE, className, "Updated Wait After Time: " + newWaitAfterTime);
     }
 
     // ------------------------------------------------------
@@ -224,6 +232,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
             return imageWithEdges;
         return currentDisplayImage;
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == mouseTimer) {
@@ -249,6 +258,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         registeredKeyLabelPane.setDisable(false);
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start registering key button");
     }
+
     @Override
     protected void stopMouseMotion(MouseEvent event) {
         stopMouseMotionListening();
@@ -259,6 +269,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         }
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on stop capturing image at mouse button");
     }
+
     private int registeredKey = -1;
     public void nativeKeyReleased(NativeKeyEvent e) {
         AppScene.addLog(LogLevel.TRACE, className, "Key pressed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));

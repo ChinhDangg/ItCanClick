@@ -1,6 +1,9 @@
 package org.dev.Operation.Action;
 
-import java.awt.*;
+import org.dev.AppScene;
+import org.dev.Enum.LogLevel;
+
+import java.awt.AWTException;
 
 public class ActionMouseDoubleClick extends Action {
     @Override
@@ -8,7 +11,7 @@ public class ActionMouseDoubleClick extends Action {
         try {
             performMouseDoubleClick(mainImageBoundingBox);
         } catch (AWTException e) {
-            System.out.println("Error with action double mouse clicks");
+            AppScene.addLog(LogLevel.ERROR, this.getClass().getSimpleName(), "Error with action double mouse clicks");
         }
     }
 }
