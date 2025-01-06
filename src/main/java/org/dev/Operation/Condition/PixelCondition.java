@@ -17,7 +17,6 @@ import java.io.*;
 @Getter @Setter
 public class PixelCondition extends Condition {
 
-    private transient BufferedImage displayImage;
     private boolean globalSearch;
     private transient final String className = this.getClass().getSimpleName();
 
@@ -50,8 +49,8 @@ public class PixelCondition extends Condition {
             if (not)
                 imageResult.setPass(!imageResult.isPass());
             return imageResult;
-        } catch (AWTException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Fail checking pixel condition");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error checking pixel condition: " + e.getMessage());
             return null;
         }
     }

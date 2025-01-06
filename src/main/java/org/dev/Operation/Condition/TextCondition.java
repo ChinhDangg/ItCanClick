@@ -2,15 +2,12 @@ package org.dev.Operation.Condition;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.sourceforge.tess4j.ITesseract;
-import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Operation.ImageSerialization;
 import org.dev.Menu.ConditionTextMenuController;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -27,8 +24,9 @@ public class TextCondition extends Condition {
     private static final long serialVersionUID = 1L;
 
     public TextCondition(ReadingCondition chosenReadingCondition, BufferedImage mainImage, Rectangle mainImageBoundingBox,
-                         boolean not, boolean required, double textScale, Set<String> texts) {
+                         boolean not, boolean required, BufferedImage displayImage, double textScale, Set<String> texts) {
         super(chosenReadingCondition, mainImage, mainImageBoundingBox, not, required);
+        this.displayImage = displayImage;
         currentTextScale = textScale;
         savedText = texts;
     }
@@ -48,17 +46,17 @@ public class TextCondition extends Condition {
                 checkResult.setPass(!checkCondition().isPass());
             return checkResult;
         } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Fail checking text condition");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - checking text condition");
             return null;
         }
     }
 
     private ImageCheckResult readTextFromCurrentScreen(Rectangle boundingBox, double scale) throws AWTException, TesseractException {
         BufferedImage seenImage = ConditionTextMenuController.captureCurrentScreen(boundingBox);
-        BufferedImage seenImageWithEdges = createImageWithEdges(seenImage, getImageWithEdges(boundingBox, mainImage));
         if (scale != 1.00)
-            seenImage = ConditionTextMenuController.getScaledImage(seenImage, scale);
+            seenImage = new ConditionTextMenuController().getScaledImage(seenImage, scale);
         String readText = ConditionTextMenuController.readTextFromImage(seenImage).replace("\n", "");
+        BufferedImage seenImageWithEdges = createImageWithEdges(seenImage, getImageWithEdges(boundingBox, mainImage));
         return new ImageCheckResult(readText, seenImageWithEdges, savedText.contains(readResult));
     }
 
@@ -66,14 +64,17 @@ public class TextCondition extends Condition {
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
         ImageSerialization.serializeBufferedImageWriteObject(out, mainImage);
-        AppScene.addLog(LogLevel.TRACE, className, "Serialized main image");
+        ImageSerialization.serializeBufferedImageWriteObject(out, displayImage);
+        AppScene.addLog(LogLevel.TRACE, className, "Serialized main image and display image");
     }
 
     @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        String imageString = (String) in.readObject();
-        mainImage = ImageSerialization.deserializeBufferedImageReadObject(in, imageString, false);
-        AppScene.addLog(LogLevel.TRACE, className, "Deserialized main image");
+        String mainImageString = (String) in.readObject();
+        mainImage = ImageSerialization.deserializeBufferedImageReadObject(in, mainImageString, true);
+        String displayImageString = (String) in.readObject();
+        displayImage = ImageSerialization.deserializeBufferedImageReadObject(in, displayImageString, true);
+        AppScene.addLog(LogLevel.TRACE, className, "Deserialized main image and display image");
     }
 }

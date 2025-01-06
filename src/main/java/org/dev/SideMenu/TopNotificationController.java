@@ -37,7 +37,7 @@ public class TopNotificationController {
         ObservableList<Node> children = notificationListVBox.getChildren();
         Parent parent = getTopNotificationPane();
         if (parent == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error getting top notification");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Top notification pane is null - getting top notification");
             return;
         }
         StackPane stackPane = (StackPane) parent.getChildrenUnmodifiable().getFirst();
@@ -83,9 +83,8 @@ public class TopNotificationController {
             Parent parentNode = topBanner.load();
             AppScene.addLog(LogLevel.TRACE, className, "Loaded a top notification");
             return parentNode;
-        } catch (IOException e) {
-            System.out.println("Error loading top notification banner");
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading a top notification");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading a top notification: " + e.getMessage());
             return null;
         }
     }

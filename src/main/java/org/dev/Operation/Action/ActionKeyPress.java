@@ -14,7 +14,7 @@ public class ActionKeyPress extends Action {
             Robot robot = new Robot();
             performKeyPress(robot, keyCode);
         } catch (AWTException e) {
-            AppScene.addLog(LogLevel.ERROR, this.getClass().getSimpleName(), "Error with action key press");
+            AppScene.addLog(LogLevel.ERROR, this.getClass().getSimpleName(), "Error with action key press: " + e.getMessage());
         }
     }
 }

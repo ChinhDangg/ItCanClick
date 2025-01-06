@@ -5,6 +5,7 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -28,7 +29,7 @@ import java.util.*;
 
 public class ConditionTextMenuController extends OptionsMenuController implements Initializable {
     @FXML
-    private Pane textMenuPane;
+    private Group parentGroup;
     @FXML
     private Label readingResultLabel;
     @FXML
@@ -96,7 +97,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     @Override
     public void showMenu(boolean show) {
         visible = show;
-        textMenuPane.setVisible(visible);
+        parentGroup.setVisible(visible);
         AppScene.addLog(LogLevel.TRACE, className, "Menu showed: " + visible);
     }
 
@@ -113,7 +114,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
         }
         conditionController.registerReadingCondition(new TextCondition(ReadingCondition.Text, currentMainImage,
                 mainImageBoundingBox, notOptionCheckBox.isSelected(), requiredOptionCheckBox.isSelected(),
-                currentTextScaleValue, readTexts));
+                currentDisplayImage, currentTextScaleValue, readTexts));
         AppScene.addLog(LogLevel.INFO, className, "Saved");
     }
     @Override
@@ -153,20 +154,13 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     private BufferedImage getDisplayImageForReadingText(int x, int y) throws AWTException {
         mainImageBoundingBox = new Rectangle(x, y, imageWidth, imageHeight);
         currentMainImage = captureCurrentScreen(mainImageBoundingBox);
-        AppScene.addLog(LogLevel.TRACE, className, "Current screen is captured: " + mainImageBoundingBox.toString());
         BufferedImage imageWithEdges = getImageWithEdges(currentMainImage, x, y, 0.5f);
         if (currentTextScaleValue != 1.00) {
             currentMainImage = getScaledImage(currentMainImage, currentTextScaleValue);
-            if (imageWithEdges != null) {
+            if (imageWithEdges != null)
                 imageWithEdges = getScaledImage(imageWithEdges, currentTextScaleValue);
-                adjustMainImageWidth(imageWithEdges.getWidth());
-                adjustMainImageHeight(imageWithEdges.getHeight());
-            }
-            else {
-                adjustMainImageWidth(currentMainImage.getWidth());
-                adjustMainImageHeight(currentMainImage.getHeight());
-            }
         }
+        currentDisplayImage = (imageWithEdges == null) ? currentMainImage : imageWithEdges;
         BufferedImage zoomedImage = getZoomedImage(imageWithEdges);
         if (zoomedImage != null)
             return zoomedImage;
@@ -177,8 +171,8 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             try {
                 String readText = readTextFromImage(currentMainImage);
                 Platform.runLater(() -> readingResultLabel.setText(readText));
-            } catch (TesseractException e) {
-                AppScene.addLog(LogLevel.ERROR, className, "Error reading from image or updating read text label");
+            } catch (Exception e) {
+                AppScene.addLog(LogLevel.ERROR, className, "Error reading from image or updating read text label: " + e.getMessage());
             }
         }
     }
@@ -246,14 +240,13 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     public void actionPerformed(java.awt.event.ActionEvent e) {
         if (e.getSource() == mouseTimer) {
             Point p = MouseInfo.getPointerInfo().getLocation();
-            if (!p.equals(previousMousePoint)) {
-                previousMousePoint = p;
-                try {
-                    currentDisplayImage = getDisplayImageForReadingText(p.x, p.y);
-                    displayMainImageView(currentDisplayImage);
-                } catch (Exception ex) {
-                    AppScene.addLog(LogLevel.ERROR, className, "Error at display captured image at mouse pointer");
-                }
+            if (p.equals(previousMousePoint))
+                return;
+            previousMousePoint = p;
+            try {
+                displayMainImageView(getDisplayImageForReadingText(p.x, p.y));
+            } catch (Exception ex) {
+                AppScene.addLog(LogLevel.ERROR, className, "Error at display captured image at mouse pointer: " + ex.getMessage());
             }
         }
     }

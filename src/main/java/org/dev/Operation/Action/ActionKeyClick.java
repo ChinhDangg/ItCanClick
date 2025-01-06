@@ -19,7 +19,7 @@ public class ActionKeyClick extends Action {
             robot.keyRelease(keyCode);
             AppScene.addLog(LogLevel.DEBUG, className, "Key released: " + KeyEvent.getKeyText(keyCode));
         } catch (AWTException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error with action key click");
+            AppScene.addLog(LogLevel.ERROR, className, "Error with action key click: " + e.getMessage());
         }
     }
 }

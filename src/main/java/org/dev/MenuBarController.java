@@ -63,7 +63,7 @@ public class MenuBarController implements Initializable {
             out.writeObject(operationData);
             AppScene.addLog(LogLevel.INFO, className, "Saved All");
         } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error saving all operation data");
+            AppScene.addLog(LogLevel.ERROR, className, "Error saving all operation data: " + e.getMessage());
         }
     }
     private Path getSavePath(String fileName) {

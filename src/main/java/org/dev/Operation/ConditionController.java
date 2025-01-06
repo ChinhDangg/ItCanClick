@@ -39,7 +39,7 @@ public class ConditionController implements Initializable, ActivityController {
 
     public void registerReadingCondition(Condition condition) {
         if (condition == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Condition is null - registerReadingCondition");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Condition is null - registerReadingCondition");
             return;
         }
         isSet = true;
@@ -66,7 +66,7 @@ public class ConditionController implements Initializable, ActivityController {
 
     public void loadSavedCondition(Condition condition) {
         if (condition == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error cannot load null saved condition");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - cannot load null saved condition");
             return;
         }
         registerReadingCondition(condition);

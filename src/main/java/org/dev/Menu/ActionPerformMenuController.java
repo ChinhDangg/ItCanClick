@@ -4,6 +4,7 @@ import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -24,7 +25,7 @@ import java.util.ResourceBundle;
 
 public class ActionPerformMenuController extends OptionsMenuController {
     @FXML
-    private Pane actionPerformMenu;
+    private Group parentGroup;
     @FXML
     private Label actionPerformIndicationLabel;
     @FXML
@@ -85,7 +86,6 @@ public class ActionPerformMenuController extends OptionsMenuController {
             case KeyPressMouseClick -> new ActionKeyPressMouseClick();
         };
     }
-
     @Override
     protected void backToPreviousMenu(MouseEvent event) {
         if (visible) {
@@ -109,7 +109,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
 
     @Override
     protected void showMenu(boolean show) {
-        actionPerformMenu.setVisible(show);
+        parentGroup.setVisible(show);
         visible = show;
     }
 
@@ -222,7 +222,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     private BufferedImage getDisplayImage(int x, int y) throws AWTException {
         mainImageBoundingBox = new Rectangle(x, y, imageWidth, imageHeight);
         currentMainImage = captureCurrentScreen(mainImageBoundingBox);
-        AppScene.addLog(LogLevel.TRACE, className, "Current screen is captured");
+        //AppScene.addLog(LogLevel.TRACE, className, "Current screen is captured");
         BufferedImage imageWithEdges = getImageWithEdges(currentMainImage, x, y, 0.5f);
         currentDisplayImage = (imageWithEdges == null) ? currentMainImage : imageWithEdges;
         BufferedImage zoomedImage = getZoomedImage(imageWithEdges);
@@ -243,7 +243,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
             try {
                 displayMainImageView(getDisplayImage(p.x, p.y));
             } catch (Exception ex) {
-                AppScene.addLog(LogLevel.ERROR, className, "Error at displaying captured image at mouse pointer");
+                AppScene.addLog(LogLevel.ERROR, className, "Error at displaying captured image at mouse pointer: " + ex.getMessage());
             }
         }
     }

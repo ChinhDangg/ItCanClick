@@ -2,14 +2,13 @@ package org.dev.Menu;
 
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
-import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
@@ -18,7 +17,6 @@ import org.dev.Operation.ActivityController;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Condition.ImageCheckResult;
 import org.dev.Operation.ConditionController;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -51,10 +49,8 @@ public class ConditionMenuController extends MenuController implements Initializ
             textMenuController.backToPreviousMenu(event);
         else if (pixelMenuController != null && pixelMenuController.visible)
             pixelMenuController.backToPreviousMenu(event);
-        GlobalScreen.removeNativeKeyListener(this);
-        isKeyListening = false;
+        stopKeyListening();
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on close menu button");
-        AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
     }
 
     @Override
@@ -69,15 +65,23 @@ public class ConditionMenuController extends MenuController implements Initializ
                 loadReadingPixelConditionMenu();
             pixelMenuController.loadMenu(conditionController);
         }
+        stopKeyListening();
+        setMenuMainGroupVisible(false);
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start registering button");
         AppScene.addLog(LogLevel.DEBUG, className, "Reading type chosen: " + readingTypeChoice.getValue());
+    }
+
+    private void stopKeyListening() {
+        GlobalScreen.removeNativeKeyListener(this);
+        isKeyListening = false;
+        AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
     }
 
     @Override
     public void loadMenu(ActivityController activityController) {
         if (!isKeyListening) {
-            isKeyListening = true;
             GlobalScreen.addNativeKeyListener(this);
+            isKeyListening = true;
         }
         this.conditionController = (ConditionController) activityController;
         boolean isControllerSet = conditionController.isSet();
@@ -90,6 +94,7 @@ public class ConditionMenuController extends MenuController implements Initializ
         else
             mainImageView.setImage(null);
         recheckResultImageView.setImage(null);
+        setMenuMainGroupVisible(true);
         AppScene.addLog(LogLevel.TRACE, className, "Loaded Menu");
         AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
         AppScene.addLog(LogLevel.TRACE, className, "Controller is set: " + isControllerSet);
@@ -106,10 +111,12 @@ public class ConditionMenuController extends MenuController implements Initializ
         try {
             Condition condition = conditionController.getCondition();
             ImageCheckResult checkedConditionResult = condition.checkCondition();
-            Platform.runLater(() -> updateRecheckResultLabel(checkedConditionResult.isPass(), condition.getChosenReadingCondition().name()));
+            //Platform.runLater(() -> updateRecheckResultLabel(checkedConditionResult.isPass(), condition.getChosenReadingCondition().name()));
+            updateRecheckResultLabel(checkedConditionResult.isPass(), checkedConditionResult.getReadResult());
+            recheckResultImageView.setImage(SwingFXUtils.toFXImage(checkedConditionResult.getDisplayImage(), null));
             AppScene.addLog(LogLevel.TRACE, className, "Condition recheck result: " + checkedConditionResult.getReadResult());
         } catch(Exception e) {
-            AppScene.addLog(LogLevel.WARN, className, "Fail rechecking condition");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail rechecking condition: " + e.getMessage());
         }
     }
     @Override
@@ -129,6 +136,7 @@ public class ConditionMenuController extends MenuController implements Initializ
         int nativeKeyCode = e.getKeyCode();
         if (nativeKeyCode == NativeKeyEvent.VC_F2) {
             AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to recheck");
+            AppScene.addLog(LogLevel.INFO, className, "Clicked on F2 key to recheck");
             recheck();
         }
     }
@@ -138,21 +146,21 @@ public class ConditionMenuController extends MenuController implements Initializ
     private void loadReadingTextConditionMenu() { // called one or else redundant
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("conditionTextMenuPane.fxml"));
-            Pane textMenuPane = loader.load();
+            Node textMenuPane = loader.load();
             textMenuController = loader.getController();
             mainMenuStackPane.getChildren().add(textMenuPane);
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Fail loading reading text condition menu pane");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading reading text condition menu pane: " + e.getMessage());
         }
     }
     private void loadReadingPixelConditionMenu() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("conditionPixelMenuPane.fxml"));
-            Pane pixelMenuPane = loader.load();
+            Node pixelMenuPane = loader.load();
             pixelMenuController = loader.getController();
             mainMenuStackPane.getChildren().add(pixelMenuPane);
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Fail loading reading pixel condition menu pane");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading reading pixel condition menu pane: " + e.getMessage());
         }
     }
 

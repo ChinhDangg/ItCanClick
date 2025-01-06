@@ -102,7 +102,7 @@ public class MinimizedTaskController implements Initializable, MainJobController
             setTaskController(loader.getController());
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Task Pane");
         } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading task pane");
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading task pane: " + e.getMessage());
         }
     }
 

@@ -146,8 +146,8 @@ public class AppScene {
             displayCurrentOperationRun();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded operation run");
             return true;
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading Operation Run Pane");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading Operation Run Pane: " + e.getMessage());
             return false;
         }
     }
@@ -222,8 +222,8 @@ public class AppScene {
             mainDisplayStackPane.getChildren().add(operationPane);
             currentLoadedOperationController = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded empty operation pane");
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading empty operation pane");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading empty operation pane: " + e.getMessage());
         }
     }
 
@@ -252,8 +252,8 @@ public class AppScene {
 
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded saved operation: " + path);
             return true;
-        } catch (IOException | ClassNotFoundException i) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading operation data: " + i.getMessage());
+        } catch (IOException | ClassNotFoundException e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading operation data: " + e.getMessage());
             return false;
         }
     }
@@ -291,8 +291,8 @@ public class AppScene {
             sideBarController = sideBarLoader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Left Side Bar");
             return leftSideBarNode;
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading left side bar");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading left side bar: " + e.getMessage());
             return null;
         }
     }
@@ -304,8 +304,8 @@ public class AppScene {
             centerBannerController = centerBannerLoader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded center banner pane");
             return centerBannerNode;
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading center banner pane");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading center banner pane: " + e.getMessage());
             return null;
         }
     }
@@ -325,8 +325,8 @@ public class AppScene {
             loader.load();
             actionMenuController = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Action Menu");
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading action menu pane");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading action menu pane: " + e.getMessage());
         }
     }
     private static void loadConditionMenuPane() {
@@ -336,8 +336,8 @@ public class AppScene {
             loader.load();
             conditionMenuController = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Condition Menu");
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition menu pane");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition menu pane: " + e.getMessage());
         }
     }
 }

@@ -7,15 +7,14 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.ActionController;
 import org.dev.Operation.ActivityController;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -42,10 +41,8 @@ public class ActionMenuController extends MenuController implements Initializabl
         AppScene.closeActionMenuPane();
         if (actionPerformMenuController != null && actionPerformMenuController.visible)
             actionPerformMenuController.backToPreviousMenu(event);
-        GlobalScreen.removeNativeKeyListener(this);
-        isKeyListening = false;
+        stopKeyListening();
         AppScene.addLog(LogLevel.DEBUG, className, "Action menu closed");
-        AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
     }
 
     @Override
@@ -54,16 +51,22 @@ public class ActionMenuController extends MenuController implements Initializabl
             loadActionPerformMenu();
         actionController.setChosenActionPerform(readingTypeChoice.getValue());
         actionPerformMenuController.loadMenu(actionController);
+        setMenuMainGroupVisible(false);
+        stopKeyListening();
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start registering");
+    }
+
+    private void stopKeyListening() {
         GlobalScreen.removeNativeKeyListener(this);
         isKeyListening = false;
-        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start registering");
+        AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
     }
 
     @Override
     public void loadMenu(ActivityController activityController) {
         if (!isKeyListening) {
-            isKeyListening = true;
             GlobalScreen.addNativeKeyListener(this);
+            isKeyListening = true;
         }
         this.actionController = (ActionController) activityController;
         boolean controllerSet = actionController.isSet();
@@ -75,6 +78,8 @@ public class ActionMenuController extends MenuController implements Initializabl
         }
         else
             mainImageView.setImage(null);
+        recheckResultImageView.setImage(null);
+        setMenuMainGroupVisible(true);
         AppScene.addLog(LogLevel.DEBUG, className, "Loaded action menu");
         AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
         AppScene.addLog(LogLevel.TRACE, className, "Current action is set: " + controllerSet);
@@ -93,7 +98,7 @@ public class ActionMenuController extends MenuController implements Initializabl
             Thread thread = new Thread(this::runRecheckAction);
             thread.start();
         } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Fail rechecking action");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail rechecking action: " + e.getMessage());
         }
     }
     @Override
@@ -108,8 +113,8 @@ public class ActionMenuController extends MenuController implements Initializabl
             actionController.getAction().performAction();
             AppScene.addLog(LogLevel.INFO, className, "Action performed");
             Platform.runLater(() -> recheckResultLabel.setText("Action finished performing"));
-        } catch (InterruptedException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Fail run recheck action with sleep");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Fail run recheck action with sleep: " + e.getMessage());
         }
     }
     public void nativeKeyReleased(NativeKeyEvent e) {
@@ -125,11 +130,11 @@ public class ActionMenuController extends MenuController implements Initializabl
     private void loadActionPerformMenu() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("actionPerformMenuPane.fxml"));
-            Pane actionPerformMenuPane = loader.load();
+            Node actionPerformMenuPane = loader.load();
             actionPerformMenuController = loader.getController();
             mainMenuStackPane.getChildren().add(actionPerformMenuPane);
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Fail loading action perform menu pane");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading action perform menu pane: " + e.getMessage());
         }
     }
 }

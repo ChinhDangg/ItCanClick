@@ -15,7 +15,6 @@ import javafx.scene.layout.StackPane;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.ActivityController;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -65,19 +64,11 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
         AppScene.addLog(LogLevel.DEBUG, className, "Updated Zoom value: " + currentZoomValue);
     }
     protected BufferedImage getZoomedImage(BufferedImage imageWithEdges) {
-        if (currentZoomValue != 1.00) {
-            if (imageWithEdges != null) {
-                BufferedImage temp = getScaledImage(imageWithEdges, currentZoomValue);
-                adjustMainImageWidth(temp.getWidth());
-                adjustMainImageHeight(temp.getHeight());
-                return temp;
-            }
-            adjustMainImageWidth((int) (currentMainImage.getWidth() * currentZoomValue));
-            adjustMainImageHeight((int) (currentMainImage.getHeight() * currentZoomValue));
-            //AppScene.addLog(LogLevel.TRACE, className, "Get Zoomed Image");
-            return getScaledImage(currentMainImage, currentZoomValue);
-        }
-        return null;
+        if (currentZoomValue == 1.00)
+            return null;
+        if (imageWithEdges != null)
+            return getScaledImage(imageWithEdges, currentZoomValue);
+        return getScaledImage(currentMainImage, currentZoomValue);
     }
 
     // ------------------------------------------------------
@@ -108,7 +99,6 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
             mainImageView.setImage(SwingFXUtils.toFXImage(image, null));
         else
             mainImageView.setImage(null);
-        //AppScene.addLog(LogLevel.TRACE, className, "Updated Main image view");
     }
     protected int imageWidth = 100, imageHeight = 100;
     protected void resetImageWidthHeight() {
@@ -180,13 +170,15 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
     public static BufferedImage captureCurrentScreen(Rectangle rectangle) throws AWTException {
         return new Robot().createScreenCapture(rectangle);
     }
-    public static BufferedImage getScaledImage(BufferedImage image, double scaleValue) {
+    public BufferedImage getScaledImage(BufferedImage image, double scaleValue) {
         int w = (int) ((double) image.getWidth() * scaleValue);
         int h = (int) ((double) image.getHeight() * scaleValue);
         BufferedImage tempImage = new BufferedImage(w, h, image.getType());
         Graphics2D g = tempImage.createGraphics();
         g.drawImage(image, 0,0, w, h,null);
         g.dispose();
+        adjustMainImageWidth(w);
+        adjustMainImageHeight(h);
         return tempImage;
     }
     // ------------------------------------------------------
@@ -241,7 +233,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
             stopMouseMotionListening();
             AppScene.addLog(LogLevel.DEBUG, className, "Stopped tracking mouse and keyboard");
         } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error with removing all listener");
+            AppScene.addLog(LogLevel.ERROR, className, "Error with removing all listener: " + e.getMessage());
         }
     }
 

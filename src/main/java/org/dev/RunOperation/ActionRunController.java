@@ -95,12 +95,12 @@ public class ActionRunController extends RunActivity implements Initializable, M
     // ------------------------------------------------------
     public boolean startAction(ActionData actionData) throws InterruptedException {
         if (actionData == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Action data is null - cannot start");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Action data is null - cannot start");
             return false;
         }
         Action action = actionData.getAction();
         if (action == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Action is null - cannot start");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Action is null - cannot start");
             return false;
         }
         changeLabelText(actionRunNameLabel, action.getActionName());
@@ -232,7 +232,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
     private void loadEntryConditionRunPane() {
         Node conditionRunPane = loadConditionRunPane();
         if (conditionRunPane == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Could not load entry condition run pane");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - cannot load condition run pane - Could not load entry condition run pane");
             return;
         }
         conditionRunEntryVBoxContainer.setVisible(true);
@@ -247,7 +247,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
     private void loadExitConditionRunPane() {
         Node conditionRunPane = loadConditionRunPane();
         if (conditionRunPane == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Could not load exit condition run pane");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - condition run pane is null - Could not load exit condition run pane");
             return;
         }
         conditionRunExitVBoxContainer.setVisible(true);
@@ -265,7 +265,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
             currentConditionRunController = fxmlLoader.getController();
             return conditionRunPane;
         } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition run pane");
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition run pane: " + e.getMessage());
             return null;
         }
     }

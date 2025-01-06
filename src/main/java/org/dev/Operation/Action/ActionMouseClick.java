@@ -10,7 +10,7 @@ public class ActionMouseClick extends Action {
         try {
             performMouseClick(mainImageBoundingBox);
         } catch (AWTException e) {
-            AppScene.addLog(LogLevel.ERROR, this.getClass().getSimpleName(), "Fail performing mouse click action");
+            AppScene.addLog(LogLevel.ERROR, this.getClass().getSimpleName(), "Error performing mouse click action: " + e.getMessage());
         }
     }
 }

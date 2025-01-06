@@ -138,8 +138,8 @@ public class OperationController implements Initializable, Serializable, MainJob
             operationVBox.getChildren().add(numberOfTask, taskPane);
             taskList.add(controller);
             createTaskSideContent(controller);
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding minimized task pane");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding minimized task pane: " + e.getMessage());
         }
     }
     private void createTaskSideContent(MinimizedTaskController controller) {
@@ -267,7 +267,7 @@ public class OperationController implements Initializable, Serializable, MainJob
 
     public void loadSavedOperationData(OperationData operationData) {
         if (operationData == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Operation data is null - cannot load from save");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation data is null - cannot load from save");
             return;
         }
         this.operation = operationData.getOperation();

@@ -80,7 +80,7 @@ public class ActionController implements Initializable, MainJobController, Activ
         AppScene.closeConditionMenuPane();
         TaskController parentTaskController = findParentTaskController();
         if (parentTaskController == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Parent task controller is null - takeToDisplay");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Parent task controller is null - takeToDisplay");
             return;
         }
         if (mainActionPane.getScene() == null)
@@ -124,7 +124,7 @@ public class ActionController implements Initializable, MainJobController, Activ
 
     public void registerActionPerform(Action action) {
         if (action == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Action is null - registerActionPerform");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Action is null - registerActionPerform");
             return;
         }
         isSet = true;
@@ -185,8 +185,8 @@ public class ActionController implements Initializable, MainJobController, Activ
             whichController.add(loader.getController());
             whichPane.getChildren().add(pane);
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Condition Pane");
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition pane - addNewCondition");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition pane - addNewCondition: " + e.getMessage());
         }
     }
 
@@ -200,8 +200,8 @@ public class ActionController implements Initializable, MainJobController, Activ
             whichController.add(controller);
             whichPane.getChildren().add(pane);
             AppScene.addLog(LogLevel.DEBUG, className, "Loading Condition Pane");
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition pane - addSavedCondition");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition pane - addSavedCondition: " + e.getMessage());
         }
     }
 
@@ -225,7 +225,7 @@ public class ActionController implements Initializable, MainJobController, Activ
 
     public void loadSavedActionData(ActionData actionData) {
         if (actionData == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Action data is null - cannot load from save");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Action data is null - cannot load from save");
             return;
         }
         registerActionPerform(actionData.getAction());

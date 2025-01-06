@@ -104,8 +104,8 @@ public class TaskController implements Initializable, MainJobController {
             // update side menu
             HBox actionLabelHBox = SideMenuController.getDropDownHBox(null, actionController.getActionNameLabel(), actionController);
             actionGroupVBoxSideContent.getChildren().add(actionLabelHBox);
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Fail loading and adding action pane");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding action pane: " + e.getMessage());
         }
     }
 
@@ -211,7 +211,7 @@ public class TaskController implements Initializable, MainJobController {
 
     public void loadSavedTaskData(TaskData taskData) {
         if (taskData == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Task data is null - cannot load from save");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Task data is null - cannot load from save");
             return;
         }
         taskNameLabel.setText(taskData.getTask().getTaskName());

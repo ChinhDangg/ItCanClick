@@ -61,7 +61,7 @@ public class OperationRunController implements Initializable, MainJobController 
     @Override
     public void takeToDisplay() {
         if (mainOperationRunVBox.getScene() == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Operation run scene is null but take to display is called");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation run scene is null - but take to display is called");
             return;
         }
         AppScene.closeActionMenuPane();
@@ -95,7 +95,7 @@ public class OperationRunController implements Initializable, MainJobController 
     public void startOperation(OperationController operationController) {
         OperationData operationData = operationController.getOperationData();
         if (operationData == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "No operation data found - cannot start");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation data is null - cannot start");
             return;
         }
         String operationName = operationData.getOperation().getOperationName();
@@ -109,8 +109,8 @@ public class OperationRunController implements Initializable, MainJobController 
                     runOperation(operationData);
                     AppScene.addLog(LogLevel.INFO, className, "Finished running operation: " + operationName);
                     Platform.runLater(() -> AppScene.setIsOperationRunning(false));
-                } catch (InterruptedException e) {
-                    AppScene.addLog(LogLevel.ERROR, className, "Error to start run operation");
+                } catch (Exception e) {
+                    AppScene.addLog(LogLevel.ERROR, className, "Error to start run operation: " + e.getMessage());
                 }
                 return null;
             }
@@ -160,7 +160,7 @@ public class OperationRunController implements Initializable, MainJobController 
             Platform.runLater(() -> taskRunVBoxSideContent.getChildren().add(new VBox(taskRunLabelHBox, actionRunVBox)));
             Platform.runLater(() -> runVBox.getChildren().add(taskRunGroup));
         } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading task run pane");
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading task run pane: " + e.getMessage());
         }
     }
 }

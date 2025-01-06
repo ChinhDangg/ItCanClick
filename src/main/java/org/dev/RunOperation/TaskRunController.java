@@ -54,12 +54,12 @@ public class TaskRunController extends RunActivity implements Initializable, Mai
     // ------------------------------------------------------
     public boolean startTask(TaskData taskData) throws InterruptedException {
         if (taskData == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Task data is null - cannot start");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Task data is null - cannot start");
             return false;
         }
         Task currentTask = taskData.getTask();
         if (currentTask == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Task is null - cannot start");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Task is null - cannot start");
             return false;
         }
         String taskName = currentTask.getTaskName();
@@ -118,7 +118,7 @@ public class TaskRunController extends RunActivity implements Initializable, Mai
             Platform.runLater(() -> actionRunVBoxSideContent.getChildren().add(new VBox(actionRunLabelHBox, conditionRunVBox)));
             Platform.runLater(() -> mainTaskRunVBox.getChildren().add(actionRunPaneGroup));
         } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading action run pane");
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading action run pane: " + e.getMessage());
         }
     }
 }

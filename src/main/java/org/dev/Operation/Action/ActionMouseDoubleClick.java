@@ -11,7 +11,7 @@ public class ActionMouseDoubleClick extends Action {
         try {
             performMouseDoubleClick(mainImageBoundingBox);
         } catch (AWTException e) {
-            AppScene.addLog(LogLevel.ERROR, this.getClass().getSimpleName(), "Error with action double mouse clicks");
+            AppScene.addLog(LogLevel.ERROR, this.getClass().getSimpleName(), "Error with action double mouse clicks: " + e.getMessage());
         }
     }
 }

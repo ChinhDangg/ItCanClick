@@ -12,6 +12,7 @@ import java.io.*;
 public abstract class Condition implements Serializable {
     protected ReadingCondition chosenReadingCondition;
     protected transient BufferedImage mainImage;
+    protected transient BufferedImage displayImage;
     protected Rectangle mainImageBoundingBox;
     protected boolean not;
     protected boolean required;
@@ -40,19 +41,20 @@ public abstract class Condition implements Serializable {
     // will return wrong image if display Image has the same or smaller width and height then bounding box
     protected BufferedImage getImageWithEdges(Rectangle innerBoundingBox, BufferedImage fullImage) throws AWTException {
         int width = fullImage.getWidth(), height = fullImage.getHeight();
-        return new Robot().createScreenCapture(new Rectangle(innerBoundingBox.x-width/2, innerBoundingBox.y-height/2, width, height));
+        return new Robot().createScreenCapture(new Rectangle(innerBoundingBox.x - (width - innerBoundingBox.width)/2
+                , innerBoundingBox.y - (height - innerBoundingBox.height)/2, width, height));
     }
 
     protected BufferedImage createImageWithEdges(BufferedImage seenImage, BufferedImage seenImageWithEdges) {
         int width = seenImageWithEdges.getWidth(), height = seenImageWithEdges.getHeight();
-        if (seenImage.getWidth() <= width && seenImage.getHeight() <= height)
+        if (seenImage.getWidth() >= width && seenImage.getHeight() >= height)
             return seenImage;
         BufferedImage completeImage = new BufferedImage(width, height, seenImageWithEdges.getType());
         Graphics2D g = completeImage.createGraphics();
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
         g.drawImage(seenImageWithEdges, 0, 0, null);
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-        g.drawImage(seenImage, width/2, height/2, null);
+        g.drawImage(seenImage, (width - seenImage.getWidth())/2, (height - seenImage.getHeight())/2, null);
         g.dispose();
         return completeImage;
     }

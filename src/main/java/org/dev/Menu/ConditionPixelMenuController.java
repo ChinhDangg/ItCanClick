@@ -4,9 +4,9 @@ import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Condition.Condition;
@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
 
 public class ConditionPixelMenuController extends OptionsMenuController implements Initializable {
     @FXML
-    private Pane pixelMenuPane;
+    private Group parentGroup;
     @FXML
     private CheckBox showHideLineCheckBox, blackWhiteLineCheckBox;
     @FXML
@@ -80,7 +80,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     }
     public void showMenu(boolean show) {
         visible = show;
-        pixelMenuPane.setVisible(visible);
+        parentGroup.setVisible(visible);
         AppScene.addLog(LogLevel.TRACE, className, "Menu showed: " + visible);
     }
 
@@ -115,7 +115,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     private BufferedImage getDisplayImageForReadingPixel(int x, int y) throws AWTException {
         mainImageBoundingBox = new Rectangle(x, y, imageWidth, imageHeight);
         currentMainImage = captureCurrentScreen(mainImageBoundingBox);
-        AppScene.addLog(LogLevel.TRACE, className, "Current screen is captured");
+        //AppScene.addLog(LogLevel.TRACE, className, "Current screen is captured");
         BufferedImage box = (showHideLineCheckBox.isSelected()) ? drawBox(imageWidth, imageHeight, getPixelColor()) : null;
         BufferedImage imageWithEdges = (box == null) ? getImageWithEdges(currentMainImage, x, y, 1.0f) :
                 getImageWithEdges(box, x, y, 1.0f);
@@ -167,23 +167,20 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
         }
     }
     private Color getPixelColor() {
-        Color color = blackWhiteLineCheckBox.isSelected() ? Color.BLACK : Color.WHITE;
-        AppScene.addLog(LogLevel.DEBUG, className, "New pixel color box: " + color.toString());
-        return color;
+        return blackWhiteLineCheckBox.isSelected() ? Color.BLACK : Color.WHITE;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == mouseTimer) {
             Point p = MouseInfo.getPointerInfo().getLocation();
-            if (p.equals(previousMousePoint)) {
+            if (p.equals(previousMousePoint))
                 return;
-            }
             previousMousePoint = p;
             try {
                 displayMainImageView(getDisplayImageForReadingPixel(p.x, p.y));
             } catch (Exception ex) {
-                AppScene.addLog(LogLevel.ERROR, className, "Error at displaying captured image at mouse pointer");
+                AppScene.addLog(LogLevel.ERROR, className, "Error at displaying captured image at mouse pointer: " + ex.getMessage());
             }
         }
     }

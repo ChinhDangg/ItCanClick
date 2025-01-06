@@ -106,8 +106,8 @@ public class SideBarController implements Initializable {
             sideMenuParentOuterNode = sideMenuLoader.load();
             sideMenuController = sideMenuLoader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Left Side Menu");
-        } catch (IOException e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading left side menu pane");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading left side menu pane: " + e.getMessage());
         }
     }
 }
