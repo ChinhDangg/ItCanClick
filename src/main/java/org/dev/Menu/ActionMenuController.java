@@ -13,8 +13,10 @@ import javafx.scene.input.MouseEvent;
 import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
 import org.dev.Enum.LogLevel;
+import org.dev.Operation.Action.Action;
 import org.dev.Operation.ActionController;
 import org.dev.Operation.ActivityController;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -64,25 +66,25 @@ public class ActionMenuController extends MenuController implements Initializabl
 
     @Override
     public void loadMenu(ActivityController activityController) {
-        if (!isKeyListening) {
-            GlobalScreen.addNativeKeyListener(this);
-            isKeyListening = true;
-        }
         this.actionController = (ActionController) activityController;
-        boolean controllerSet = actionController.isSet();
-        recheckContentVBox.setVisible(controllerSet);
+        boolean isControllerSet = actionController.isSet();
+        recheckContentVBox.setVisible(isControllerSet);
         recheckResultLabel.setText("");
-        if (controllerSet) {
+        if (isControllerSet) {
             mainImageView.setImage(SwingFXUtils.toFXImage(actionController.getAction().getDisplayImage(), null));
             readingTypeChoice.setValue(actionController.getAction().getChosenActionPerform());
         }
         else
             mainImageView.setImage(null);
+        if (!isKeyListening && isControllerSet) {
+            GlobalScreen.addNativeKeyListener(this);
+            isKeyListening = true;
+        }
         recheckResultImageView.setImage(null);
         setMenuMainGroupVisible(true);
         AppScene.addLog(LogLevel.DEBUG, className, "Loaded action menu");
         AppScene.addLog(LogLevel.TRACE, className, "Key is listening: " + isKeyListening);
-        AppScene.addLog(LogLevel.TRACE, className, "Current action is set: " + controllerSet);
+        AppScene.addLog(LogLevel.TRACE, className, "Current action is set: " + isControllerSet);
     }
 
     // ------------------------------------------------------
@@ -95,7 +97,7 @@ public class ActionMenuController extends MenuController implements Initializabl
         }
         try {
             AppScene.addLog(LogLevel.INFO, className, "Test performing action without conditions");
-            Thread thread = new Thread(this::runRecheckAction);
+            Thread thread = new Thread(this::runRecheckActionThread);
             thread.start();
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail rechecking action: " + e.getMessage());
@@ -106,13 +108,20 @@ public class ActionMenuController extends MenuController implements Initializabl
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on recheck button");
         recheck();
     }
-    private void runRecheckAction() {
+    @Override
+    protected void updateRecheckResultLabel(boolean pass, String resultText) {
+        recheckResultLabel.setText(resultText);
+    }
+    private void runRecheckActionThread() {
         try {
             AppScene.addLog(LogLevel.INFO, className, "Performing action in 3s");
             Thread.sleep(3000);
-            actionController.getAction().performAction();
+            Action action = actionController.getAction();
+            BufferedImage seenImage = action.getSeenImage();
+            action.performAction();
             AppScene.addLog(LogLevel.INFO, className, "Action performed");
-            Platform.runLater(() -> recheckResultLabel.setText("Action finished performing"));
+            recheckResultImageView.setImage(SwingFXUtils.toFXImage(seenImage, null));
+            Platform.runLater(() -> updateRecheckResultLabel(false, "Action finished performing"));
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail run recheck action with sleep: " + e.getMessage());
         }
@@ -120,6 +129,7 @@ public class ActionMenuController extends MenuController implements Initializabl
     public void nativeKeyReleased(NativeKeyEvent e) {
         int nativeKeyCode = e.getKeyCode();
         if (nativeKeyCode == NativeKeyEvent.VC_F2) {
+            AppScene.addLog(LogLevel.INFO, className, "Rechecking action");
             AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to recheck");
             recheck();
         }

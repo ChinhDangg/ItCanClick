@@ -79,10 +79,7 @@ public class ConditionMenuController extends MenuController implements Initializ
 
     @Override
     public void loadMenu(ActivityController activityController) {
-        if (!isKeyListening) {
-            GlobalScreen.addNativeKeyListener(this);
-            isKeyListening = true;
-        }
+
         this.conditionController = (ConditionController) activityController;
         boolean isControllerSet = conditionController.isSet();
         recheckContentVBox.setVisible(isControllerSet);
@@ -93,6 +90,10 @@ public class ConditionMenuController extends MenuController implements Initializ
         }
         else
             mainImageView.setImage(null);
+        if (!isKeyListening && isControllerSet) {
+            GlobalScreen.addNativeKeyListener(this);
+            isKeyListening = true;
+        }
         recheckResultImageView.setImage(null);
         setMenuMainGroupVisible(true);
         AppScene.addLog(LogLevel.TRACE, className, "Loaded Menu");
@@ -124,19 +125,20 @@ public class ConditionMenuController extends MenuController implements Initializ
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on recheck button");
         recheck();
     }
-    private void updateRecheckResultLabel(boolean pass, String newReadText) {
-        if (newReadText == null)
+    @Override
+    protected void updateRecheckResultLabel(boolean pass, String resultText) {
+        if (resultText == null)
             recheckResultLabel.setText("Result");
         else if (pass)
-            recheckResultLabel.setText("Pass reading " + newReadText);
+            recheckResultLabel.setText("Pass reading " + resultText);
         else
-            recheckResultLabel.setText("Fail reading " + newReadText);
+            recheckResultLabel.setText("Fail reading " + resultText);
     }
     public void nativeKeyReleased(NativeKeyEvent e) {
         int nativeKeyCode = e.getKeyCode();
         if (nativeKeyCode == NativeKeyEvent.VC_F2) {
+            AppScene.addLog(LogLevel.INFO, className, "Rechecking condition");
             AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to recheck");
-            AppScene.addLog(LogLevel.INFO, className, "Clicked on F2 key to recheck");
             recheck();
         }
     }

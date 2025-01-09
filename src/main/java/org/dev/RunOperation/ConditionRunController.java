@@ -39,7 +39,7 @@ public class ConditionRunController extends RunActivity implements Initializable
         double width = stackPaneImageViewContainer.getPrefWidth();
         double height = stackPaneImageViewContainer.getPrefHeight();
         conditionExpectedImageView.setFitWidth(width);
-        conditionExpectedImageView.setFitWidth(height);
+        conditionExpectedImageView.setFitHeight(height);
         conditionReadImageView.setFitWidth(width);
         conditionReadImageView.setFitHeight(height);
     }
@@ -53,11 +53,12 @@ public class ConditionRunController extends RunActivity implements Initializable
     public boolean checkCondition(Condition condition) {
         updateImageView(conditionExpectedImageView, condition.getMainDisplayImage());
         changeLabelText(expectedResultLabel, condition.getExpectedResult());
-        ImageCheckResult checkedResult = condition.checkCondition();
-        boolean passed = checkedResult.isPass();
-        changeLabelText(readResultLabel, condition.getActualResult());
-        updateImageView(conditionReadImageView, condition.getMainImageBoundingBox());
 
+        ImageCheckResult checkedResult = condition.checkCondition();
+        changeLabelText(readResultLabel, condition.getActualResult());
+        updateImageView(conditionReadImageView, checkedResult.getDisplayImage());
+
+        boolean passed = checkedResult.isPass();
         updatePaneStatusColor(conditionReadPane, passed);
         if (condition.isRequired())
             updatePaneStatusColor(conditionExpectedPane, passed);

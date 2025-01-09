@@ -32,9 +32,6 @@ public class PixelCondition extends Condition {
     }
 
     @Override
-    public BufferedImage getMainDisplayImage() { return displayImage; }
-
-    @Override
     public String getExpectedResult() { return ReadingCondition.Pixel.name(); }
 
     @Override
@@ -57,7 +54,7 @@ public class PixelCondition extends Condition {
 
     private ImageCheckResult checkPixelFromBoundingBox(Rectangle boundingBox, BufferedImage img2) throws AWTException {
         BufferedImage img1 = ConditionPixelMenuController.captureCurrentScreen(boundingBox);
-        BufferedImage seenImageWithEdges = getImageWithEdges(boundingBox, displayImage);
+        BufferedImage seenImageWithEdges = getFullImage(boundingBox, displayImage);
 
 //        ImageIO.write(img1, "png", new File("img1.png"));
 //        ImageIO.write(img2, "png", new File("img2.png"));
@@ -81,7 +78,7 @@ public class PixelCondition extends Condition {
             if (db1.getElem(i) != db2.getElem(i))
                 pass = false;
         RunningStatus readResult = pass ? RunningStatus.Passed : RunningStatus.Failed;
-        return new ImageCheckResult(readResult.name(), createImageWithEdges(img1, seenImageWithEdges), pass);
+        return new ImageCheckResult(readResult.name(), createImageWithEdges(boundingBox, seenImageWithEdges), pass);
     }
 
     // TODO : check pixel in entire screen

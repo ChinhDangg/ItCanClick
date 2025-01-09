@@ -72,9 +72,6 @@ public class AppScene {
         primaryCenterStackPane.getChildren().add(mainCenterVBox);
         primaryCenterStackPane.getChildren().add(mainNotificationStackPane);
 
-        loadConditionMenuPane();
-        loadActionMenuPane();
-
         mainNotificationStackPane.getChildren().add(loadTopNotificationBannerPane());
         mainNotificationStackPane.getChildren().add(loadCenterBannerPane());
         mainNotificationStackPane.setMouseTransparent(true);
@@ -90,6 +87,9 @@ public class AppScene {
         HBox.setHgrow(mainDisplayStackPane, Priority.ALWAYS);
         mainCenterHBox.getChildren().add(sideBarController.getSideMenuParentOuterNode());
         mainCenterHBox.getChildren().add(mainDisplayStackPane);
+
+        loadConditionMenuPane();
+        loadActionMenuPane();
 
         sideBarController.switchTab(CurrentTab.Operation);
         return new Scene(primaryBorderPane);
@@ -265,8 +265,8 @@ public class AppScene {
             Node bottomPane = bottomPaneLoader.load();
             bottomPaneController = bottomPaneLoader.getController();
             return bottomPane;
-        } catch (IOException e) {
-            System.out.println("Error loading bottom pane");
+        } catch (Exception e) {
+            System.out.println("Error loading bottom pane: " + e.getMessage());
             return null;
         }
     }
@@ -278,7 +278,7 @@ public class AppScene {
             menuBarController = menuBarLoader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Top menu bar");
             return menuBarNode;
-        } catch (IOException e) {
+        } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading top menu bar: " + e.getMessage());
             return null;
         }

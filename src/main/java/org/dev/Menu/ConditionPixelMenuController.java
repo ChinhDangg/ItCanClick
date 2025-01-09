@@ -107,6 +107,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             stopAllListeners();
             showMenu(false);
             AppScene.conditionMenuController.loadMenu(conditionController);
+            resetMenu();
             AppScene.addLog(LogLevel.DEBUG, className, "Backed to main condition menu");
         }
     }
@@ -138,33 +139,33 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
 
     // ------------------------------------------------------
     private void showHideBoxAction(javafx.event.ActionEvent event) {
-        if (mouseStopped) {
-            Graphics2D g = currentDisplayImage.createGraphics();
-            if (showHideLineCheckBox.isSelected())
-                g.drawImage(drawBox(imageWidth, imageHeight, getPixelColor()),
-                        outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);
-            else
-                g.drawImage(currentMainImage, outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);
-            g.dispose();
-            if (currentZoomValue != 1.00)
-                displayMainImageView(getScaledImage(currentDisplayImage, currentZoomValue));
-            else
-                displayMainImageView(currentDisplayImage);
-        }
-    }
-    private void changePixelLineColor(javafx.event.ActionEvent event) {
-        if (mouseStopped) {
-            showHideLineCheckBox.setSelected(true);
-            AppScene.addLog(LogLevel.DEBUG, className, "Change pixel line color");
-            Graphics2D g = currentDisplayImage.createGraphics();
+        if (currentDisplayImage == null || !mouseStopped)
+            return;
+        Graphics2D g = currentDisplayImage.createGraphics();
+        if (showHideLineCheckBox.isSelected())
             g.drawImage(drawBox(imageWidth, imageHeight, getPixelColor()),
                     outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);
-            g.dispose();
-            if (currentZoomValue != 1.00)
-                displayMainImageView(getScaledImage(currentDisplayImage, currentZoomValue));
-            else
-                displayMainImageView(currentDisplayImage);
-        }
+        else
+            g.drawImage(currentMainImage, outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);
+        g.dispose();
+        if (currentZoomValue != 1.00)
+            displayMainImageView(getScaledImage(currentDisplayImage, currentZoomValue));
+        else
+            displayMainImageView(currentDisplayImage);
+    }
+    private void changePixelLineColor(javafx.event.ActionEvent event) {
+        if (currentDisplayImage == null || !mouseStopped)
+            return;
+        showHideLineCheckBox.setSelected(true);
+        AppScene.addLog(LogLevel.DEBUG, className, "Change pixel line color");
+        Graphics2D g = currentDisplayImage.createGraphics();
+        g.drawImage(drawBox(imageWidth, imageHeight, getPixelColor()),
+                outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);
+        g.dispose();
+        if (currentZoomValue != 1.00)
+            displayMainImageView(getScaledImage(currentDisplayImage, currentZoomValue));
+        else
+            displayMainImageView(currentDisplayImage);
     }
     private Color getPixelColor() {
         return blackWhiteLineCheckBox.isSelected() ? Color.BLACK : Color.WHITE;
@@ -188,10 +189,12 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     public void nativeKeyReleased(NativeKeyEvent e) {
         AppScene.addLog(LogLevel.TRACE, className, "Key Released: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
         if (e.getKeyCode() == NativeKeyEvent.VC_F2) {
+            AppScene.addLog(LogLevel.INFO, className, "Starting mouse listening");
             AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to start mouse listening");
             startMouseMotionListening();
         }
         else if (e.getKeyCode() == NativeKeyEvent.VC_F1) {
+            AppScene.addLog(LogLevel.INFO, className, "Stopping mouse listening");
             AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F1 key to stop mouse listening");
             stopMouseMotionListening();
         }

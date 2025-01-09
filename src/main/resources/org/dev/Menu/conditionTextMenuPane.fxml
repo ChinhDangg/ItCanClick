@@ -4,9 +4,9 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
@@ -21,19 +21,9 @@
          <children>
             <StackPane alignment="TOP_CENTER">
                <children>
-                  <StackPane alignment="TOP_CENTER">
+                  <Group StackPane.alignment="TOP_LEFT">
                      <children>
-                        <Group>
-                           <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="27.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
-                              <Label layoutX="24.0" layoutY="5.0" text="Condition" />
-                           </children>
-                        </Group>
-                     </children>
-                  </StackPane>
-                  <BorderPane>
-                     <left>
-                        <StackPane alignment="TOP_RIGHT" BorderPane.alignment="CENTER">
+                        <StackPane alignment="TOP_RIGHT">
                            <children>
                               <StackPane fx:id="backButton">
                                  <children>
@@ -42,13 +32,21 @@
                                  </children>
                               </StackPane>
                            </children>
-                           <BorderPane.margin>
+                           <padding>
                               <Insets left="5.0" top="5.0" />
-                           </BorderPane.margin>
+                           </padding>
                         </StackPane>
-                     </left>
-                     <right>
-                        <StackPane alignment="TOP_LEFT" BorderPane.alignment="CENTER">
+                     </children>
+                  </Group>
+                  <Group StackPane.alignment="TOP_CENTER">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="27.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                        <Label layoutX="24.0" layoutY="5.0" text="Condition" />
+                     </children>
+                  </Group>
+                  <Group StackPane.alignment="TOP_RIGHT">
+                     <children>
+                        <StackPane alignment="TOP_LEFT">
                            <children>
                               <StackPane fx:id="saveButton">
                                  <children>
@@ -57,12 +55,12 @@
                                  </children>
                               </StackPane>
                            </children>
-                           <BorderPane.margin>
+                           <padding>
                               <Insets right="5.0" top="5.0" />
-                           </BorderPane.margin>
+                           </padding>
                         </StackPane>
-                     </right>
-                  </BorderPane>
+                     </children>
+                  </Group>
                </children>
             </StackPane>
             <HBox>
@@ -106,7 +104,15 @@
                <children>
                   <StackPane fx:id="mainImageViewContainer" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="242.0" prefWidth="489.0" style="-fx-border-color: black; -fx-border-width: 1px;">
                      <children>
-                        <ImageView fx:id="mainImageView" pickOnBounds="true" preserveRatio="true" />
+                        <ScrollPane fitToHeight="true" fitToWidth="true">
+                           <content>
+                              <StackPane>
+                                 <children>
+                                    <ImageView fx:id="mainImageView" pickOnBounds="true" preserveRatio="true" />
+                                 </children>
+                              </StackPane>
+                           </content>
+                        </ScrollPane>
                      </children>
                   </StackPane>
                </children>
@@ -264,9 +270,6 @@
                                              </children>
                                           </Pane>
                                        </children>
-                                       <padding>
-                                          <Insets left="30.0" />
-                                       </padding>
                                     </HBox>
                                  </children>
                               </VBox>
@@ -324,7 +327,7 @@
             </StackPane>
             <StackPane alignment="BOTTOM_CENTER">
                <children>
-                  <Group>
+                  <Group StackPane.alignment="BOTTOM_CENTER">
                      <children>
                         <StackPane>
                            <children>

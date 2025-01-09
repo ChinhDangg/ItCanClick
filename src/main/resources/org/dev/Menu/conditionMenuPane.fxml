@@ -4,6 +4,8 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -21,43 +23,39 @@
                <children>
                   <StackPane>
                      <children>
-                        <StackPane alignment="TOP_CENTER">
+                        <Group StackPane.alignment="TOP_LEFT">
                            <children>
-                              <Group>
+                              <StackPane>
                                  <children>
-                                    <StackPane>
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="27.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
-                                          <Label text="Condition" />
-                                       </children>
-                                    </StackPane>
-                                 </children>
-                              </Group>
-                           </children>
-                        </StackPane>
-                        <StackPane alignment="CENTER_LEFT">
-                           <children>
-                              <Group>
-                                 <children>
-                                    <StackPane fx:id="removeButton">
+                                    <StackPane fx:id="removeButton" focusTraversable="true" styleClass="stackpane-button">
                                        <children>
                                           <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="52.0" />
                                           <Label text="Remove" />
                                        </children>
                                     </StackPane>
                                  </children>
-                              </Group>
+                                 <padding>
+                                    <Insets left="5.0" top="5.0" />
+                                 </padding>
+                              </StackPane>
                            </children>
-                           <padding>
-                              <Insets left="5.0" top="5.0" />
-                           </padding>
-                        </StackPane>
+                        </Group>
+                        <Group StackPane.alignment="TOP_CENTER">
+                           <children>
+                              <StackPane>
+                                 <children>
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="27.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                                    <Label text="Condition" />
+                                 </children>
+                              </StackPane>
+                           </children>
+                        </Group>
                      </children>
                   </StackPane>
                   <HBox alignment="CENTER_LEFT" spacing="25.0">
                      <children>
                         <ChoiceBox fx:id="readingTypeChoice" prefHeight="25.0" prefWidth="83.0" />
-                        <StackPane fx:id="startRegisteringButton">
+                        <StackPane fx:id="startRegisteringButton" focusTraversable="true" styleClass="stackpane-button">
                            <children>
                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="34.0" stroke="BLACK" strokeType="INSIDE" width="161.0" />
                               <Label text="Start Registering">
@@ -72,55 +70,200 @@
                         <Insets left="5.0" />
                      </padding>
                   </HBox>
-                  <VBox spacing="10.0">
+                  <HBox>
                      <children>
-                        <Pane style="-fx-border-color: black; -fx-border-width: 1px;">
+                        <VBox spacing="10.0">
                            <children>
-                              <StackPane prefHeight="220.0" prefWidth="489.0">
+                              <HBox>
                                  <children>
-                                    <ImageView fx:id="mainImageView" pickOnBounds="true" preserveRatio="true" />
+                                    <VBox>
+                                       <children>
+                                          <VBox spacing="5.0">
+                                             <children>
+                                                <StackPane focusTraversable="true" styleClass="stackpane-button">
+                                                   <children>
+                                                      <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
+                                                   </children>
+                                                </StackPane>
+                                                <StackPane focusTraversable="true" styleClass="stackpane-button">
+                                                   <children>
+                                                      <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
+                                                   </children>
+                                                </StackPane>
+                                             </children>
+                                             <VBox.margin>
+                                                <Insets bottom="3.0" top="3.0" />
+                                             </VBox.margin>
+                                          </VBox>
+                                          <StackPane style="-fx-border-color: black transparent black black; -fx-border-radius: 2px 0 0 2px;" VBox.vgrow="ALWAYS">
+                                             <children>
+                                                <Group>
+                                                   <children>
+                                                      <Label alignment="CENTER" layoutY="32.0" rotate="-90.0" text="Saved" />
+                                                   </children>
+                                                </Group>
+                                             </children>
+                                             <VBox.margin>
+                                                <Insets />
+                                             </VBox.margin>
+                                             <padding>
+                                                <Insets left="3.0" right="3.0" />
+                                             </padding>
+                                          </StackPane>
+                                       </children>
+                                    </VBox>
+                                    <StackPane fx:id="savedImageViewContainer" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="220.0" prefWidth="460.0" style="-fx-border-color: black; -fx-border-width: 1px;">
+                                       <children>
+                                          <ScrollPane fx:id="savedScrollPane" fitToHeight="true" fitToWidth="true">
+                                             <content>
+                                                <StackPane>
+                                                   <children>
+                                                      <ImageView fx:id="mainImageView" pickOnBounds="true" preserveRatio="true" />
+                                                   </children>
+                                                </StackPane>
+                                             </content>
+                                          </ScrollPane>
+                                       </children>
+                                    </StackPane>
+                                 </children>
+                              </HBox>
+                              <VBox fx:id="recheckContentVBox" spacing="10.0">
+                                 <children>
+                                    <HBox>
+                                       <children>
+                                          <VBox>
+                                             <children>
+                                                <VBox spacing="5.0">
+                                                   <VBox.margin>
+                                                      <Insets />
+                                                   </VBox.margin>
+                                                   <children>
+                                                      <StackPane focusTraversable="true" styleClass="stackpane-button">
+                                                         <children>
+                                                            <ImageView fitHeight="18.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" />
+                                                         </children>
+                                                      </StackPane>
+                                                      <StackPane fx:id="recheckClearButton" focusTraversable="true" styleClass="stackpane-button">
+                                                         <children>
+                                                            <ImageView fitHeight="18.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="@../../../images/icons/trash2-icon.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </children>
+                                                      </StackPane>
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="3.0" top="3.0" />
+                                                   </padding>
+                                                </VBox>
+                                                <StackPane style="-fx-border-color: black transparent black black; -fx-border-radius: 2px 0 0 2px;" VBox.vgrow="ALWAYS">
+                                                   <children>
+                                                      <Group>
+                                                         <children>
+                                                            <Label alignment="CENTER" layoutY="57.142852783203125" rotate="-90.0" text="Rechecked" />
+                                                         </children>
+                                                      </Group>
+                                                   </children>
+                                                   <VBox.margin>
+                                                      <Insets />
+                                                   </VBox.margin>
+                                                   <padding>
+                                                      <Insets left="3.0" right="3.0" />
+                                                   </padding>
+                                                </StackPane>
+                                             </children>
+                                          </VBox>
+                                          <StackPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="220.0" prefWidth="460.0" style="-fx-border-color: black; -fx-border-width: 1px;">
+                                             <children>
+                                                <ScrollPane fx:id="recheckScrollPane" fitToHeight="true" fitToWidth="true">
+                                                   <content>
+                                                      <StackPane>
+                                                         <children>
+                                                            <ImageView fx:id="recheckResultImageView" pickOnBounds="true" preserveRatio="true" />
+                                                         </children>
+                                                      </StackPane>
+                                                   </content>
+                                                </ScrollPane>
+                                             </children>
+                                          </StackPane>
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                       <children>
+                                          <StackPane fx:id="recheckButton" focusTraversable="true" styleClass="stackpane-button">
+                                             <children>
+                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="34.0" stroke="BLACK" strokeType="INSIDE" width="68.0" />
+                                                <Label text="Recheck">
+                                                   <font>
+                                                      <Font size="14.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </StackPane>
+                                          <Label fx:id="recheckResultLabel" prefHeight="17.0" prefWidth="385.0" text="Result" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" spacing="5.0">
+                           <children>
+                              <StackPane fx:id="fitButton" focusTraversable="true" styleClass="stackpane-button">
+                                 <children>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../images/icons/fit-icon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                              <StackPane fx:id="zoomInButton" focusTraversable="true" styleClass="stackpane-button">
+                                 <children>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../images/icons/zoom-in-icon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                              <StackPane fx:id="zoomOutButton" focusTraversable="true" styleClass="stackpane-button">
+                                 <children>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../images/icons/zoom-out-icon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                              <StackPane fx:id="centerButton" focusTraversable="true" styleClass="stackpane-button">
+                                 <children>
+                                    <ImageView fitHeight="22.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../images/icons/center-icon.png" />
+                                       </image>
+                                    </ImageView>
                                  </children>
                               </StackPane>
                            </children>
-                        </Pane>
-                        <VBox fx:id="recheckContentVBox" spacing="10.0">
-                           <children>
-                              <Pane style="-fx-border-color: black; -fx-border-width: 1px;">
-                                 <children>
-                                    <StackPane prefHeight="220.0" prefWidth="489.0">
-                                       <children>
-                                          <ImageView fx:id="recheckResultImageView" pickOnBounds="true" preserveRatio="true" />
-                                       </children>
-                                    </StackPane>
-                                 </children>
-                              </Pane>
-                              <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                 <children>
-                                    <StackPane fx:id="recheckButton">
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="34.0" stroke="BLACK" strokeType="INSIDE" width="68.0" />
-                                          <Label text="Recheck">
-                                             <font>
-                                                <Font size="14.0" />
-                                             </font>
-                                          </Label>
-                                       </children>
-                                    </StackPane>
-                                    <Label fx:id="recheckResultLabel" prefHeight="17.0" prefWidth="385.0" text="Result" />
-                                 </children>
-                              </HBox>
-                           </children>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                           <padding>
+                              <Insets left="5.0" />
+                           </padding>
                         </VBox>
                      </children>
                      <padding>
                         <Insets left="5.0" right="5.0" />
                      </padding>
-                  </VBox>
+                  </HBox>
                   <StackPane alignment="BOTTOM_LEFT">
                      <children>
                         <Group>
                            <children>
-                              <StackPane fx:id="backButton">
+                              <StackPane fx:id="backButton" focusTraversable="true" styleClass="stackpane-button">
                                  <children>
                                     <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="41.0" />
                                     <Label text="Back" />

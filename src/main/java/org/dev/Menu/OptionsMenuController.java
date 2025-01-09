@@ -15,6 +15,8 @@ import javafx.scene.layout.StackPane;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.ActivityController;
+import org.dev.Operation.Condition.TextCondition;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -170,19 +172,15 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
     public static BufferedImage captureCurrentScreen(Rectangle rectangle) throws AWTException {
         return new Robot().createScreenCapture(rectangle);
     }
-    public BufferedImage getScaledImage(BufferedImage image, double scaleValue) {
+    protected BufferedImage getScaledImage(BufferedImage image, double scaleValue) {
         int w = (int) ((double) image.getWidth() * scaleValue);
         int h = (int) ((double) image.getHeight() * scaleValue);
-        BufferedImage tempImage = new BufferedImage(w, h, image.getType());
-        Graphics2D g = tempImage.createGraphics();
-        g.drawImage(image, 0,0, w, h,null);
-        g.dispose();
         adjustMainImageWidth(w);
         adjustMainImageHeight(h);
-        return tempImage;
+        return TextCondition.getScaledImage(image, scaleValue);
     }
-    // ------------------------------------------------------
 
+    // ------------------------------------------------------
     @FXML
     protected Pane outsideBoxMinusButton, outsideBoxPlusButton;
     protected int outsideBoxWidth = 10;
@@ -225,8 +223,14 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
     }
     @FXML
     protected Pane startReadingConditionButton, stopReadingConditionButton;
-    protected void startMouseMotion(MouseEvent event) { startMouseMotionListening(); }
-    protected void stopMouseMotion(MouseEvent event) { stopMouseMotionListening(); }
+    protected void startMouseMotion(MouseEvent event) {
+        AppScene.addLog(LogLevel.INFO, className, "Starting capturing image at mouse");
+        startMouseMotionListening();
+    }
+    protected void stopMouseMotion(MouseEvent event) {
+        AppScene.addLog(LogLevel.INFO, className, "Stopping capturing image at mouse");
+        stopMouseMotionListening();
+    }
     protected void stopAllListeners() {
         try {
             GlobalScreen.removeNativeKeyListener(this);
@@ -249,6 +253,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
         resetImageWidthHeight();
         outsideBoxWidth = 10;
         fitImageCheckBox.setSelected(true);
+        currentDisplayImage = null;
         AppScene.addLog(LogLevel.TRACE, className, "Shared menu content is reset");
     }
 }

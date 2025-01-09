@@ -22,6 +22,9 @@ import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.MainJobController;
 import org.dev.SideMenu.SideMenuController;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -183,7 +186,11 @@ public class ActionRunController extends RunActivity implements Initializable, M
     private void performAction(Action action) {
         showActionRunPane(true);
         updateImageView(actionSavedImageView, action.getDisplayImage());
-        updateImageView(actionPerformedImageView, action.getMainImageBoundingBox());
+        try {
+            updateImageView(actionPerformedImageView, action.getSeenImage());
+        } catch (AWTException e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error getting action seen image");
+        }
         action.performAction();
         AppScene.addLog(LogLevel.INFO, className, "Performed action: " + action.getActionName());
     }

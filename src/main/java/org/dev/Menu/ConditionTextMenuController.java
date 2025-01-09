@@ -12,9 +12,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import net.sourceforge.tess4j.ITesseract;
-import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
@@ -169,21 +166,12 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     private void readAndUpdateReadTextLabel() {
         if (currentMainImage != null) {
             try {
-                String readText = readTextFromImage(currentMainImage);
+                String readText = TextCondition.readTextFromImage(currentMainImage);
                 Platform.runLater(() -> readingResultLabel.setText(readText));
             } catch (Exception e) {
                 AppScene.addLog(LogLevel.ERROR, className, "Error reading from image or updating read text label: " + e.getMessage());
             }
         }
-    }
-
-    public static String readTextFromImage(BufferedImage image) throws TesseractException {
-        System.out.println("Read texts from an image");
-        ITesseract tess = new Tesseract();
-        // deprecated but usable to remove warning variable or just import all languages in tessdata
-        tess.setTessVariable("debug_file", "/dev/null");
-        tess.setDatapath("tessdata");
-        return tess.doOCR(image);
     }
 
     // ------------------------------------------------------
@@ -254,11 +242,13 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     public void nativeKeyReleased(NativeKeyEvent e) {
         AppScene.addLog(LogLevel.TRACE, className, "Key Released: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
         if (e.getKeyCode() == NativeKeyEvent.VC_F2) {
+            AppScene.addLog(LogLevel.INFO, className, "Starting mouse listening");
             AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to start mouse listening");
             startMouseMotionListening();
         }
         else if (e.getKeyCode() == NativeKeyEvent.VC_F1) {
-            AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F1 key to stop mouse listening");
+            AppScene.addLog(LogLevel.INFO, className, "Stopping mouse listening");
+            AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to start mouse listening");
             stopMouseMotionListening();
             readAndUpdateReadTextLabel();
         }
@@ -266,7 +256,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
 
     @Override
     protected void stopMouseMotion(MouseEvent event) {
-        stopMouseMotionListening();
+        super.stopMouseMotionListening();
         readAndUpdateReadTextLabel();
     }
 }

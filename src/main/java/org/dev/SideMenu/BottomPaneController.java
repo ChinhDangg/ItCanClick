@@ -85,7 +85,7 @@ public class BottomPaneController implements Initializable {
             AppScene.openCenterBanner(logLevel.name(), content);
 
         TextFlow line = getLogLine(logLevel, className, content);
-        System.out.println(logLevel + " " + className + " " + content);
+        //System.out.println(logLevel + " " + className + " " + content);
         Platform.runLater(() -> bottomTextVBox.getChildren().add(line));
     }
 

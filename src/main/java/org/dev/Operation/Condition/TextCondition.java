@@ -2,6 +2,8 @@ package org.dev.Operation.Condition;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.sourceforge.tess4j.ITesseract;
+import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
@@ -46,7 +48,7 @@ public class TextCondition extends Condition {
                 checkResult.setPass(!checkCondition().isPass());
             return checkResult;
         } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Fail - checking text condition");
+            AppScene.addLog(LogLevel.ERROR, className, "Error checking text condition: " + e.getMessage());
             return null;
         }
     }
@@ -54,10 +56,25 @@ public class TextCondition extends Condition {
     private ImageCheckResult readTextFromCurrentScreen(Rectangle boundingBox, double scale) throws AWTException, TesseractException {
         BufferedImage seenImage = ConditionTextMenuController.captureCurrentScreen(boundingBox);
         if (scale != 1.00)
-            seenImage = new ConditionTextMenuController().getScaledImage(seenImage, scale);
-        String readText = ConditionTextMenuController.readTextFromImage(seenImage).replace("\n", "");
-        BufferedImage seenImageWithEdges = createImageWithEdges(seenImage, getImageWithEdges(boundingBox, mainImage));
-        return new ImageCheckResult(readText, seenImageWithEdges, savedText.contains(readResult));
+            seenImage = getScaledImage(seenImage, scale);
+        String readText = readTextFromImage(seenImage).replace("\n", "");
+        BufferedImage seenImageWithEdges = createImageWithEdges(seenImage, getFullImage(boundingBox, displayImage));
+        return new ImageCheckResult(readText, seenImageWithEdges, checkTextInList(readText));
+    }
+
+    private boolean checkTextInList(String readText) {
+        for (String s : savedText)
+            if (s.contains(readText) || readText.contains(s))
+                return true;
+        return false;
+    }
+
+    public static String readTextFromImage(BufferedImage image) throws TesseractException {
+        System.out.println("Read texts from an image");
+        ITesseract tess = new Tesseract();
+        //tess.setTessVariable("debug_file", "/dev/null");
+        tess.setDatapath("tessdata");
+        return tess.doOCR(image);
     }
 
     @Serial

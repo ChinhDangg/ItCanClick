@@ -261,13 +261,12 @@ public class ActionPerformMenuController extends OptionsMenuController {
 
     @Override
     protected void stopMouseMotion(MouseEvent event) {
-        stopMouseMotionListening();
+        super.stopMouseMotionListening();
         if (keyIsListening) {
             GlobalScreen.removeNativeKeyListener(this);
             registeredKeyLabelPane.setDisable(true);
             keyIsListening = false;
         }
-        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on stop capturing image at mouse button");
     }
 
     private int registeredKey = -1;
@@ -283,11 +282,13 @@ public class ActionPerformMenuController extends OptionsMenuController {
             updateRegisteredKeyLabel(keyEvent);
         }
         if (nativeKeyCode == NativeKeyEvent.VC_F2) {
-            AppScene.addLog(LogLevel.DEBUG, className, "F2 key is clicked");
+            AppScene.addLog(LogLevel.INFO, className, "Starting mouse listening");
+            AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to start mouse listening");
             startMouseMotionListening();
         }
         else if (nativeKeyCode == NativeKeyEvent.VC_F1) {
-            AppScene.addLog(LogLevel.DEBUG, className, "F1 key is clicked");
+            AppScene.addLog(LogLevel.INFO, className, "Stopping mouse listening");
+            AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to start mouse listening");
             stopMouseMotionListening();
         }
     }

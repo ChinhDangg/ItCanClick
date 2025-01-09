@@ -31,31 +31,58 @@ public abstract class Condition implements Serializable {
         this.required = required;
     }
     public BufferedImage getMainDisplayImage() {
-        return mainImage;
+        return displayImage;
     }
     public abstract ImageCheckResult checkCondition();
 
     public abstract String getExpectedResult();
     public abstract String getActualResult();
 
-    // will return wrong image if display Image has the same or smaller width and height then bounding box
-    protected BufferedImage getImageWithEdges(Rectangle innerBoundingBox, BufferedImage fullImage) throws AWTException {
-        int width = fullImage.getWidth(), height = fullImage.getHeight();
+    public static BufferedImage getFullImage(Rectangle innerBoundingBox, BufferedImage previousFullImage) throws AWTException {
+        int width = previousFullImage.getWidth(), height = previousFullImage.getHeight();
         return new Robot().createScreenCapture(new Rectangle(innerBoundingBox.x - (width - innerBoundingBox.width)/2
                 , innerBoundingBox.y - (height - innerBoundingBox.height)/2, width, height));
     }
 
-    protected BufferedImage createImageWithEdges(BufferedImage seenImage, BufferedImage seenImageWithEdges) {
-        int width = seenImageWithEdges.getWidth(), height = seenImageWithEdges.getHeight();
-        if (seenImage.getWidth() >= width && seenImage.getHeight() >= height)
-            return seenImage;
-        BufferedImage completeImage = new BufferedImage(width, height, seenImageWithEdges.getType());
+    public static BufferedImage createImageWithEdges(Rectangle innerBoundingBox, BufferedImage fullImage) {
+        int fullWidth = fullImage.getWidth(), fullHeight = fullImage.getHeight();
+        int innerWidth = innerBoundingBox.width, innerHeight = innerBoundingBox.height;
+        if (innerWidth == fullWidth && innerHeight == fullHeight)
+            return fullImage;
+        int innerX = (fullWidth - innerWidth) / 2, innerY = (fullHeight - innerHeight) / 2;
+        BufferedImage innerImage = fullImage.getSubimage(innerX, innerY, innerWidth, innerHeight);
+        BufferedImage completeImage = new BufferedImage(fullWidth, fullHeight, fullImage.getType());
         Graphics2D g = completeImage.createGraphics();
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
-        g.drawImage(seenImageWithEdges, 0, 0, null);
+        g.drawImage(fullImage, 0, 0, null);
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-        g.drawImage(seenImage, (width - seenImage.getWidth())/2, (height - seenImage.getHeight())/2, null);
+        g.drawImage(innerImage, innerX, innerY, null);
         g.dispose();
         return completeImage;
+    }
+
+    public static BufferedImage createImageWithEdges(BufferedImage seenImage, BufferedImage fullImage) {
+        int fullWidth = fullImage.getWidth(), fullHeight = fullImage.getHeight();
+        int innerWidth = seenImage.getWidth(), innerHeight = seenImage.getHeight();
+        if (innerWidth == fullWidth && innerHeight == fullHeight)
+            return fullImage;
+        BufferedImage completeImage = new BufferedImage(fullWidth, fullHeight, fullImage.getType());
+        Graphics2D g = completeImage.createGraphics();
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+        g.drawImage(fullImage, 0, 0, null);
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+        g.drawImage(seenImage, (fullWidth - innerWidth)/2, (fullHeight - innerHeight)/2, null);
+        g.dispose();
+        return completeImage;
+    }
+
+    public static BufferedImage getScaledImage(BufferedImage image, double scaleValue) {
+        int w = (int) ((double) image.getWidth() * scaleValue);
+        int h = (int) ((double) image.getHeight() * scaleValue);
+        BufferedImage tempImage = new BufferedImage(w, h, image.getType());
+        Graphics2D g = tempImage.createGraphics();
+        g.drawImage(image, 0,0, w, h,null);
+        g.dispose();
+        return tempImage;
     }
 }
