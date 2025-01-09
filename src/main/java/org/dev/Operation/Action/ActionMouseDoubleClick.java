@@ -5,11 +5,12 @@ import org.dev.Enum.LogLevel;
 
 import java.awt.AWTException;
 
-public class ActionMouseDoubleClick extends Action {
+public class ActionMouseDoubleClick extends ActionMouseClick {
+
     @Override
     public void performAction() {
         try {
-            performMouseDoubleClick(mainImageBoundingBox);
+            performMouseClick(mainImageBoundingBox, 2);
         } catch (AWTException e) {
             AppScene.addLog(LogLevel.ERROR, this.getClass().getSimpleName(), "Error with action double mouse clicks: " + e.getMessage());
         }

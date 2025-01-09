@@ -5,10 +5,9 @@ import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
 import org.dev.Enum.LogLevel;
+import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.ImageSerialization;
 import java.awt.*;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
@@ -33,43 +32,6 @@ public abstract class Action implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public abstract void performAction();
-
-    protected void performMouseClick(Rectangle box) throws AWTException {
-        Robot robot = new Robot();
-        int randomX = (int) (box.getX() + Math.random() * (box.getWidth() + 1));
-        int randomY = (int) (box.getY() + Math.random() * (box.getHeight() + 1));
-        robot.mouseMove(randomX, randomY);
-        robot.delay(50 + (int) (Math.random() * 100));
-        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK); // left mouse
-        robot.delay(50 + (int) (Math.random() * 100));
-        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-        AppScene.addLog(LogLevel.DEBUG, className, "Mouse clicked at (" + randomX + ", " + randomY + ")");
-    }
-
-    protected void performMouseDoubleClick(Rectangle box) throws AWTException {
-        int randomX = (int) (box.getX() + Math.random() * (box.getWidth() + 1));
-        int randomY = (int) (box.getY() + Math.random() * (box.getHeight() + 1));
-        Robot robot = new Robot();
-        robot.mouseMove(randomX, randomY);
-        robot.delay(50 + (int) (Math.random() * 100));
-        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK); // left mouse
-        robot.delay(50 + (int) (Math.random() * 100));
-        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-        robot.delay(50 + (int) (Math.random() * 50));
-        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK); // left mouse
-        robot.delay(50 + (int) (Math.random() * 100));
-        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-        AppScene.addLog(LogLevel.DEBUG, className, "Mouse double clicked at (" + randomX + ", " + randomY + ")");
-    }
-
-    protected void performKeyPress(Robot robot, int eventKey) throws AWTException {
-        if (robot == null)
-            throw new NullPointerException();
-        robot.keyPress(eventKey);
-        AppScene.addLog(LogLevel.DEBUG, className, "Key pressed: " + KeyEvent.getKeyText(eventKey));
-    }
-
     public void setActionOptions(int attempt, boolean progressive, int progressiveSearchTime, int beforeTime, int afterTime, ActionTypes actionTypes,
                                  BufferedImage mainImage, BufferedImage displayImage, Rectangle boundingBox,
                                  int keyCode) {
@@ -84,6 +46,13 @@ public abstract class Action implements Serializable {
         mainImageBoundingBox = boundingBox;
         this.keyCode = keyCode;
     }
+
+    public BufferedImage getSeenImage() throws AWTException {
+        BufferedImage fullImage = Condition.getFullImage(mainImageBoundingBox, displayImage);
+        return Condition.createImageWithEdges(mainImageBoundingBox, fullImage);
+    }
+
+    public abstract void performAction();
 
     @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {
