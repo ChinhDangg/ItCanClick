@@ -125,8 +125,8 @@ public class OperationController implements Initializable, Serializable, MainJob
         try {
             AppScene.addLog(LogLevel.TRACE, className, "Loading Minimized Task Pane");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("minimizedTaskPane.fxml"));
-            StackPane taskPane = loader.load();
-            taskPane.getChildren().getFirst().setOnMouseClicked(this::selectTheTaskPaneAction);
+            Node taskPane = loader.load();
+            taskPane.setOnMouseClicked(this::selectTheTaskPaneAction);
             MinimizedTaskController controller = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Minimized Task Pane");
             if (taskData != null)
@@ -150,13 +150,12 @@ public class OperationController implements Initializable, Serializable, MainJob
     }
 
     // ------------------------------------------------------
-    public void changeOperationScrollPaneView(StackPane minimizedTaskLayerStackPane) {
-        Pane innerChildPane = (Pane) minimizedTaskLayerStackPane.getChildren().getFirst();
-        selectTheTaskPane(innerChildPane);
-        changeScrollPaneView(minimizedTaskLayerStackPane);
+    public void changeOperationScrollPaneView(Node minimizedTaskPane) {
+        selectTheTaskPane(minimizedTaskPane);
+        changeScrollPaneView(minimizedTaskPane);
     }
-    private void changeScrollPaneView(StackPane minimizedTaskLayerStackPane) {
-        double targetPaneY = minimizedTaskLayerStackPane.getBoundsInParent().getMinY() * currentGlobalScale;
+    private void changeScrollPaneView(Node minimizedTaskPane) {
+        double targetPaneY = minimizedTaskPane.getBoundsInParent().getMinY() * currentGlobalScale;
         double contentHeight = operationScrollPane.getContent().getBoundsInLocal().getHeight();
         double scrollPaneHeight = operationScrollPane.getViewportBounds().getHeight();
         double vValue = Math.min(targetPaneY / (contentHeight - scrollPaneHeight), 1.00);
@@ -165,18 +164,18 @@ public class OperationController implements Initializable, Serializable, MainJob
     }
 
     // ------------------------------------------------------
-    private Pane currentSelectedTaskPane = null;
+    private Node currentSelectedTaskPane = null;
     private void selectTheTaskPaneAction(MouseEvent event) {
-        selectTheTaskPane((Pane) event.getSource());
+        selectTheTaskPane((Node) event.getSource());
     }
-    private void selectTheTaskPane(Pane taskPane) {
+    private void selectTheTaskPane(Node taskPane) {
         if (currentSelectedTaskPane != null)
             setUnselected(currentSelectedTaskPane);
         currentSelectedTaskPane = taskPane;
         setSelected(currentSelectedTaskPane);
     }
-    private void setSelected(Pane taskPane) { taskPane.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); }
-    private void setUnselected(Pane taskPane) { taskPane.setStyle(""); }
+    private void setSelected(Node taskPane) { taskPane.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); }
+    private void setUnselected(Node taskPane) { taskPane.setStyle(""); }
 
     // ------------------------------------------------------
     private void removeSelectedTaskPane(MouseEvent event) {

@@ -6,11 +6,11 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
@@ -30,7 +30,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     @FXML
     private Label readingResultLabel;
     @FXML
-    private Pane textScaleMinusButton, textScalePlusButton;
+    private Node textScaleMinusButton, textScalePlusButton;
     @FXML
     private Label currentTextScaleLabel, registeredTextLabel;
     @FXML
@@ -256,7 +256,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
 
     @Override
     protected void stopMouseMotion(MouseEvent event) {
-        super.stopMouseMotionListening();
+        super.stopMouseMotion(event);
         readAndUpdateReadTextLabel();
     }
 }

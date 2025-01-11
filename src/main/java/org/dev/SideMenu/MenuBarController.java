@@ -1,4 +1,4 @@
-package org.dev;
+package org.dev.SideMenu;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Data.OperationData;
 import java.io.File;

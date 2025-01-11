@@ -1,0 +1,12 @@
+.stepper-button {
+    -fx-pref-width: 30;
+    -fx-pref-height: 30;
+}
+
+.initiate-button {
+    -fx-padding: 3 10;
+}
+
+#back-button, #save-button {
+    -fx-padding: 3 7 3 7;
+}

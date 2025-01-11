@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -108,7 +109,7 @@ public class TaskRunController extends RunActivity implements Initializable, Mai
     private void loadAndAddNewActionRunPane() {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("actionRunPane.fxml"));
-            Group actionRunPaneGroup = fxmlLoader.load();
+            Node actionRunPaneGroup = fxmlLoader.load();
             currentActionRunController = fxmlLoader.getController();
             VBox conditionRunVBox = currentActionRunController.getConditionRunVBoxSideContent();
             HBox actionRunLabelHBox = SideMenuController.getDropDownHBox(conditionRunVBox,

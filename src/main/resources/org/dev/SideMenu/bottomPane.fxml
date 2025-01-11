@@ -11,13 +11,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 
-<StackPane fx:id="bottomMainStackPane" maxHeight="400.0" minHeight="400.0" prefHeight="400.0" prefWidth="600.0" stylesheets="@../../../styles/bottomPaneStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.BottomPaneController">
+<StackPane fx:id="bottomMainStackPane" maxHeight="400.0" minHeight="400.0" prefHeight="400.0" prefWidth="600.0" stylesheets="@../../../styles/SideMenu/bottomPaneStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.BottomPaneController">
    <children>
       <VBox>
          <children>
             <VBox fx:id="topVBoxHeader">
                <children>
-                  <StackPane fx:id="resizeStackPane" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="10.0" style="-fx-background-color: red;">
+                  <StackPane fx:id="resizeStackPane" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="10.0">
                      <cursor>
                         <Cursor fx:constant="S_RESIZE" />
                      </cursor>
@@ -34,7 +34,7 @@
                                     <Insets />
                                  </HBox.margin>
                                  <children>
-                                    <StackPane fx:id="trashStackPaneButton" styleClass="stackpane-button">
+                                    <StackPane fx:id="trashStackPaneButton" styleClass="initiate-button">
                                        <children>
                                           <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
@@ -50,7 +50,7 @@
                               </Group>
                               <Group>
                                  <children>
-                                    <StackPane fx:id="minimizeStackPaneButton" styleClass="stackpane-button">
+                                    <StackPane fx:id="minimizeStackPaneButton" styleClass="initiate-button">
                                        <children>
                                           <Line endX="10.0" />
                                        </children>

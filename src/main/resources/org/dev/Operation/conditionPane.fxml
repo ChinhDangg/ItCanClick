@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.layout.VBox?>
 
-<StackPane fx:id="conditionStackPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Operation.ConditionController">
+<StackPane fx:id="conditionStackPane" stylesheets="@../../../styles/Operation/conditionPane.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.Operation.ConditionController">
    <children>
-      <Pane>
+      <VBox alignment="CENTER">
          <children>
-            <Pane prefHeight="131.0" prefWidth="198.0" style="-fx-border-color: black; -fx-border-width: 1px;">
+            <Pane prefHeight="125.0" prefWidth="198.0" style="-fx-border-color: black; -fx-border-width: 1px;">
                <children>
                   <StackPane prefHeight="131.0" prefWidth="198.0">
                      <children>
@@ -19,22 +21,24 @@
                   </StackPane>
                </children>
             </Pane>
-            <Pane layoutY="130.0" prefHeight="20.0" prefWidth="198.0" style="-fx-border-color: black; -fx-border-width: 1px; -fx-border-radius: 2px;">
+            <StackPane prefHeight="17.0" prefWidth="197.0" styleClass="no-top-border">
                <children>
-                  <StackPane layoutX="1.0" layoutY="1.0" prefHeight="17.0" prefWidth="197.0">
+                  <Label fx:id="requirementStatusLabel" text="Required/Optional" />
+               </children>
+            </StackPane>
+            <Group>
+               <children>
+                  <StackPane styleClass="no-top-border">
                      <children>
-                        <Label fx:id="requirementStatusLabel" text="Required/Optional" />
+                        <Label fx:id="readingConditionLabel" text="Read" />
                      </children>
+                     <padding>
+                        <Insets left="7.0" right="7.0" />
+                     </padding>
                   </StackPane>
                </children>
-            </Pane>
-            <Pane layoutX="71.0" layoutY="149.0">
-               <children>
-                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="20.0" stroke="BLACK" strokeType="INSIDE" width="50.0" />
-                  <Label fx:id="readingConditionLabel" layoutX="12.0" layoutY="1.0" text="Read" />
-               </children>
-            </Pane>
+            </Group>
          </children>
-      </Pane>
+      </VBox>
    </children>
 </StackPane>

@@ -11,7 +11,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +21,6 @@ import org.dev.Operation.Action.Action;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +29,7 @@ import java.util.ResourceBundle;
 public class ActionController implements Initializable, MainJobController, ActivityController {
 
     @FXML
-    private Pane mainActionPane;
+    private Node mainActionParentNode;
     @FXML
     private TextField renameTextField;
     @FXML
@@ -43,7 +41,7 @@ public class ActionController implements Initializable, MainJobController, Activ
     @FXML
     private HBox entryConditionHBox, exitConditionHBox;
     @FXML
-    private Pane entryAddButton, exitAddButton;
+    private StackPane entryAddButton, exitAddButton;
 
     @Getter
     private boolean isSet;
@@ -83,9 +81,9 @@ public class ActionController implements Initializable, MainJobController, Activ
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Parent task controller is null - takeToDisplay");
             return;
         }
-        if (mainActionPane.getScene() == null)
+        if (mainActionParentNode.getScene() == null)
             parentTaskController.openTaskPane();
-        parentTaskController.changeTaskScrollPaneView(mainActionPane);
+        parentTaskController.changeTaskScrollPaneView(mainActionParentNode);
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
     private TaskController findParentTaskController() {

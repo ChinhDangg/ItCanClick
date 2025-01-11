@@ -90,7 +90,7 @@ public class TaskController implements Initializable, MainJobController {
         try {
             AppScene.addLog(LogLevel.TRACE, className, "Loading Action Pane");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("actionPane.fxml"));
-            Pane actionPane = loader.load();
+            Node actionPane = loader.load();
             actionPane.setOnMouseClicked(this::selectTheActionPaneAction);
             ActionController actionController = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Action Pane");
@@ -109,7 +109,7 @@ public class TaskController implements Initializable, MainJobController {
         }
     }
 
-    public void changeTaskScrollPaneView(Pane mainActionPane) {
+    public void changeTaskScrollPaneView(Node mainActionPane) {
         selectTheActionPane(mainActionPane);
         double targetPaneY = mainActionPane.getBoundsInParent().getMinY() * currentGlobalScale;
         double contentHeight = taskScrollPane.getContent().getBoundsInLocal().getHeight();
@@ -120,11 +120,11 @@ public class TaskController implements Initializable, MainJobController {
     }
 
     // ------------------------------------------------------
-    private Pane currentSelectedActionPane = null;
+    private Node currentSelectedActionPane = null;
     private void selectTheActionPaneAction(MouseEvent event) {
-        selectTheActionPane((Pane) event.getSource());
+        selectTheActionPane((Node) event.getSource());
     }
-    private void selectTheActionPane(Pane actionPane) {
+    private void selectTheActionPane(Node actionPane) {
         if (currentSelectedActionPane != null)
             setUnSelectedAction(currentSelectedActionPane);
         currentSelectedActionPane = actionPane;
@@ -144,8 +144,8 @@ public class TaskController implements Initializable, MainJobController {
         //update side menu
         actionGroupVBoxSideContent.getChildren().remove(changeIndex);
     }
-    private void setSelectedAction(Pane actionPane) { actionPane.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); }
-    private void setUnSelectedAction(Pane actionPane) { actionPane.setStyle(""); }
+    private void setSelectedAction(Node actionPane) { actionPane.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); }
+    private void setUnSelectedAction(Node actionPane) { actionPane.setStyle(""); }
 
     private void moveActionUp(MouseEvent event) {
         if (currentSelectedActionPane == null)

@@ -6,6 +6,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -48,7 +49,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
     @FXML
     protected Label currentZoomLabel;
     @FXML
-    protected Pane zoomMinusButton, zoomPlusButton;
+    protected Node zoomMinusButton, zoomPlusButton;
     protected double currentZoomValue = 1.00;
     protected void increaseZoom(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on zoom plus button");
@@ -130,7 +131,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
 
     // ------------------------------------------------------
     @FXML
-    protected Pane xMinusButton, xPlusButton, yMinusButton, yPlusButton;
+    protected Node xMinusButton, xPlusButton, yMinusButton, yPlusButton;
     protected void increaseImageWidth(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on x plus button");
         int step = 10;
@@ -182,7 +183,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
 
     // ------------------------------------------------------
     @FXML
-    protected Pane outsideBoxMinusButton, outsideBoxPlusButton;
+    protected Node outsideBoxMinusButton, outsideBoxPlusButton;
     protected int outsideBoxWidth = 10;
     protected void increaseOutsideBox(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on extending outside box plus button");
@@ -221,8 +222,9 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
             AppScene.addLog(LogLevel.DEBUG, className, "Stopped mouse motion listening");
         }
     }
+
     @FXML
-    protected Pane startReadingConditionButton, stopReadingConditionButton;
+    protected Node startReadingConditionButton, stopReadingConditionButton;
     protected void startMouseMotion(MouseEvent event) {
         AppScene.addLog(LogLevel.INFO, className, "Starting capturing image at mouse");
         startMouseMotionListening();
@@ -242,7 +244,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
     }
 
     @FXML
-    protected Pane backButton, saveButton;
+    protected Node backButton, saveButton;
     protected abstract void save(MouseEvent event);
     protected abstract void backToPreviousMenu(MouseEvent event);
     protected abstract void loadMenu(ActivityController controller);

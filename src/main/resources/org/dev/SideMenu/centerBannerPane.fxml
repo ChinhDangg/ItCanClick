@@ -14,7 +14,7 @@
       <StackPane fx:id="edgeStackPane" prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: red;" />
       <Group>
          <children>
-            <StackPane maxHeight="300.0" styleClass="center-main-stackpane" stylesheets="@../../../styles/centerBanner.css">
+            <StackPane maxHeight="300.0" styleClass="center-main-stackpane" stylesheets="@../../../styles/SideMenu/centerBanner.css">
                <children>
                   <VBox>
                      <children>
@@ -66,7 +66,7 @@
                               </VBox>
                               <HBox alignment="CENTER_RIGHT" spacing="10.0">
                                  <children>
-                                    <StackPane id="confirm-button-stackpane" fx:id="confirmStackPaneButton" minHeight="25.0" minWidth="60.0">
+                                    <StackPane id="confirm-button-stackpane" fx:id="confirmStackPaneButton" focusTraversable="true" minHeight="25.0" minWidth="60.0" styleClass="focusable-button">
                                        <children>
                                           <Label text="Confirm" textFill="WHITE" />
                                        </children>
@@ -74,7 +74,7 @@
                                           <Insets bottom="3.0" left="5.0" right="5.0" top="3.0" />
                                        </padding>
                                     </StackPane>
-                                    <StackPane id="cancel-button-stackpane" fx:id="cancelStackPaneButton" minHeight="25.0" minWidth="60.0">
+                                    <StackPane id="cancel-button-stackpane" fx:id="cancelStackPaneButton" focusTraversable="true" minHeight="25.0" minWidth="60.0" styleClass="focusable-button">
                                        <children>
                                           <Label text="Cancel" textFill="WHITE" />
                                        </children>

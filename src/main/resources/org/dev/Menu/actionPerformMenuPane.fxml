@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.CheckBox?>
@@ -7,7 +9,6 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
@@ -26,11 +27,14 @@
                            <children>
                               <StackPane>
                                  <children>
-                                    <StackPane fx:id="backButton">
+                                    <StackPane id="back-button" fx:id="backButton" focusTraversable="true">
                                        <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="41.0" />
                                           <Label text="Back" />
                                        </children>
+                                       <styleClass>
+                                          <String fx:value="stackpane-button" />
+                                          <String fx:value="focusable-button" />
+                                       </styleClass>
                                     </StackPane>
                                  </children>
                                  <padding>
@@ -53,11 +57,14 @@
                            <children>
                               <StackPane>
                                  <children>
-                                    <StackPane fx:id="saveButton">
+                                    <StackPane id="save-button" fx:id="saveButton" focusTraversable="true">
                                        <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="41.0" />
                                           <Label text="Save" />
                                        </children>
+                                       <styleClass>
+                                          <String fx:value="stackpane-button" />
+                                          <String fx:value="focusable-button" />
+                                       </styleClass>
                                     </StackPane>
                                  </children>
                                  <padding>
@@ -70,68 +77,92 @@
                   </StackPane>
                   <HBox alignment="CENTER_LEFT" spacing="150.0">
                      <children>
-                        <Group>
+                        <HBox alignment="CENTER_LEFT" spacing="5.0">
                            <children>
-                              <Pane layoutX="55.0">
-                                 <children>
-                                    <Pane fx:id="attemptMinusButton">
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
-                                       </children>
-                                    </Pane>
-                                    <Pane fx:id="attemptPlusButton" layoutX="40.0">
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
-                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
-                                       </children>
-                                    </Pane>
-                                 </children>
-                              </Pane>
-                              <Label fx:id="attemptNumberLabel" layoutX="133.0" layoutY="5.0" prefHeight="20.0" prefWidth="29.0" text="1">
+                              <Label text="Attempt">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <Label layoutY="5.0" prefHeight="20.0" prefWidth="61.0" text="Attempt">
+                              <Group>
+                                 <children>
+                                    <StackPane fx:id="attemptMinusButton" focusTraversable="true">
+                                       <children>
+                                          <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="stackpane-button" />
+                                          <String fx:value="stepper-button" />
+                                          <String fx:value="focusable-button" />
+                                       </styleClass>
+                                    </StackPane>
+                                 </children>
+                              </Group>
+                              <Group>
+                                 <children>
+                                    <StackPane fx:id="attemptPlusButton" focusTraversable="true">
+                                       <children>
+                                          <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                          <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="stackpane-button" />
+                                          <String fx:value="stepper-button" />
+                                          <String fx:value="focusable-button" />
+                                       </styleClass>
+                                    </StackPane>
+                                 </children>
+                              </Group>
+                              <Label fx:id="attemptNumberLabel" prefHeight="20.0" prefWidth="29.0" text="1">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Label>
                            </children>
-                        </Group>
-                        <Pane>
+                        </HBox>
+                        <VBox spacing="5.0">
                            <children>
-                              <CheckBox fx:id="progressiveSearchCheckBox" layoutX="1.0" mnemonicParsing="false" text="Progressive Search" />
-                              <Pane fx:id="progressiveSearchButtonsPane" layoutY="20.0" visible="false">
+                              <CheckBox fx:id="progressiveSearchCheckBox" mnemonicParsing="false" text="Progressive Search" />
+                              <HBox fx:id="progressiveSearchButtonsPane" alignment="CENTER_LEFT" spacing="5.0">
                                  <children>
-                                    <Pane>
+                                    <Group>
                                        <children>
-                                          <Pane fx:id="progressiveSearchMinusButton">
+                                          <StackPane fx:id="progressiveSearchMinusButton" focusTraversable="true">
                                              <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
                                              </children>
-                                          </Pane>
-                                          <Pane fx:id="progressiveSearchPlusButton" layoutX="40.0">
-                                             <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
-                                             </children>
-                                          </Pane>
+                                             <styleClass>
+                                                <String fx:value="stackpane-button" />
+                                                <String fx:value="stepper-button" />
+                                                <String fx:value="focusable-button" />
+                                             </styleClass>
+                                          </StackPane>
                                        </children>
-                                    </Pane>
-                                    <Label fx:id="progressiveSearchTimeLabel" layoutX="77.0" layoutY="5.0" prefHeight="20.0" prefWidth="47.0" text="1s">
+                                    </Group>
+                                    <Group>
+                                       <children>
+                                          <StackPane fx:id="progressiveSearchPlusButton" focusTraversable="true">
+                                             <children>
+                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                             </children>
+                                             <styleClass>
+                                                <String fx:value="stackpane-button" />
+                                                <String fx:value="stepper-button" />
+                                                <String fx:value="focusable-button" />
+                                             </styleClass>
+                                          </StackPane>
+                                       </children>
+                                    </Group>
+                                    <Label fx:id="progressiveSearchTimeLabel" prefHeight="20.0" prefWidth="47.0" text="1s">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
                                     </Label>
                                  </children>
-                              </Pane>
+                              </HBox>
                            </children>
-                        </Pane>
+                        </VBox>
                      </children>
                      <VBox.margin>
                         <Insets left="5.0" />
@@ -161,225 +192,316 @@
             </StackPane>
             <StackPane>
                <children>
-                  <Pane>
+                  <HBox>
                      <children>
-                        <Pane layoutX="-1.0">
+                        <VBox spacing="5.0">
                            <children>
-                              <Label layoutX="20.0" layoutY="-1.0" text="Extending the main action box:" />
-                              <Pane layoutX="41.0" layoutY="18.0">
+                              <VBox>
                                  <children>
-                                    <Pane layoutX="13.0">
+                                    <Label text="Extending the main action box:" />
+                                    <VBox spacing="5.0">
                                        <children>
-                                          <Pane fx:id="xMinusButton">
+                                          <HBox alignment="CENTER" spacing="5.0">
                                              <children>
-            
-                                                      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                                <Label text="X">
+                                                   <font>
+                                                      <Font size="14.0" />
+                                                   </font>
+                                                </Label>
+                                                <Group>
+                                                   <children>
+                                                      <StackPane focusTraversable="true" fx:id="xMinusButton">
+                                                         <children>
+                                                            <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                         </children>
+                                                         <styleClass>
+                                                            <String fx:value="stackpane-button" />
+                                                            <String fx:value="stepper-button" />
+                                                            <String fx:value="focusable-button" />
+                                                         </styleClass>
+                                                      </StackPane>
+                                                   </children>
+                                                </Group>
+                                                <Group>
+                                                   <children>
+                                                      <StackPane focusTraversable="true" fx:id="xPlusButton">
+                                                         <children>
+                                                            <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                            <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                                         </children>
+                                                         <styleClass>
+                                                            <String fx:value="stackpane-button" />
+                                                            <String fx:value="stepper-button" />
+                                                            <String fx:value="focusable-button" />
+                                                         </styleClass>
+                                                      </StackPane>
+                                                   </children>
+                                                </Group>
                                              </children>
-                                          </Pane>
-                                          <Pane layoutX="40.0" fx:id="xPlusButton">
+                                          </HBox>
+                                          <HBox alignment="CENTER" spacing="5.0">
                                              <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
+                                                <Label text="Y">
+                                                   <font>
+                                                      <Font size="14.0" />
+                                                   </font>
+                                                </Label>
+                                                <Group>
+                                                   <children>
+                                                      <StackPane fx:id="yMinusButton" focusTraversable="true">
+                                                         <children>
+                                                            <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                         </children>
+                                                         <styleClass>
+                                                            <String fx:value="stackpane-button" />
+                                                            <String fx:value="stepper-button" />
+                                                            <String fx:value="focusable-button" />
+                                                         </styleClass>
+                                                      </StackPane>
+                                                   </children>
+                                                </Group>
+                                                <Group>
+                                                   <children>
+                                                      <StackPane fx:id="yPlusButton" focusTraversable="true">
+                                                         <children>
+                                                            <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                            <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                                         </children>
+                                                         <styleClass>
+                                                            <String fx:value="stackpane-button" />
+                                                            <String fx:value="stepper-button" />
+                                                            <String fx:value="focusable-button" />
+                                                         </styleClass>
+                                                      </StackPane>
+                                                   </children>
+                                                </Group>
                                              </children>
-                                          </Pane>
+                                          </HBox>
                                        </children>
-                                    </Pane>
-                                    <Label layoutY="6.0" text="X">
+                                    </VBox>
+                                 </children>
+                              </VBox>
+                              <HBox alignment="CENTER" spacing="5.0">
+                                 <children>
+                                    <Label prefWidth="80.0" text="Wait before">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font>
+                                    </Label>
+                                    <Group>
+                                       <children>
+                                          <StackPane fx:id="waitBeforeMinusButton" focusTraversable="true">
+                                             <children>
+                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                             </children>
+                                             <styleClass>
+                                                <String fx:value="stackpane-button" />
+                                                <String fx:value="stepper-button" />
+                                                <String fx:value="focusable-button" />
+                                             </styleClass>
+                                          </StackPane>
+                                       </children>
+                                    </Group>
+                                    <Group>
+                                       <children>
+                                          <StackPane fx:id="waitBeforePlusButton" focusTraversable="true">
+                                             <children>
+                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                             </children>
+                                             <styleClass>
+                                                <String fx:value="stackpane-button" />
+                                                <String fx:value="stepper-button" />
+                                                <String fx:value="focusable-button" />
+                                             </styleClass>
+                                          </StackPane>
+                                       </children>
+                                    </Group>
+                                    <Label fx:id="waitBeforeTimeLabel" prefHeight="20.0" prefWidth="47.0" text="1s">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
                                     </Label>
                                  </children>
-                              </Pane>
-                              <Pane layoutX="41.0" layoutY="50.0">
+                              </HBox>
+                              <HBox alignment="CENTER" spacing="5.0">
                                  <children>
-                                    <Pane layoutX="13.0">
+                                    <Label prefWidth="80.0" text="Wait after">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font>
+                                    </Label>
+                                    <Group>
                                        <children>
-                                          <Pane fx:id="yMinusButton">
+                                          <StackPane fx:id="waitAfterMinusButton">
                                              <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
                                              </children>
-                                          </Pane>
-                                          <Pane fx:id="yPlusButton" layoutX="40.0">
-                                             <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
-                                             </children>
-                                          </Pane>
+                                             <styleClass>
+                                                <String fx:value="stackpane-button" />
+                                                <String fx:value="stepper-button" />
+                                             </styleClass>
+                                          </StackPane>
                                        </children>
-                                    </Pane>
-                                    <Label layoutY="6.0" text="Y">
+                                    </Group>
+                                    <Group>
+                                       <children>
+                                          <StackPane fx:id="waitAfterPlusButton">
+                                             <children>
+                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                             </children>
+                                             <styleClass>
+                                                <String fx:value="stackpane-button" />
+                                                <String fx:value="stepper-button" />
+                                             </styleClass>
+                                          </StackPane>
+                                       </children>
+                                    </Group>
+                                    <Label fx:id="waitAfterTimeLabel" prefHeight="20.0" prefWidth="47.0" text="1s">
                                        <font>
                                           <Font size="14.0" />
                                        </font>
                                     </Label>
                                  </children>
-                              </Pane>
-                           </children>
-                        </Pane>
-                        <Pane layoutX="1.0" layoutY="85.0">
-                           <children>
-                              <Pane layoutX="1.0">
+                              </HBox>
+                              <HBox fx:id="registeredKeyPane" alignment="CENTER_LEFT" spacing="5.0">
                                  <children>
-                                    <Pane layoutX="80.0">
+                                    <StackPane fx:id="startRegisterKeyButton" focusTraversable="true">
                                        <children>
-                                          <Pane fx:id="waitBeforeMinusButton">
+                                          <Label text="Start" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="stackpane-button" />
+                                          <String fx:value="initiate-button" />
+                                          <String fx:value="focusable-button" />
+                                       </styleClass>
+                                    </StackPane>
+                                    <HBox fx:id="registeredKeyLabelPane" alignment="CENTER_LEFT" spacing="5.0">
+                                       <children>
+                                          <Label text="Registered Key:" />
+                                          <Label fx:id="registeredKeyLabel" text="Key" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <VBox spacing="7.0">
+                           <children>
+                              <VBox>
+                                 <children>
+                                    <Label text="Extending the outside box:" />
+                                    <HBox spacing="5.0">
+                                       <children>
+                                          <Group>
                                              <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                                <StackPane fx:id="outsideBoxMinusButton" focusTraversable="true">
+                                                   <children>
+                                                      <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                   </children>
+                                                   <styleClass>
+                                                      <String fx:value="stackpane-button" />
+                                                      <String fx:value="stepper-button" />
+                                                      <String fx:value="focusable-button" />
+                                                   </styleClass>
+                                                </StackPane>
                                              </children>
-                                          </Pane>
-                                          <Pane fx:id="waitBeforePlusButton" layoutX="40.0">
+                                          </Group>
+                                          <Group>
                                              <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
+                                                <StackPane fx:id="outsideBoxPlusButton" focusTraversable="true">
+                                                   <children>
+                                                      <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                      <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                                   </children>
+                                                   <styleClass>
+                                                      <String fx:value="stackpane-button" />
+                                                      <String fx:value="stepper-button" />
+                                                      <String fx:value="focusable-button" />
+                                                   </styleClass>
+                                                </StackPane>
                                              </children>
-                                          </Pane>
+                                          </Group>
                                        </children>
-                                    </Pane>
-                                    <Label fx:id="waitBeforeTimeLabel" layoutX="157.0" layoutY="5.0" prefHeight="20.0" prefWidth="47.0" text="1s">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Label>
-                                    <Label layoutX="-1.0" layoutY="5.0" prefHeight="20.0" prefWidth="79.0" text="Wait before">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Label>
+                                    </HBox>
                                  </children>
-                              </Pane>
-                              <Pane layoutX="1.0" layoutY="32.0">
+                              </VBox>
+                              <HBox alignment="CENTER_LEFT" spacing="5.0">
                                  <children>
-                                    <Pane layoutX="80.0">
+                                    <Label text="Zoom" />
+                                    <Group>
                                        <children>
-                                          <Pane fx:id="waitAfterMinusButton">
+                                          <StackPane fx:id="zoomMinusButton">
                                              <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
+                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
                                              </children>
-                                          </Pane>
-                                          <Pane fx:id="waitAfterPlusButton" layoutX="40.0">
+                                             <styleClass>
+                                                <String fx:value="stackpane-button" />
+                                                <String fx:value="stepper-button" />
+                                             </styleClass>
+                                          </StackPane>
+                                       </children>
+                                    </Group>
+                                    <Group>
+                                       <children>
+                                          <StackPane fx:id="zoomPlusButton">
                                              <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
-                                                <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
+                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
                                              </children>
-                                          </Pane>
+                                             <styleClass>
+                                                <String fx:value="stackpane-button" />
+                                                <String fx:value="stepper-button" />
+                                             </styleClass>
+                                          </StackPane>
                                        </children>
-                                    </Pane>
-                                    <Label fx:id="waitAfterTimeLabel" layoutX="157.0" layoutY="5.0" prefHeight="20.0" prefWidth="47.0" text="1s">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Label>
-                                    <Label layoutX="-1.0" layoutY="5.0" prefHeight="20.0" prefWidth="79.0" text="Wait after">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Label>
+                                    </Group>
+                                    <Label fx:id="currentZoomLabel" text="1" />
                                  </children>
-                              </Pane>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                 <children>
+                                    <HBox alignment="CENTER" spacing="5.0">
+                                       <children>
+                                          <StackPane fx:id="stopReadingConditionButton" focusTraversable="true">
+                                             <children>
+                                                <Label text="Stop" />
+                                             </children>
+                                             <styleClass>
+                                                <String fx:value="stackpane-button" />
+                                                <String fx:value="initiate-button" />
+                                                <String fx:value="focusable-button" />
+                                             </styleClass>
+                                          </StackPane>
+                                          <Label text="Press F1" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER" spacing="5.0">
+                                       <children>
+                                          <StackPane fx:id="startReadingConditionButton" focusTraversable="true">
+                                             <children>
+                                                <Label text="Start" />
+                                             </children>
+                                             <styleClass>
+                                                <String fx:value="stackpane-button" />
+                                                <String fx:value="initiate-button" />
+                                                <String fx:value="focusable-button" />
+                                             </styleClass>
+                                          </StackPane>
+                                          <Label text="Press F2" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </HBox>
+                              <CheckBox fx:id="fitImageCheckBox" mnemonicParsing="false" selected="true" text="Fit Image" />
                            </children>
-                        </Pane>
-                        <Pane fx:id="registeredKeyPane" layoutX="-1.0" layoutY="155.0">
-                           <children>
-                              <Pane fx:id="registeredKeyLabelPane" disable="true" layoutX="46.0" layoutY="4.0">
-                                 <children>
-                                    <Label text="Registered Key:" />
-                                    <Label fx:id="registeredKeyLabel" layoutX="86.0" text="Key" />
-                                 </children>
-                              </Pane>
-                              <StackPane fx:id="startRegisterKeyButton">
-                                 <children>
-                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="41.0" />
-                                    <Label text="Start" />
-                                 </children>
-                              </StackPane>
-                           </children>
-                        </Pane>
-                        <Pane layoutX="286.0">
-                           <children>
-                              <Label text="Extending the outside box:" />
-                              <Pane layoutX="32.0" layoutY="19.0">
-                                 <children>
-                                    <Pane fx:id="outsideBoxMinusButton">
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
-                                       </children>
-                                    </Pane>
-                                    <Pane fx:id="outsideBoxPlusButton" layoutX="40.0">
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
-                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
-                                       </children>
-                                    </Pane>
-                                 </children>
-                              </Pane>
-                           </children>
-                        </Pane>
-                        <Pane layoutX="286.0" layoutY="60.0">
-                           <children>
-                              <Pane layoutX="32.0">
-                                 <children>
-                                    <Pane fx:id="zoomMinusButton">
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
-                                       </children>
-                                    </Pane>
-                                    <Pane fx:id="zoomPlusButton" layoutX="40.0">
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
-                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" startX="-95.49999237060547" />
-                                          <Line endX="-78.22222900390625" layoutX="102.0" layoutY="15.0" rotate="-90.0" startX="-95.49999237060547" />
-                                       </children>
-                                    </Pane>
-                                 </children>
-                              </Pane>
-                              <Label layoutX="-3.0" layoutY="6.0" text="Zoom" />
-                              <Label fx:id="currentZoomLabel" layoutX="108.0" layoutY="6.0" text="1" />
-                           </children>
-                        </Pane>
-                        <Pane layoutX="271.0" layoutY="104.0">
-                           <children>
-                              <Pane>
-                                 <children>
-                                    <Pane fx:id="stopReadingConditionButton">
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="25.0" stroke="BLACK" strokeType="INSIDE" width="44.0" />
-                                          <Label layoutX="9.0" layoutY="3.0" text="Stop" />
-                                       </children>
-                                    </Pane>
-                                    <Label layoutX="48.0" layoutY="4.0" text="Press F1" />
-                                 </children>
-                              </Pane>
-                              <Pane layoutX="102.0">
-                                 <children>
-                                    <Pane fx:id="startReadingConditionButton">
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="25.0" stroke="BLACK" strokeType="INSIDE" width="44.0" />
-                                          <Label layoutX="9.0" layoutY="3.0" text="Start" />
-                                       </children>
-                                    </Pane>
-                                    <Label layoutX="48.0" layoutY="4.0" text="Press F2" />
-                                 </children>
-                              </Pane>
-                           </children>
-                        </Pane>
-                        <CheckBox fx:id="fitImageCheckBox" layoutX="310.0" layoutY="139.0" mnemonicParsing="false" selected="true" text="Fit Image" />
+                        </VBox>
                      </children>
-                  </Pane>
+                  </HBox>
                </children>
                <padding>
-                  <Insets left="5.0" right="5.0" />
+                  <Insets left="25.0" right="25.0" />
                </padding>
             </StackPane>
             <StackPane alignment="BOTTOM_CENTER">
@@ -401,4 +523,8 @@
          </children>
       </VBox>
    </children>
+   <stylesheets>
+      <URL value="@../../../styles/root.css" />
+      <URL value="@../../../styles/Menu/optionMenuPane.css" />
+   </stylesheets>
 </Group>

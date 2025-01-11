@@ -1,0 +1,7 @@
+.repeat-stepper-button {
+    -fx-width: 20;
+    -fx-height: 20;
+    -fx-border-color: black;
+    -fx-padding: 2;
+    -fx-border-radius: 2;
+}

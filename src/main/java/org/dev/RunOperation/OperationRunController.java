@@ -150,7 +150,7 @@ public class OperationRunController implements Initializable, MainJobController 
         try {
             currentTaskRunController = null;
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("taskRunPane.fxml"));
-            Group taskRunGroup = fxmlLoader.load();
+            Node taskRunGroup = fxmlLoader.load();
             currentTaskRunController = fxmlLoader.getController();
             VBox actionRunVBox = currentTaskRunController.getActionRunVBoxSideContent();
             HBox taskRunLabelHBox = SideMenuController.getDropDownHBox(actionRunVBox,

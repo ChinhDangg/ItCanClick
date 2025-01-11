@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="parentNode" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" styleClass="vbox-container" stylesheets="@../../../styles/SideMenu/rightClickMenu.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.RightClickMenuController">
+   <children>
+      <HBox fx:id="newSection" alignment="CENTER_LEFT" spacing="5.0" styleClass="hbox-content">
+         <children>
+            <StackPane prefWidth="20.0">
+               <children>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </StackPane>
+            <StackPane alignment="CENTER_LEFT" prefWidth="120.0">
+               <children>
+                  <Label text="New">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </StackPane>
+            <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../images/icons/right-icon.png" />
+               </image>
+            </ImageView>
+         </children>
+      </HBox>
+      <HBox prefHeight="0.0" style="-fx-border-color: black transparent transparent transparent;" />
+      <HBox fx:id="copySection" alignment="CENTER_LEFT" spacing="5.0" styleClass="hbox-content">
+         <children>
+            <StackPane prefWidth="20.0">
+               <children>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../images/icons/copy-icon.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </StackPane>
+            <StackPane alignment="CENTER_LEFT" prefWidth="120.0">
+               <children>
+                  <Label text="Copy">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
+      <HBox fx:id="pasteSection" alignment="CENTER_LEFT" spacing="5.0" styleClass="hbox-content">
+         <children>
+            <StackPane prefWidth="20.0">
+               <children>
+                  <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../images/icons/paste-icon.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </StackPane>
+            <StackPane alignment="CENTER_LEFT" prefWidth="120.0">
+               <children>
+                  <Label text="Paste">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
+      <HBox fx:id="deleteSection" alignment="CENTER_LEFT" spacing="5.0" styleClass="hbox-content">
+         <children>
+            <StackPane prefWidth="20.0">
+               <children>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../images/icons/delete-icon.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </StackPane>
+            <StackPane alignment="CENTER_LEFT" prefWidth="120.0">
+               <children>
+                  <Label text="Delete">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</VBox>

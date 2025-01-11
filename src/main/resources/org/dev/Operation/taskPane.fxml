@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
@@ -18,7 +19,7 @@
                <children>
                   <VBox fx:id="mainTaskOuterVBox">
                      <children>
-                        <VBox prefHeight="66.0" spacing="5.0">
+                        <VBox spacing="10.0">
                            <children>
                               <StackPane>
                                  <children>
@@ -26,13 +27,23 @@
                                        <children>
                                           <StackPane>
                                              <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="25.0" stroke="BLACK" strokeType="INSIDE" width="37.0" />
-                                                <Label text="Back" />
+                                                <StackPane id="back-button" focusTraversable="true">
+                                                   <children>
+                                                      <Label text="Back" />
+                                                   </children>
+                                                   <styleClass>
+                                                      <String fx:value="stackpane-button" />
+                                                      <String fx:value="focusable-button" />
+                                                   </styleClass>
+                                                </StackPane>
                                              </children>
+                                             <padding>
+                                                <Insets left="5.0" top="5.0" />
+                                             </padding>
                                           </StackPane>
                                        </children>
                                        <StackPane.margin>
-                                          <Insets left="5.0" top="5.0" />
+                                          <Insets />
                                        </StackPane.margin>
                                     </Group>
                                     <Group>
@@ -47,55 +58,83 @@
                                     </Group>
                                  </children>
                               </StackPane>
-                              <Pane>
+                              <HBox spacing="5.0">
                                  <children>
-                                    <HBox spacing="5.0">
+                                    <StackPane fx:id="removeActionButton" focusTraversable="true">
                                        <children>
-                                          <StackPane fx:id="removeActionButton">
-                                             <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="25.0" stroke="BLACK" strokeType="INSIDE" width="95.0" />
-                                                <Label text="Remove Action" />
-                                             </children>
-                                          </StackPane>
-                                          <StackPane fx:id="moveActionUpButton">
-                                             <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="25.0" stroke="BLACK" strokeType="INSIDE" width="95.0" />
-                                                <Label text="Move Action Up" />
-                                             </children>
-                                          </StackPane>
-                                          <StackPane fx:id="moveActionDownButton">
-                                             <children>
-                                                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="25.0" stroke="BLACK" strokeType="INSIDE" width="107.0" />
-                                                <Label text="Move Action Down" />
-                                             </children>
-                                          </StackPane>
+                                          <Label text="Remove Action" />
                                        </children>
-                                    </HBox>
+                                       <styleClass>
+                                          <String fx:value="stackpane-button" />
+                                          <String fx:value="update-button" />
+                                          <String fx:value="focusable-button" />
+                                       </styleClass>
+                                    </StackPane>
+                                    <StackPane fx:id="moveActionUpButton" focusTraversable="true">
+                                       <children>
+                                          <Label text="Move Action Up" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="stackpane-button" />
+                                          <String fx:value="update-button" />
+                                          <String fx:value="focusable-button" />
+                                       </styleClass>
+                                    </StackPane>
+                                    <StackPane fx:id="moveActionDownButton" focusTraversable="true">
+                                       <children>
+                                          <Label text="Move Action Down" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="stackpane-button" />
+                                          <String fx:value="update-button" />
+                                          <String fx:value="focusable-button" />
+                                       </styleClass>
+                                    </StackPane>
                                  </children>
-                              </Pane>
+                                 <padding>
+                                    <Insets left="5.0" />
+                                 </padding>
+                              </HBox>
                            </children>
                         </VBox>
                         <VBox spacing="10.0">
                            <children>
                               <VBox fx:id="taskVBox" spacing="20.0" />
-                              <Pane>
+                              <VBox alignment="CENTER" spacing="10.0">
                                  <children>
-                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="16.0" layoutX="2.0" stroke="BLACK" strokeType="INSIDE" width="518.0" />
-                                    <StackPane fx:id="addNewActionButton" layoutX="183.0" layoutY="23.0">
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="16.0" stroke="BLACK" strokeType="INSIDE" width="518.0" />
+                                    <Group>
                                        <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="38.0" stroke="BLACK" strokeType="INSIDE" width="152.0" />
-                                          <Label text="Add new Action" />
+                                          <StackPane id="add-action-button" fx:id="addNewActionButton" focusTraversable="true">
+                                             <children>
+                                                <Label text="Add new Action" />
+                                             </children>
+                                             <styleClass>
+                                                <String fx:value="stackpane-button" />
+                                                <String fx:value="focusable-button" />
+                                             </styleClass>
+                                          </StackPane>
                                        </children>
-                                    </StackPane>
+                                    </Group>
                                  </children>
-                              </Pane>
+                                 <padding>
+                                    <Insets bottom="5.0" />
+                                 </padding>
+                              </VBox>
                            </children>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
                         </VBox>
                      </children>
                   </VBox>
                </children>
             </Group>
          </children>
+         <stylesheets>
+            <URL value="@../../../styles/root.css" />
+            <URL value="@../../../styles/Operation/taskPane.css" />
+         </stylesheets>
       </StackPane>
    </content>
 </ScrollPane>

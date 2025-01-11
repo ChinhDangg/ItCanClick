@@ -26,10 +26,10 @@ import java.util.ResourceBundle;
 
 /**
  operationHBox
-    taskVBox
+    taskVBox (padding 15)
     Vbox
     taskLabelHBox
-        taskActionVBox
+        taskActionVBox (padding 35)
         actionLabelHBox
         actionLabelHBox
         actionLabelHBox

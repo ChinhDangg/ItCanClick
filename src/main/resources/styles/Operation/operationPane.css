@@ -1,0 +1,17 @@
+.update-button {
+    -fx-padding: 5 10 5 10;
+}
+
+#add-task-button {
+    -fx-border-color: transparent;
+}
+
+#add-task-plus-button, #add-task-inner-button {
+    -fx-border-color: black;
+    -fx-border-radius: 2;
+    -fx-padding: 5;
+}
+
+#add-task-inner-button {
+    -fx-padding: 5 10 5 10;
+}

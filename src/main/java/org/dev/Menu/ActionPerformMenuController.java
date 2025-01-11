@@ -5,6 +5,7 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -31,13 +32,19 @@ public class ActionPerformMenuController extends OptionsMenuController {
     @FXML
     private CheckBox progressiveSearchCheckBox;
     @FXML
-    private Pane registeredKeyPane, registeredKeyLabelPane, progressiveSearchButtonsPane, progressiveSearchMinusButton, progressiveSearchPlusButton;
+    private Node registeredKeyPane, registeredKeyLabelPane, progressiveSearchButtonsPane, progressiveSearchMinusButton, progressiveSearchPlusButton;
     @FXML
-    private Pane waitBeforeMinusButton, waitBeforePlusButton, waitAfterMinusButton, waitAfterPlusButton;
+    private Node waitBeforeMinusButton, waitBeforePlusButton, waitAfterMinusButton, waitAfterPlusButton;
     @FXML
     private Label registeredKeyLabel, progressiveSearchTimeLabel, waitBeforeTimeLabel, waitAfterTimeLabel;
-    private ActionController actionController;
+    @FXML
+    private Label attemptNumberLabel;
+    @FXML
+    private Node attemptMinusButton, attemptPlusButton;
+    @FXML
+    private StackPane startRegisterKeyButton;
 
+    private ActionController actionController;
     private final String className = this.getClass().getSimpleName();
 
     @Override
@@ -153,10 +160,6 @@ public class ActionPerformMenuController extends OptionsMenuController {
 
     // ------------------------------------------------------
     private int attempt = 1;
-    @FXML
-    private Label attemptNumberLabel;
-    @FXML
-    private Pane attemptMinusButton, attemptPlusButton;
     private void increaseNumberOfAttempt(MouseEvent event) {
         updateAttemptLabel(Math.min(attempt + 1, 10));
     }
@@ -249,8 +252,6 @@ public class ActionPerformMenuController extends OptionsMenuController {
     }
 
     // ------------------------------------------------------
-    @FXML
-    private StackPane startRegisterKeyButton;
     private boolean keyIsListening = false;
     private void startRegisteringKey(MouseEvent event) {
         keyIsListening = true;
@@ -261,7 +262,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
 
     @Override
     protected void stopMouseMotion(MouseEvent event) {
-        super.stopMouseMotionListening();
+        super.stopMouseMotion(event);
         if (keyIsListening) {
             GlobalScreen.removeNativeKeyListener(this);
             registeredKeyLabelPane.setDisable(true);

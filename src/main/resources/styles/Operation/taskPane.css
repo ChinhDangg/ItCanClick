@@ -1,0 +1,11 @@
+.update-button {
+    -fx-padding: 5 10 5 10;
+}
+
+#back-button {
+    -fx-padding: 3 7 3 7;
+}
+
+#add-action-button {
+    -fx-padding: 7 15 7 15;
+}

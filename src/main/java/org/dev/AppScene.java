@@ -6,9 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import org.dev.Enum.LogLevel;
-import org.dev.SideMenu.BottomPaneController;
-import org.dev.SideMenu.CenterBannerController;
-import org.dev.SideMenu.SideBarController;
+import org.dev.SideMenu.*;
 import org.dev.Menu.ActionMenuController;
 import org.dev.Menu.ConditionMenuController;
 import org.dev.Operation.ActionController;
@@ -17,7 +15,6 @@ import org.dev.Operation.Data.OperationData;
 import org.dev.Operation.OperationController;
 import org.dev.RunOperation.OperationRunController;
 import org.dev.Enum.CurrentTab;
-import org.dev.SideMenu.TopNotificationController;
 
 import java.io.FileInputStream;
 import java.io.IOException;

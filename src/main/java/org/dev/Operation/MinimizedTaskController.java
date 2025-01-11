@@ -3,6 +3,8 @@ package org.dev.Operation;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -19,7 +21,9 @@ import java.util.ResourceBundle;
 
 public class MinimizedTaskController implements Initializable, MainJobController {
     @FXML
-    private StackPane minimizedTaskLayerStackPane, taskNameAreaStackPane;
+    private Node parentNode;
+    @FXML
+    private StackPane taskNameAreaStackPane;
     @FXML
     private Label taskIndexLabel, repeatNumberLabel;
     @FXML
@@ -82,7 +86,7 @@ public class MinimizedTaskController implements Initializable, MainJobController
     @Override
     public void takeToDisplay() {
         AppScene.currentLoadedOperationController.takeToDisplay();
-        AppScene.currentLoadedOperationController.changeOperationScrollPaneView(minimizedTaskLayerStackPane);
+        AppScene.currentLoadedOperationController.changeOperationScrollPaneView(parentNode);
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 

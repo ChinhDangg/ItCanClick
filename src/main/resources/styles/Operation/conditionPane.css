@@ -1,0 +1,5 @@
+.no-top-border {
+    -fx-border-color:  transparent  black black black;
+    -fx-border-radius:  0 0 3 3;
+    -fx-border-width:  0 1 1 1;
+}
