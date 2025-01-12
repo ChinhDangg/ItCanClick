@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -15,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import org.dev.AppScene;
+import org.dev.Enum.AppLevel;
 import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Action.Action;
@@ -24,7 +24,6 @@ import org.dev.Operation.MainJobController;
 import org.dev.SideMenu.SideMenuController;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -50,7 +49,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
     private VBox actionRunVBox, conditionRunEntryVBoxContainer, conditionRunExitVBoxContainer;
 
     @Getter
-    private VBox conditionRunVBoxSideContent = new VBox();
+    private VBox actionRunSideContent = new VBox();
     private final String className = this.getClass().getSimpleName();
 
     @Override
@@ -58,7 +57,6 @@ public class ActionRunController extends RunActivity implements Initializable, M
         showActionRunPane(false);
         conditionRunExitVBoxContainer.setVisible(false);
         setFitDimensionImageView();
-        conditionRunVBoxSideContent.setPadding(new Insets(0, 0, 0, 35));
     }
 
     private void setFitDimensionImageView() {
@@ -243,11 +241,12 @@ public class ActionRunController extends RunActivity implements Initializable, M
             return;
         }
         conditionRunEntryVBoxContainer.setVisible(true);
-        Platform.runLater(() -> conditionRunVBoxSideContent.getChildren().clear());
+        Platform.runLater(() -> actionRunSideContent.getChildren().clear());
         currentConditionRunController.setParentScrollPane(entryConditionScrollPane);
-        HBox entryConditionSideMenuHbox = SideMenuController.getDropDownHBox(null, new Label(ConditionType.Entry.name()), currentConditionRunController);
+        Node conditionEntryRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(AppLevel.Condition,
+                new Label(ConditionType.Entry.name()), null, currentConditionRunController);
         // update side hierarchy
-        Platform.runLater(() -> conditionRunVBoxSideContent.getChildren().add(entryConditionSideMenuHbox));
+        Platform.runLater(() -> actionRunSideContent.getChildren().add(conditionEntryRunHBoxLabel));
         Platform.runLater(() -> entryConditionHBox.getChildren().add(conditionRunPane));
     }
 
@@ -259,9 +258,10 @@ public class ActionRunController extends RunActivity implements Initializable, M
         }
         conditionRunExitVBoxContainer.setVisible(true);
         currentConditionRunController.setParentScrollPane(exitConditionScrollPane);
-        HBox exitConditionSideMenuHbox = SideMenuController.getDropDownHBox(null, new Label(ConditionType.Exit.name()), currentConditionRunController);
+        Node conditionExitRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(AppLevel.Condition,
+                new Label(ConditionType.Exit.name()), null, currentConditionRunController);
         // update side hierarchy
-        Platform.runLater(() -> conditionRunVBoxSideContent.getChildren().add(exitConditionSideMenuHbox));
+        Platform.runLater(() -> actionRunSideContent.getChildren().add(conditionExitRunHBoxLabel));
         Platform.runLater(() -> exitConditionHBox.getChildren().add(conditionRunPane));
     }
 

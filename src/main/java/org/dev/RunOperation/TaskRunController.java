@@ -3,15 +3,13 @@ package org.dev.RunOperation;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import org.dev.AppScene;
+import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Data.ActionData;
@@ -20,27 +18,20 @@ import org.dev.Operation.MainJobController;
 import org.dev.Operation.Task.Task;
 import org.dev.SideMenu.SideMenuController;
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
 
-public class TaskRunController extends RunActivity implements Initializable, MainJobController {
+public class TaskRunController extends RunActivity implements MainJobController {
 
     @FXML
     private Group mainTaskRunGroup;
     @FXML @Getter
     private Label taskRunNameLabel;
-    @FXML @Getter
+    @FXML
     private VBox mainTaskRunVBox;
 
     @Getter
-    private VBox actionRunVBoxSideContent = new VBox();
+    private VBox taskRunVBoxSideContent = new VBox();
     private final String className = this.getClass().getSimpleName();
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        actionRunVBoxSideContent.setPadding(new Insets(0, 0, 0, 15));
-    }
 
     @Override
     public void takeToDisplay() {
@@ -111,12 +102,11 @@ public class TaskRunController extends RunActivity implements Initializable, Mai
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("actionRunPane.fxml"));
             Node actionRunPaneGroup = fxmlLoader.load();
             currentActionRunController = fxmlLoader.getController();
-            VBox conditionRunVBox = currentActionRunController.getConditionRunVBoxSideContent();
-            HBox actionRunLabelHBox = SideMenuController.getDropDownHBox(conditionRunVBox,
-                    new Label(currentActionRunController.getActionRunNameLabel().getText()),
-                    currentActionRunController);
+            VBox actionRunSideContent = currentActionRunController.getActionRunSideContent();
+            Node actionRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(AppLevel.Action,
+                    new Label(currentActionRunController.getActionRunNameLabel().getText()), actionRunSideContent, currentActionRunController);
             // update side hierarchy
-            Platform.runLater(() -> actionRunVBoxSideContent.getChildren().add(new VBox(actionRunLabelHBox, conditionRunVBox)));
+            Platform.runLater(() -> taskRunVBoxSideContent.getChildren().addAll(actionRunHBoxLabel, actionRunSideContent));
             Platform.runLater(() -> mainTaskRunVBox.getChildren().add(actionRunPaneGroup));
         } catch (IOException e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading action run pane: " + e.getMessage());

@@ -4,16 +4,14 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import lombok.Getter;
 import org.dev.AppScene;
+import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Data.OperationData;
 import org.dev.Operation.Data.TaskData;
@@ -25,25 +23,23 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class OperationRunController implements Initializable, MainJobController {
-
-    @FXML @Getter
+    @FXML
     private ScrollPane operationRunScrollPane;
     @FXML
     private VBox mainOperationRunVBox;
     @FXML @Getter
     private Label operationNameRunLabel;
-    @FXML @Getter
+    @FXML
     private VBox runVBox;
 
-    private Thread operationRunThread = null;
     @Getter
-    private VBox taskRunVBoxSideContent = new VBox();
+    private VBox operationRunSideContent = new VBox();
+    private Thread operationRunThread = null;
     private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loadMainOperationRunVBox();
-        taskRunVBoxSideContent.setPadding(new Insets(0, 0, 0, 15));
     }
 
     public Node getParentNode() {
@@ -148,16 +144,14 @@ public class OperationRunController implements Initializable, MainJobController 
     private TaskRunController currentTaskRunController;
     private void loadAndAddNewTaskRunPane() {
         try {
-            currentTaskRunController = null;
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("taskRunPane.fxml"));
             Node taskRunGroup = fxmlLoader.load();
             currentTaskRunController = fxmlLoader.getController();
-            VBox actionRunVBox = currentTaskRunController.getActionRunVBoxSideContent();
-            HBox taskRunLabelHBox = SideMenuController.getDropDownHBox(actionRunVBox,
-                    new Label(currentTaskRunController.getTaskRunNameLabel().getText()),
-                    currentTaskRunController);
+            VBox taskRunSideContent = currentTaskRunController.getTaskRunVBoxSideContent();
+            Node taskRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(AppLevel.Task,
+                    new Label(currentTaskRunController.getTaskRunNameLabel().getText()), taskRunSideContent, currentTaskRunController);
             // update side hierarchy
-            Platform.runLater(() -> taskRunVBoxSideContent.getChildren().add(new VBox(taskRunLabelHBox, actionRunVBox)));
+            Platform.runLater(() -> operationRunSideContent.getChildren().addAll(taskRunHBoxLabel, taskRunSideContent));
             Platform.runLater(() -> runVBox.getChildren().add(taskRunGroup));
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading task run pane: " + e.getMessage());

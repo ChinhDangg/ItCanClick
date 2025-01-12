@@ -5,24 +5,22 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import lombok.Getter;
 import org.dev.AppScene;
+import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.Data.TaskData;
 import org.dev.SideMenu.SideMenuController;
-import java.io.IOException;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,12 +39,12 @@ public class TaskController implements Initializable, MainJobController {
     @FXML
     private StackPane removeActionButton, moveActionUpButton, moveActionDownButton, addNewActionButton;
 
+    private double currentGlobalScale = 1;
+    private final String className = this.getClass().getSimpleName();
     @Getter
     private final List<ActionController> actionList = new ArrayList<>();
-    private double currentGlobalScale = 1;
     @Getter
-    private VBox actionGroupVBoxSideContent = new VBox();
-    private final String className = this.getClass().getSimpleName();
+    private VBox taskSideContent = new VBox();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -56,7 +54,6 @@ public class TaskController implements Initializable, MainJobController {
         moveActionUpButton.setOnMouseClicked(this::moveActionUp);
         backButton.setOnMouseClicked(this::backToPreviousAction);
         loadMainTaskVBox();
-        actionGroupVBoxSideContent.setPadding(new Insets(0, 0, 0, 35));
         taskVBox.heightProperty().addListener((_, _, _) -> Platform.runLater(() -> taskScrollPane.setVvalue(1.0)));
     }
 
@@ -102,8 +99,9 @@ public class TaskController implements Initializable, MainJobController {
             taskVBox.getChildren().add(numberOfActions, actionPane);
             actionList.add(actionController);
             // update side menu
-            HBox actionLabelHBox = SideMenuController.getDropDownHBox(null, actionController.getActionNameLabel(), actionController);
-            actionGroupVBoxSideContent.getChildren().add(actionLabelHBox);
+            Node actionHBoxLabel = SideMenuController.getNewSideHBoxLabel(AppLevel.Action, actionController.getActionNameLabel(),
+                    null, actionController);
+            taskSideContent.getChildren().add(actionHBoxLabel);
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding action pane: " + e.getMessage());
         }
@@ -142,7 +140,7 @@ public class TaskController implements Initializable, MainJobController {
         AppScene.addLog(LogLevel.DEBUG, className, "Removed selected action: " + changeIndex);
         currentSelectedActionPane = null;
         //update side menu
-        actionGroupVBoxSideContent.getChildren().remove(changeIndex);
+        taskSideContent.getChildren().remove(changeIndex);
     }
     private void setSelectedAction(Node actionPane) { actionPane.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); }
     private void setUnSelectedAction(Node actionPane) { actionPane.setStyle(""); }
@@ -186,7 +184,7 @@ public class TaskController implements Initializable, MainJobController {
         children.add(changeIndex, currentSelectedActionPane);
     }
     private void updateActionSideContent(int selectedActionPaneIndex, int changeIndex) {
-        ObservableList<Node> actionSideContent = actionGroupVBoxSideContent.getChildren();
+        ObservableList<Node> actionSideContent = taskSideContent.getChildren();
         Node temp = actionSideContent.get(selectedActionPaneIndex);
         actionSideContent.remove(selectedActionPaneIndex);
         actionSideContent.add(changeIndex, temp);

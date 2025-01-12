@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+
+<HBox fx:id="parentHBoxNode" alignment="CENTER_LEFT" spacing="1.0" styleClass="side-hbox-label-content" stylesheets="@../../../styles/SideMenu/sideMenu.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.SideMenuLabelController">
+   <children>
+      <StackPane prefHeight="10.0" prefWidth="10.0">
+         <children>
+            <ImageView fx:id="collapseImageIcon" fitHeight="7.0" fitWidth="7.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../images/icons/arrowDownIcon.png" />
+               </image>
+            </ImageView>
+         </children>
+      </StackPane>
+      <StackPane prefHeight="18.0" prefWidth="15.0">
+         <children>
+            <ImageView fx:id="labelIndicationImageView" fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../images/icons/operation-icon.png" />
+               </image>
+            </ImageView>
+         </children>
+      </StackPane>
+      <Label fx:id="sideLabel" text="Label" />
+   </children>
+</HBox>

@@ -5,24 +5,22 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import lombok.Getter;
 import org.dev.AppScene;
+import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Data.OperationData;
 import org.dev.Operation.Data.TaskData;
 import org.dev.SideMenu.SideMenuController;
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,8 +35,6 @@ public class OperationController implements Initializable, Serializable, MainJob
     private VBox mainOperationVBox;
     @FXML
     private TextField renameTextField;
-    @Getter
-    private final Label operationNameLabel = new Label();
     @FXML
     private StackPane removeTaskButton, moveTaskUpButton, moveTaskDownButton;
     @FXML
@@ -46,14 +42,17 @@ public class OperationController implements Initializable, Serializable, MainJob
     @FXML
     private HBox addTaskButton;
 
+    private double currentGlobalScale = 1;
+    private final String className = this.getClass().getSimpleName();
     @Getter
     private final List<MinimizedTaskController> taskList = new ArrayList<>();
     @Getter
     private Operation operation = new Operation();
-    private double currentGlobalScale = 1;
     @Getter
-    private VBox taskGroupVBoxSideContent = new VBox();
-    private final String className = this.getClass().getSimpleName();
+    private final Label operationNameLabel = new Label();
+    @Getter
+    private VBox operationSideContent = new VBox();
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -69,7 +68,6 @@ public class OperationController implements Initializable, Serializable, MainJob
             }
         });
         loadMainOperationVBox();
-        taskGroupVBoxSideContent.setPadding(new Insets(0, 0, 0, 15));
         operationVBox.heightProperty().addListener((_, _, _) -> Platform.runLater(() -> operationScrollPane.setVvalue(1.0)));
     }
 
@@ -143,10 +141,10 @@ public class OperationController implements Initializable, Serializable, MainJob
         }
     }
     private void createTaskSideContent(MinimizedTaskController controller) {
-        VBox taskActionVBox = controller.getTaskController().getActionGroupVBoxSideContent();
-        HBox taskLabelHBox = SideMenuController.getDropDownHBox(taskActionVBox, controller.getTaskNameLabel(), controller);
-        taskGroupVBoxSideContent.getChildren().add(new VBox(taskLabelHBox, taskActionVBox));
-        AppScene.addLog(LogLevel.TRACE, className, "Created task side content");
+        VBox taskSideContent = controller.getTaskController().getTaskSideContent();
+        Node taskLabelHBox = SideMenuController.getNewSideHBoxLabel(AppLevel.Task, controller.getTaskNameLabel(), taskSideContent, controller);
+        operationSideContent.getChildren().addAll(taskLabelHBox, taskSideContent);
+        AppScene.addLog(LogLevel.TRACE, className, "Created operation side content");
     }
 
     // ------------------------------------------------------
@@ -191,7 +189,7 @@ public class OperationController implements Initializable, Serializable, MainJob
         currentSelectedTaskPane = null;
         updateTaskIndex(changeIndex);
         // update side menu
-        taskGroupVBoxSideContent.getChildren().remove(changeIndex);
+        operationSideContent.getChildren().remove(changeIndex);
     }
     private void moveTaskUp(MouseEvent event) {
         if (currentSelectedTaskPane == null)
@@ -236,7 +234,7 @@ public class OperationController implements Initializable, Serializable, MainJob
         children.add(changeIndex, currentSelectedTaskPane.getParent());
     }
     private void updateTaskSideContent(int selectedIndex, int changeIndex) {
-        ObservableList<Node> taskSideContent = taskGroupVBoxSideContent.getChildren();
+        ObservableList<Node> taskSideContent = operationSideContent.getChildren();
         Node temp = taskSideContent.get(selectedIndex);
         taskSideContent.remove(selectedIndex);
         taskSideContent.add(changeIndex, temp);

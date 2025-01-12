@@ -1,0 +1,4 @@
+.side-hbox-label-content:hover {
+    -fx-background-color: rgb(200,200,200);
+    -fx-background-radius: 3;
+}

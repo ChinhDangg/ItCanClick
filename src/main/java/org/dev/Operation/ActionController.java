@@ -52,11 +52,10 @@ public class ActionController implements Initializable, MainJobController, Activ
     @Getter
     private final Label actionNameLabel = new Label();
 
-    @Getter
-    private final List<ConditionController> entryConditionList = new ArrayList<>();
-    @Getter
-    private final List<ConditionController> exitConditionList = new ArrayList<>();
     private final String className = this.getClass().getSimpleName();
+    private final List<ConditionController> entryConditionList = new ArrayList<>();
+    private final List<ConditionController> exitConditionList = new ArrayList<>();
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

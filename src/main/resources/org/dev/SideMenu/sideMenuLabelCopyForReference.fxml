@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox prefWidth="200.0" stylesheets="@../../../styles/SideMenu/sideMenu.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.SideMenuLabelController">
+   <children>
+      <HBox fx:id="parentHBoxNode" alignment="CENTER_LEFT" spacing="1.0" styleClass="side-hbox-label-content" stylesheets="@../../../styles/SideMenu/sideMenu.css">
+         <children>
+            <StackPane prefWidth="20.0">
+               <children>
+                  <ImageView fx:id="collapseImageIcon" fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../images/icons/arrowDownIcon.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </StackPane>
+            <StackPane prefWidth="12.0">
+               <children>
+                  <ImageView fx:id="labelIndicationImageView" fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../images/icons/operation-icon.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </StackPane>
+            <Label fx:id="sideLabel" text="Label" />
+         </children>
+      </HBox>
+      <VBox>
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="1.0" styleClass="side-hbox-label-content">
+               <children>
+                  <StackPane prefWidth="20.0">
+                     <children>
+                        <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../images/icons/arrowDownIcon.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </StackPane>
+                  <StackPane prefWidth="12.0">
+                     <children>
+                        <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../images/icons/task-icon.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </StackPane>
+                  <Label text="Label" />
+               </children>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </HBox>
+            <VBox>
+               <children>
+                  <HBox alignment="CENTER_LEFT" spacing="1.0" styleClass="side-hbox-label-content">
+                     <children>
+                        <StackPane prefWidth="20.0">
+                           <children>
+                              <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/icons/arrowDownIcon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <StackPane prefWidth="15.0">
+                           <children>
+                              <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/icons/action-icon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <Label text="Label" />
+                     </children>
+                     <padding>
+                        <Insets left="40.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="1.0" styleClass="side-hbox-label-content">
+                     <children>
+                        <StackPane prefWidth="20.0">
+                           <children>
+                              <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/icons/arrowDownIcon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <StackPane prefWidth="15.0">
+                           <children>
+                              <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/icons/action-icon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <Label text="Label" />
+                     </children>
+                     <padding>
+                        <Insets left="40.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="1.0" styleClass="side-hbox-label-content">
+                     <children>
+                        <StackPane prefWidth="20.0">
+                           <children>
+                              <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/icons/arrowDownIcon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <StackPane prefWidth="15.0">
+                           <children>
+                              <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/icons/action-icon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <Label text="Label" />
+                     </children>
+                     <padding>
+                        <Insets left="40.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </VBox>
+            <HBox alignment="CENTER_LEFT" spacing="1.0" styleClass="side-hbox-label-content">
+               <children>
+                  <StackPane prefWidth="20.0">
+                     <children>
+                        <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../images/icons/arrowDownIcon.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </StackPane>
+                  <StackPane prefWidth="12.0">
+                     <children>
+                        <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../images/icons/task-icon.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </StackPane>
+                  <Label text="Label" />
+               </children>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </HBox>
+            <VBox>
+               <children>
+                  <HBox alignment="CENTER_LEFT" spacing="1.0" styleClass="side-hbox-label-content">
+                     <children>
+                        <StackPane prefWidth="20.0">
+                           <children>
+                              <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/icons/arrowDownIcon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <StackPane prefWidth="15.0">
+                           <children>
+                              <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/icons/action-icon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <Label text="Label" />
+                     </children>
+                     <padding>
+                        <Insets left="40.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="1.0" styleClass="side-hbox-label-content">
+                     <children>
+                        <StackPane prefWidth="20.0">
+                           <children>
+                              <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/icons/arrowDownIcon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <StackPane prefWidth="15.0">
+                           <children>
+                              <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/icons/action-icon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <Label text="Label" />
+                     </children>
+                     <padding>
+                        <Insets left="40.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="1.0" styleClass="side-hbox-label-content">
+                     <children>
+                        <StackPane prefWidth="20.0">
+                           <children>
+                              <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/icons/arrowDownIcon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <StackPane prefWidth="15.0">
+                           <children>
+                              <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/icons/action-icon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <Label text="Label" />
+                     </children>
+                     <padding>
+                        <Insets left="40.0" />
+                     </padding>
+                  </HBox>
+                  <VBox>
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="1.0" styleClass="side-hbox-label-content">
+                           <children>
+                              <StackPane prefWidth="20.0">
+                                 <children>
+                                    <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../images/icons/arrowDownIcon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                              <StackPane prefWidth="15.0">
+                                 <children>
+                                    <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../images/icons/condition-icon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                              <Label text="Label" />
+                           </children>
+                           <padding>
+                              <Insets left="60.0" />
+                           </padding>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="1.0" styleClass="side-hbox-label-content">
+                           <children>
+                              <StackPane prefWidth="20.0">
+                                 <children>
+                                    <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../images/icons/arrowDownIcon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                              <StackPane prefWidth="15.0">
+                                 <children>
+                                    <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../images/icons/condition-icon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                              <Label text="Label" />
+                           </children>
+                           <padding>
+                              <Insets left="60.0" />
+                           </padding>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="1.0" styleClass="side-hbox-label-content">
+                           <children>
+                              <StackPane prefWidth="20.0">
+                                 <children>
+                                    <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../images/icons/arrowDownIcon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                              <StackPane prefWidth="15.0">
+                                 <children>
+                                    <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../../images/icons/condition-icon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                              <Label text="Label" />
+                           </children>
+                           <padding>
+                              <Insets left="60.0" />
+                           </padding>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</VBox>
