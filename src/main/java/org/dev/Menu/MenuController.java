@@ -96,7 +96,6 @@ public abstract class MenuController implements Initializable, NativeKeyListener
         mainImageView.setFitHeight(height);
         recheckResultImageView.setFitWidth(width);
         recheckResultImageView.setFitHeight(height);
-        System.out.println("in: " + width + " " + height);
     }
     protected void zoomOutImageView(MouseEvent event) {
         Image image = mainImageView.getImage();
@@ -108,7 +107,6 @@ public abstract class MenuController implements Initializable, NativeKeyListener
         mainImageView.setFitHeight(height);
         recheckResultImageView.setFitWidth(width);
         recheckResultImageView.setFitHeight(height);
-        System.out.println("out: " + width + " " + height);
     }
 
     protected void centerImageView(MouseEvent event) {

@@ -5,10 +5,12 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.dev.Enum.AppLevel;
+import org.dev.Operation.DataController;
 import org.dev.Operation.MainJobController;
 
 public class SideMenuLabelController {
@@ -19,7 +21,9 @@ public class SideMenuLabelController {
     @FXML
     private Label sideLabel;
 
-    public Node createHBoxLabel(AppLevel appLevel, Label label, VBox collapseContent, MainJobController mainJobController) {
+    public Node createHBoxLabel(Label label, VBox collapseContent, DataController dataController, DataController parentController,
+                                RightClickMenuController rightClickMenuController) {
+        AppLevel appLevel = dataController.getAppLevel();
         parentHBoxNode.getChildren().remove(sideLabel);
         if (appLevel == AppLevel.Action || appLevel == AppLevel.Condition) {
             labelIndicationImageView.setFitWidth(13);
@@ -30,7 +34,17 @@ public class SideMenuLabelController {
         parentHBoxNode.getChildren().add(label);
         if (collapseContent != null)
             collapseImageIcon.setOnMouseClicked(_ -> collapseContent(collapseContent));
-        parentHBoxNode.setOnMouseClicked(event -> doubleClick(event, mainJobController));
+        parentHBoxNode.setOnMouseClicked(
+                event -> doubleClickAndRightClick(event, dataController, parentController, rightClickMenuController));
+        return parentHBoxNode;
+    }
+
+    public Node createHBoxLabel(Label label, VBox collapseContent, MainJobController jobController) {
+        parentHBoxNode.getChildren().remove(sideLabel);
+        parentHBoxNode.getChildren().add(label);
+        if (collapseContent != null)
+            collapseImageIcon.setOnMouseClicked(_ -> collapseContent(collapseContent));
+        parentHBoxNode.setOnMouseClicked(event -> doubleClick(event, jobController));
         return parentHBoxNode;
     }
 
@@ -63,7 +77,15 @@ public class SideMenuLabelController {
     }
 
     private void doubleClick(MouseEvent event, MainJobController jobController) {
-        if (event.getClickCount() == 2)
+        if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2)
             jobController.takeToDisplay();
+    }
+
+    private void doubleClickAndRightClick(MouseEvent event, DataController dataController, DataController parentController, RightClickMenuController rightClickMenuController) {
+        if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2)
+            dataController.takeToDisplay();
+        else if (event.getButton() == MouseButton.SECONDARY) {
+            rightClickMenuController.showRightMenu(event, dataController, parentController);
+        }
     }
 }

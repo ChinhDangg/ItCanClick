@@ -18,6 +18,7 @@ import lombok.Getter;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
+import org.dev.Operation.Data.AppData;
 import org.dev.Operation.Data.OperationData;
 import org.dev.Operation.Data.TaskData;
 import org.dev.SideMenu.SideMenuController;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class OperationController implements Initializable, Serializable, MainJobController {
+public class OperationController implements Initializable, Serializable, DataController {
 
     @FXML
     private ScrollPane operationScrollPane;
@@ -52,7 +53,6 @@ public class OperationController implements Initializable, Serializable, MainJob
     private final Label operationNameLabel = new Label();
     @Getter
     private VBox operationSideContent = new VBox();
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -117,9 +117,10 @@ public class OperationController implements Initializable, Serializable, MainJob
             AppScene.addLog(LogLevel.INFO, className, "Recent minimized task is not set");
             return;
         }
-        addNewMinimizedTask(null);
+        addSavedData(null);
     }
-    private void addNewMinimizedTask(TaskData taskData) {
+    @Override
+    public void addSavedData(AppData taskData) {
         try {
             AppScene.addLog(LogLevel.TRACE, className, "Loading Minimized Task Pane");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("minimizedTaskPane.fxml"));
@@ -128,7 +129,7 @@ public class OperationController implements Initializable, Serializable, MainJob
             MinimizedTaskController controller = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Minimized Task Pane");
             if (taskData != null)
-                controller.loadSavedTaskData(taskData);
+                controller.loadSavedData(taskData);
             int numberOfTask = operationVBox.getChildren().size();
             if (numberOfTask == 0)
                 controller.disablePreviousOption();
@@ -142,7 +143,7 @@ public class OperationController implements Initializable, Serializable, MainJob
     }
     private void createTaskSideContent(MinimizedTaskController controller) {
         VBox taskSideContent = controller.getTaskController().getTaskSideContent();
-        Node taskLabelHBox = SideMenuController.getNewSideHBoxLabel(AppLevel.Task, controller.getTaskNameLabel(), taskSideContent, controller);
+        Node taskLabelHBox = SideMenuController.getNewSideHBoxLabel(controller.getTaskNameLabel(), taskSideContent, controller, this);
         operationSideContent.getChildren().addAll(taskLabelHBox, taskSideContent);
         AppScene.addLog(LogLevel.TRACE, className, "Created operation side content");
     }
@@ -180,18 +181,29 @@ public class OperationController implements Initializable, Serializable, MainJob
         if (currentSelectedTaskPane == null)
             return;
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on remove selected task");
-        int changeIndex = operationVBox.getChildren().indexOf(currentSelectedTaskPane.getParent());
+        int changeIndex = operationVBox.getChildren().indexOf(currentSelectedTaskPane);
+        removeTask(changeIndex);
+        currentSelectedTaskPane = null;
+    }
+    private void removeTask(int changeIndex) {
         taskList.remove(changeIndex);
         if (changeIndex == 0 && !taskList.isEmpty())
             taskList.getFirst().disablePreviousOption();
-        operationVBox.getChildren().remove(currentSelectedTaskPane.getParent());
+        operationVBox.getChildren().remove(changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Removed selected task: " + changeIndex);
-        currentSelectedTaskPane = null;
         updateTaskIndex(changeIndex);
         // update side menu
-        operationSideContent.getChildren().remove(changeIndex);
+        operationSideContent.getChildren().remove(changeIndex * 2);
+        operationSideContent.getChildren().remove(changeIndex * 2);
     }
+    @Override
+    public void removeSavedData(DataController dataController) {
+        int changeIndex = taskList.indexOf((MinimizedTaskController) dataController);
+        removeTask(changeIndex);
+    }
+
     private void moveTaskUp(MouseEvent event) {
+        System.out.println(operationSideContent.getChildren().size());
         if (currentSelectedTaskPane == null)
             return;
         ObservableList<Node> children = operationVBox.getChildren();
@@ -209,6 +221,7 @@ public class OperationController implements Initializable, Serializable, MainJob
         //update side menu
         updateTaskSideContent(selectedTaskPaneIndex, changeIndex);
     }
+
     private void moveTaskDown(MouseEvent event) {
         if (currentSelectedTaskPane == null)
             return;
@@ -251,25 +264,33 @@ public class OperationController implements Initializable, Serializable, MainJob
     }
 
     // ------------------------------------------------------
-    public OperationData getOperationData() {
+    @Override
+    public AppLevel getAppLevel() {
+        return AppLevel.Operation;
+    }
+
+    @Override
+    public AppData getSavedData() {
         OperationData operationData = new OperationData();
         operationData.setOperation(operation);
         List<TaskData> taskDataList = new ArrayList<>();
         for (MinimizedTaskController taskController : taskList)
-            taskDataList.add(taskController.getTaskData());
+            taskDataList.add((TaskData) taskController.getSavedData());
         operationData.setTaskDataList(taskDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got operation data");
         return operationData;
     }
 
-    public void loadSavedOperationData(OperationData operationData) {
-        if (operationData == null) {
+    @Override
+    public void loadSavedData(AppData appData) {
+        if (appData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation data is null - cannot load from save");
             return;
         }
+        OperationData operationData = (OperationData) appData;
         this.operation = operationData.getOperation();
         updateOperationName(operation.getOperationName());
         for (TaskData data : operationData.getTaskDataList())
-            addNewMinimizedTask(data);
+            addSavedData(data);
     }
 }

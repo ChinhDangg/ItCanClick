@@ -241,7 +241,7 @@ public class AppScene {
             mainDisplayStackPane.getChildren().clear();
             AppScene.addLog(LogLevel.TRACE, className, "Passed clearing main display stack pane children");
 
-            currentLoadedOperationController.loadSavedOperationData(operationData);
+            currentLoadedOperationController.loadSavedData(operationData);
             AppScene.addLog(LogLevel.TRACE, className, "Passed loading saved data");
 
             mainDisplayStackPane.getChildren().add(operationPane);

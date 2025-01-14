@@ -13,7 +13,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import org.dev.AppScene;
-import org.dev.Enum.AppLevel;
 import org.dev.Enum.CurrentTab;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.*;
@@ -48,10 +47,12 @@ public class SideMenuController implements Initializable {
     private Group newOperationGroupButton;
 
     private final String className = this.getClass().getSimpleName();
+    private static RightClickMenuController rightClickMenuController;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setScaleHierarchyVBox();
+        rightClickMenuController = loadRightClickMenu();
         newOperationGroupButton.setOnMouseClicked(this::getNewOperationPane);
     }
 
@@ -88,9 +89,18 @@ public class SideMenuController implements Initializable {
     }
 
     // ------------------------------------------------------
-    public static Node getNewSideHBoxLabel(AppLevel appLevel, Label label, VBox content, MainJobController jobController) {
+    public static Node getNewSideHBoxLabel(Label label, VBox content, DataController dataController, DataController parentController) {
         SideMenuLabelController controller = loadSideMenuLabelController();
-        return (controller == null) ? null : controller.createHBoxLabel(appLevel, label, content, jobController);
+        if (controller == null)
+            return null;
+        return controller.createHBoxLabel(label, content, dataController, parentController, rightClickMenuController);
+    }
+
+    public static Node getNewSideHBoxLabel(Label label, VBox content, MainJobController jobController) {
+        SideMenuLabelController controller = loadSideMenuLabelController();
+        if (controller == null)
+            return null;
+        return controller.createHBoxLabel(label, content, jobController);
     }
 
     private static SideMenuLabelController loadSideMenuLabelController() {
@@ -99,7 +109,7 @@ public class SideMenuController implements Initializable {
             sideMenuLabelLoader.load();
             return sideMenuLabelLoader.getController();
         } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, SideMenuController.class.getSimpleName(), "Failed to load side menu label");
+            AppScene.addLog(LogLevel.ERROR, SideMenuController.class.getSimpleName(), "Error loading side menu label: " + e.getMessage());
             return null;
         }
     }
@@ -112,8 +122,8 @@ public class SideMenuController implements Initializable {
         sideHierarchyChildren.clear();
 
         VBox operationSideContent = operationController.getOperationSideContent();
-        Node operationSideHBoxLabel = getNewSideHBoxLabel(AppLevel.Operation, operationController.getOperationNameLabel(),
-                operationSideContent, operationController);
+        Node operationSideHBoxLabel = getNewSideHBoxLabel(operationController.getOperationNameLabel(),
+                operationSideContent, operationController, null);
         sideHierarchyChildren.add(operationSideHBoxLabel);
         sideHierarchyChildren.add(operationSideContent);
 
@@ -125,11 +135,22 @@ public class SideMenuController implements Initializable {
         runSideHierarchyChildren.clear();
 
         VBox operationRunSideContent = operationRunController.getOperationRunSideContent();
-        Node operationRunSideHBoxLabel = getNewSideHBoxLabel(AppLevel.Operation, operationRunController.getOperationNameRunLabel(),
+        Node operationRunSideHBoxLabel = getNewSideHBoxLabel(operationRunController.getOperationNameRunLabel(),
                 operationRunSideContent, operationRunController);
         runSideHierarchyChildren.add(operationRunSideHBoxLabel);
         runSideHierarchyChildren.add(operationRunSideContent);
 
         AppScene.addLog(LogLevel.DEBUG, className, "Loaded Operation run side hierarchy");
+    }
+
+    private RightClickMenuController loadRightClickMenu() {
+        try {
+            FXMLLoader rightClickMenuLoader = new FXMLLoader(SideMenuController.class.getResource("rightClickMenuPane.fxml"));
+            rightClickMenuLoader.load();
+            return rightClickMenuLoader.getController();
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading right click menu: " + e.getMessage());
+            return null;
+        }
     }
 }

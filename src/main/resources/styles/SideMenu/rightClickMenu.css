@@ -2,10 +2,15 @@
     -fx-border-color: black;
     -fx-border-radius: 3;
     -fx-background-radius: 3;
+    -fx-background-color: white;
 }
 
-.hbox-content {
+.hbox-content, #new-hbox-content {
     -fx-padding: 3;
+}
+
+#new-task-hbox-content, #new-action-hbox-content {
+    -fx-padding: 3 3 3 25;
 }
 
 .hbox-content:hover {

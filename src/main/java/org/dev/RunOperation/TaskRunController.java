@@ -9,7 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import org.dev.AppScene;
-import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Data.ActionData;
@@ -103,7 +102,7 @@ public class TaskRunController extends RunActivity implements MainJobController 
             Node actionRunPaneGroup = fxmlLoader.load();
             currentActionRunController = fxmlLoader.getController();
             VBox actionRunSideContent = currentActionRunController.getActionRunSideContent();
-            Node actionRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(AppLevel.Action,
+            Node actionRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(
                     new Label(currentActionRunController.getActionRunNameLabel().getText()), actionRunSideContent, currentActionRunController);
             // update side hierarchy
             Platform.runLater(() -> taskRunVBoxSideContent.getChildren().addAll(actionRunHBoxLabel, actionRunSideContent));

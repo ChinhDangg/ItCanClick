@@ -11,7 +11,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import lombok.Getter;
 import org.dev.AppScene;
-import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Data.OperationData;
 import org.dev.Operation.Data.TaskData;
@@ -89,7 +88,7 @@ public class OperationRunController implements Initializable, MainJobController 
 
     // ------------------------------------------------------
     public void startOperation(OperationController operationController) {
-        OperationData operationData = operationController.getOperationData();
+        OperationData operationData = (OperationData) operationController.getSavedData();
         if (operationData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation data is null - cannot start");
             return;
@@ -148,7 +147,7 @@ public class OperationRunController implements Initializable, MainJobController 
             Node taskRunGroup = fxmlLoader.load();
             currentTaskRunController = fxmlLoader.getController();
             VBox taskRunSideContent = currentTaskRunController.getTaskRunVBoxSideContent();
-            Node taskRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(AppLevel.Task,
+            Node taskRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(
                     new Label(currentTaskRunController.getTaskRunNameLabel().getText()), taskRunSideContent, currentTaskRunController);
             // update side hierarchy
             Platform.runLater(() -> operationRunSideContent.getChildren().addAll(taskRunHBoxLabel, taskRunSideContent));

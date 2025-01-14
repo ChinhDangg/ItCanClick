@@ -3,7 +3,6 @@ package org.dev.Operation;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -13,13 +12,15 @@ import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.AppScene;
+import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
+import org.dev.Operation.Data.AppData;
 import org.dev.Operation.Data.TaskData;
 import org.dev.Operation.Task.Task;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class MinimizedTaskController implements Initializable, MainJobController {
+public class MinimizedTaskController implements Initializable, DataController {
     @FXML
     private Node parentNode;
     @FXML
@@ -66,6 +67,7 @@ public class MinimizedTaskController implements Initializable, MainJobController
         updateTaskName(name);
     }
     private void updateTaskName(String name) {
+        task.setTaskName(name);
         taskNameLabel.setText(name);
         renameTextField.setText(name);
         taskController.changeTaskName(name);
@@ -110,6 +112,8 @@ public class MinimizedTaskController implements Initializable, MainJobController
         }
     }
 
+
+
     // ------------------------------------------------------
     private int repeatNumber = 0;
     private void increaseRepeatNumber(MouseEvent event) {
@@ -127,8 +131,16 @@ public class MinimizedTaskController implements Initializable, MainJobController
     }
 
     // ------------------------------------------------------
-    public TaskData getTaskData() {
-        TaskData taskData = taskController.getTaskData();
+    @Override
+    public void addSavedData(AppData appData) { taskController.addSavedData(appData); }
+    @Override
+    public void removeSavedData(DataController dataController) { taskController.removeSavedData(dataController); }
+    @Override
+    public AppLevel getAppLevel() { return AppLevel.Task; }
+
+    @Override
+    public AppData getSavedData() {
+        TaskData taskData = (TaskData) taskController.getSavedData();
         task.setRepeatNumber(repeatNumber);
         task.setRequired(requiredCheckBox.isSelected());
         task.setPreviousPass(requiredCheckBox.isSelected());
@@ -137,9 +149,11 @@ public class MinimizedTaskController implements Initializable, MainJobController
         return taskData;
     }
 
-    public void loadSavedTaskData(TaskData taskData) {
+    @Override
+    public void loadSavedData(AppData appData) {
         loadNewTaskPane();
-        taskController.loadSavedTaskData(taskData);
+        TaskData taskData = (TaskData) appData;
+        taskController.loadSavedData(taskData);
         task = taskData.getTask();
         requiredCheckBox.setSelected(task.isRequired());
         previousPassCheckBox.setSelected(task.isPreviousPass());

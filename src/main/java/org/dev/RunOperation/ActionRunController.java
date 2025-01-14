@@ -14,7 +14,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import org.dev.AppScene;
-import org.dev.Enum.AppLevel;
 import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Action.Action;
@@ -22,7 +21,6 @@ import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.MainJobController;
 import org.dev.SideMenu.SideMenuController;
-
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
@@ -243,7 +241,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
         conditionRunEntryVBoxContainer.setVisible(true);
         Platform.runLater(() -> actionRunSideContent.getChildren().clear());
         currentConditionRunController.setParentScrollPane(entryConditionScrollPane);
-        Node conditionEntryRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(AppLevel.Condition,
+        Node conditionEntryRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(
                 new Label(ConditionType.Entry.name()), null, currentConditionRunController);
         // update side hierarchy
         Platform.runLater(() -> actionRunSideContent.getChildren().add(conditionEntryRunHBoxLabel));
@@ -258,7 +256,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
         }
         conditionRunExitVBoxContainer.setVisible(true);
         currentConditionRunController.setParentScrollPane(exitConditionScrollPane);
-        Node conditionExitRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(AppLevel.Condition,
+        Node conditionExitRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(
                 new Label(ConditionType.Exit.name()), null, currentConditionRunController);
         // update side hierarchy
         Platform.runLater(() -> actionRunSideContent.getChildren().add(conditionExitRunHBoxLabel));

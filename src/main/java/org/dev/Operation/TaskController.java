@@ -18,15 +18,15 @@ import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Data.ActionData;
+import org.dev.Operation.Data.AppData;
 import org.dev.Operation.Data.TaskData;
 import org.dev.SideMenu.SideMenuController;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class TaskController implements Initializable, MainJobController {
+public class TaskController implements Initializable, DataController {
 
     @FXML
     private ScrollPane taskScrollPane;
@@ -39,12 +39,12 @@ public class TaskController implements Initializable, MainJobController {
     @FXML
     private StackPane removeActionButton, moveActionUpButton, moveActionDownButton, addNewActionButton;
 
-    private double currentGlobalScale = 1;
-    private final String className = this.getClass().getSimpleName();
     @Getter
     private final List<ActionController> actionList = new ArrayList<>();
     @Getter
     private VBox taskSideContent = new VBox();
+    private double currentGlobalScale = 1;
+    private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -81,9 +81,11 @@ public class TaskController implements Initializable, MainJobController {
             AppScene.addLog(LogLevel.INFO, className, "Recent action is not set");
             return;
         }
-        addNewAction(null);
+        addSavedData(null);
     }
-    private void addNewAction(ActionData actionData) {
+
+    @Override
+    public void addSavedData(AppData actionData) {
         try {
             AppScene.addLog(LogLevel.TRACE, className, "Loading Action Pane");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("actionPane.fxml"));
@@ -92,15 +94,15 @@ public class TaskController implements Initializable, MainJobController {
             ActionController actionController = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Action Pane");
             if (actionData != null)
-                actionController.loadSavedActionData(actionData);
+                actionController.loadSavedData(actionData);
             int numberOfActions = taskVBox.getChildren().size();
             if (numberOfActions == 0)
                 actionController.disablePreviousOptions();
             taskVBox.getChildren().add(numberOfActions, actionPane);
             actionList.add(actionController);
             // update side menu
-            Node actionHBoxLabel = SideMenuController.getNewSideHBoxLabel(AppLevel.Action, actionController.getActionNameLabel(),
-                    null, actionController);
+            Node actionHBoxLabel = SideMenuController.getNewSideHBoxLabel(actionController.getActionNameLabel(),
+                    null, actionController, this);
             taskSideContent.getChildren().add(actionHBoxLabel);
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding action pane: " + e.getMessage());
@@ -133,15 +135,24 @@ public class TaskController implements Initializable, MainJobController {
             return;
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on remove selected action");
         int changeIndex = taskVBox.getChildren().indexOf(currentSelectedActionPane);
+        removeAction(changeIndex);
+        currentSelectedActionPane = null;
+    }
+    private void removeAction(int changeIndex) {
         actionList.remove(changeIndex);
         if (changeIndex == 0 && !actionList.isEmpty())
             actionList.getFirst().disablePreviousOptions();
-        taskVBox.getChildren().remove(currentSelectedActionPane);
+        taskVBox.getChildren().remove(changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Removed selected action: " + changeIndex);
-        currentSelectedActionPane = null;
         //update side menu
         taskSideContent.getChildren().remove(changeIndex);
     }
+    @Override
+    public void removeSavedData(DataController dataController) {
+        int changeIndex = actionList.indexOf((ActionController) dataController);
+        removeAction(changeIndex);
+    }
+
     private void setSelectedAction(Node actionPane) { actionPane.setStyle("-fx-border-color: black; -fx-border-width: 1px;"); }
     private void setUnSelectedAction(Node actionPane) { actionPane.setStyle(""); }
 
@@ -197,24 +208,32 @@ public class TaskController implements Initializable, MainJobController {
     }
 
     // ------------------------------------------------------
-    public TaskData getTaskData() {
+    @Override
+    public AppLevel getAppLevel() {
+        return null;
+    }
+
+    @Override
+    public AppData getSavedData() {
         TaskData taskData = new TaskData();
         List<ActionData> actionData = new ArrayList<>();
         for (ActionController actionController : actionList)
-            actionData.add(actionController.getActionData());
+            actionData.add((ActionData) actionController.getSavedData());
         taskData.setActionDataList(actionData);
         AppScene.addLog(LogLevel.TRACE, className, "Got task data");
         return taskData;
     }
 
-    public void loadSavedTaskData(TaskData taskData) {
-        if (taskData == null) {
+    @Override
+    public void loadSavedData(AppData appData) {
+        if (appData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task data is null - cannot load from save");
             return;
         }
+        TaskData taskData = (TaskData) appData;
         taskNameLabel.setText(taskData.getTask().getTaskName());
         for (ActionData actionData : taskData.getActionDataList())
-            addNewAction(actionData);
+            addSavedData(actionData);
     }
 
     @Override

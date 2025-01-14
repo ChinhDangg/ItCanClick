@@ -16,17 +16,20 @@ import lombok.Getter;
 import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
+import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
+import org.dev.Operation.Data.AppData;
+
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ActionController implements Initializable, MainJobController, ActivityController {
+public class ActionController implements Initializable, DataController, ActivityController {
 
     @FXML
     private Node mainActionParentNode;
@@ -103,8 +106,6 @@ public class ActionController implements Initializable, MainJobController, Activ
             renameTextField.setText(actionNameLabel.getText());
             return;
         }
-        if (action != null)
-            action.setActionName(name);
         updateActionName(name);
     }
     private void updateActionName(String name) {
@@ -203,10 +204,21 @@ public class ActionController implements Initializable, MainJobController, Activ
     }
 
     // ------------------------------------------------------
-    public ActionData getActionData() {
+    @Override
+    public void removeSavedData(DataController dataController) {}
+    @Override
+    public void addSavedData(AppData appData) {}
+    @Override
+    public AppLevel getAppLevel() { return AppLevel.Action; }
+
+    @Override
+    public AppData getSavedData() {
+        if (action == null)
+            return null;
         ActionData actionData = new ActionData();
         action.setRequired(requiredCheckBox.isSelected());
         action.setPreviousPass(previousPassCheckBox.isSelected());
+        action.setActionName(actionNameLabel.getText());
         actionData.setAction(action);
         List<Condition> entryConditions = new ArrayList<>();
         List<Condition> exitConditions = new ArrayList<>();
@@ -220,11 +232,13 @@ public class ActionController implements Initializable, MainJobController, Activ
         return actionData;
     }
 
-    public void loadSavedActionData(ActionData actionData) {
-        if (actionData == null) {
+    @Override
+    public void loadSavedData(AppData appData) {
+        if (appData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Action data is null - cannot load from save");
             return;
         }
+        ActionData actionData = (ActionData) appData;
         registerActionPerform(actionData.getAction());
         updateActionName(action.getActionName());
         requiredCheckBox.setSelected(action.isRequired());
