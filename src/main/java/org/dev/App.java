@@ -5,6 +5,7 @@ import com.github.kwhat.jnativehook.NativeHookException;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.*;
 
@@ -28,6 +29,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         stage.setMinWidth(740.0);
         stage.setScene(AppScene.getAppMainScene());
+        //stage.initStyle(StageStyle.UNDECORATED);
         stage.setOnCloseRequest(_ -> System.exit(0));
         stage.show();
     }

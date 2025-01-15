@@ -43,8 +43,6 @@ public class OperationController implements Initializable, Serializable, DataCon
     @FXML
     private HBox addTaskButton;
 
-    private double currentGlobalScale = 1;
-    private final String className = this.getClass().getSimpleName();
     @Getter
     private final List<MinimizedTaskController> taskList = new ArrayList<>();
     @Getter
@@ -53,6 +51,8 @@ public class OperationController implements Initializable, Serializable, DataCon
     private final Label operationNameLabel = new Label();
     @Getter
     private VBox operationSideContent = new VBox();
+    private double currentGlobalScale = 1;
+    private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

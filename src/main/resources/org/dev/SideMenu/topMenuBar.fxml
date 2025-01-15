@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.Polygon?>
 <?import javafx.scene.shape.Rectangle?>
 
-<HBox fx:id="topMenuBarMainHBox" spacing="10.0" styleClass="menu-bar-hbox-container" stylesheets="@../../../styles/SideMenu/menuBarStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.MenuBarController">
+<HBox id="menu-bar-hbox-container" fx:id="topMenuBarMainHBox" spacing="10.0" stylesheets="@../../../styles/SideMenu/menuBarStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.MenuBarController">
    <children>
       <MenuBar>
          <menus>
@@ -95,6 +95,7 @@
             </HBox>
          </children>
       </HBox>
+      <HBox />
    </children>
    <padding>
       <Insets bottom="5.0" top="5.0" />

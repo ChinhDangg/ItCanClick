@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import org.dev.AppScene;
+import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Data.ActionData;
@@ -23,7 +24,7 @@ public class TaskRunController extends RunActivity implements MainJobController 
 
     @FXML
     private Group mainTaskRunGroup;
-    @FXML @Getter
+    @FXML
     private Label taskRunNameLabel;
     @FXML
     private VBox mainTaskRunVBox;
@@ -38,7 +39,12 @@ public class TaskRunController extends RunActivity implements MainJobController 
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
-    private void changeTaskRunName(String newName) {
+    @Override
+    public AppLevel getAppLevel() {
+        return AppLevel.Task;
+    }
+
+    public void changeTaskRunName(String newName) {
         taskRunNameLabel.setText(newName);
     }
 
@@ -82,7 +88,7 @@ public class TaskRunController extends RunActivity implements MainJobController 
                 AppScene.addLog(LogLevel.INFO, className, "Skipping action as previous is passed: " + actionName);
                 continue;
             }
-            loadAndAddNewActionRunPane();
+            loadAndAddNewActionRunPane(currentAction.getActionName());
             AppScene.addLog(LogLevel.INFO, className, "Start running action: " + actionName);
             pass = currentActionRunController.startAction(actionData);
             if (!currentAction.isRequired())
@@ -96,14 +102,15 @@ public class TaskRunController extends RunActivity implements MainJobController 
     }
 
     private ActionRunController currentActionRunController;
-    private void loadAndAddNewActionRunPane() {
+    private void loadAndAddNewActionRunPane(String actionName) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("actionRunPane.fxml"));
             Node actionRunPaneGroup = fxmlLoader.load();
             currentActionRunController = fxmlLoader.getController();
+            currentActionRunController.changeActionRunName(actionName);
             VBox actionRunSideContent = currentActionRunController.getActionRunSideContent();
             Node actionRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(
-                    new Label(currentActionRunController.getActionRunNameLabel().getText()), actionRunSideContent, currentActionRunController);
+                    new Label(actionName), actionRunSideContent, currentActionRunController);
             // update side hierarchy
             Platform.runLater(() -> taskRunVBoxSideContent.getChildren().addAll(actionRunHBoxLabel, actionRunSideContent));
             Platform.runLater(() -> mainTaskRunVBox.getChildren().add(actionRunPaneGroup));

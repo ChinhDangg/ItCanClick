@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import lombok.Getter;
 import org.dev.AppScene;
+import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Data.OperationData;
 import org.dev.Operation.Data.TaskData;
@@ -63,6 +64,11 @@ public class OperationRunController implements Initializable, MainJobController 
         AppScene.closeConditionMenuPane();
         operationRunScrollPane.setVvalue(0.0);
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
+    }
+
+    @Override
+    public AppLevel getAppLevel() {
+        return AppLevel.Operation;
     }
 
     public void changeScrollPaneVValueView(Node node) {
@@ -125,7 +131,7 @@ public class OperationRunController implements Initializable, MainJobController 
         for (TaskData taskData : operationData.getTaskDataList()) {
             Task currentTask = taskData.getTask();
             String taskName = currentTask.getTaskName();
-            loadAndAddNewTaskRunPane();
+            loadAndAddNewTaskRunPane(currentTask.getTaskName());
             if (pass && currentTask.isPreviousPass()) {
                 AppScene.addLog(LogLevel.INFO, className, "Previous is passed, Skipping task " + taskName);
                 continue;
@@ -141,14 +147,15 @@ public class OperationRunController implements Initializable, MainJobController 
     }
 
     private TaskRunController currentTaskRunController;
-    private void loadAndAddNewTaskRunPane() {
+    private void loadAndAddNewTaskRunPane(String taskName) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("taskRunPane.fxml"));
             Node taskRunGroup = fxmlLoader.load();
             currentTaskRunController = fxmlLoader.getController();
+            currentTaskRunController.changeTaskRunName(taskName);
             VBox taskRunSideContent = currentTaskRunController.getTaskRunVBoxSideContent();
             Node taskRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(
-                    new Label(currentTaskRunController.getTaskRunNameLabel().getText()), taskRunSideContent, currentTaskRunController);
+                    new Label(taskName), taskRunSideContent, currentTaskRunController);
             // update side hierarchy
             Platform.runLater(() -> operationRunSideContent.getChildren().addAll(taskRunHBoxLabel, taskRunSideContent));
             Platform.runLater(() -> runVBox.getChildren().add(taskRunGroup));

@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<ScrollPane fx:id="sideMenuMainScrollPane" prefHeight="50.0" styleClass="left-border-only" stylesheets="@../../../styles/SideMenu/sideBarStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.SideMenuController">
+<ScrollPane fx:id="sideMenuMainScrollPane" prefHeight="100.0" styleClass="left-border-only" stylesheets="@../../../styles/SideMenu/sideBarStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.SideMenuController">
    <content>
       <VBox>
          <children>
@@ -19,11 +19,13 @@
                         <VBox fx:id="runSideHierarchyVBox">
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </padding></VBox>
+                           </padding>
+                        </VBox>
                         <VBox fx:id="sideHierarchyVBox">
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </padding></VBox>
+                           </padding>
+                        </VBox>
                         <Group fx:id="newOperationGroupButton">
                            <children>
                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="24.0" stroke="BLACK" strokeType="INSIDE" width="91.0" />

@@ -8,7 +8,6 @@ import org.dev.Enum.ReadingCondition;
 import org.dev.Menu.ConditionPixelMenuController;
 import org.dev.Operation.ImageSerialization;
 import org.dev.RunOperation.RunningStatus;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -88,7 +87,6 @@ public class PixelCondition extends Condition {
     private boolean checkPixelFromCurrentScreen(BufferedImage img2, BufferedImage NOT_USED) throws AWTException {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         BufferedImage currentScreen = new Robot().createScreenCapture(new Rectangle(0, 0, screenSize.width-1, screenSize.height-1));
-
         int heightDif = currentScreen.getHeight() - img2.getHeight();
         int widthDif = currentScreen.getWidth() - img2.getWidth();
         for (int y = 0; y < heightDif; y++)

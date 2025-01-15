@@ -1,60 +1,57 @@
 package org.dev;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.input.MouseButton;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Popup;
-import javafx.stage.Stage;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
-public class Testing2 extends Application {
+public class Testing2 {
 
-    @Override
-    public void start(Stage primaryStage) {
-        // Create a VBox to act as a custom menu
-        VBox customMenu = new VBox();
-        customMenu.setStyle("-fx-background-color: white; -fx-border-color: black; -fx-padding: 5;");
 
-        // Add menu items
-        Label item1 = new Label("Option 1");
-        Label item2 = new Label("Option 2");
-        Label item3 = new Label("Option 3");
+    public static void main(String[] args) throws AWTException, IOException {
+//        BufferedImage img = new Robot().createScreenCapture(new Rectangle(60, 60, 50, 50));
+//        ImageIO.write(img, "png", new File("test2.png"));
 
-        customMenu.getChildren().addAll(item1, item2, item3);
+//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//        BufferedImage currentScreen = new Robot().createScreenCapture(new Rectangle(0, 0, screenSize.width-1, screenSize.height-1));
+//        System.out.println(currentScreen.getType());
 
-        // Add hover effects
-        for (Label item : new Label[]{item1, item2, item3}) {
-            item.setStyle("-fx-padding: 10; -fx-background-color: white; -fx-text-fill: black;");
-            item.setOnMouseEntered(e -> item.setStyle("-fx-padding: 10; -fx-background-color: lightblue; -fx-text-fill: black;"));
-            item.setOnMouseExited(e -> item.setStyle("-fx-padding: 10; -fx-background-color: white; -fx-text-fill: black;"));
-            item.setOnMouseClicked(e -> System.out.println(item.getText() + " clicked"));
-        }
 
-        // Create a Popup to display the menu
-        Popup popup = new Popup();
-        popup.getContent().add(customMenu);
-
-        // Tie the popup to the main stage
-        popup.setAutoHide(true); // Optional: Automatically hide on click outside
-
-        // Show the popup on right-click
-        StackPane root = new StackPane();
-        root.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
-                popup.show(primaryStage, event.getScreenX(), event.getScreenY());
-            } //else {
-//                popup.hide();
-//            }
-        });
-
-        primaryStage.setScene(new Scene(root, 400, 300));
-        primaryStage.setTitle("Popup Lifecycle Fix");
-        primaryStage.show();
+        BufferedImage big = ImageIO.read(new File("C:\\Users\\admin\\IdeaProjects\\SmartClick\\Screenshot 2025-01-14 161020.png"));
+        System.out.println(big.getType());
+        BufferedImage small = ImageIO.read(new File("C:\\Users\\admin\\IdeaProjects\\SmartClick\\Screenshot 2025-01-14 161043.png"));
+        System.out.println(small.getType());
+        System.out.println(checkPixelFromCurrentScreen(small, big));
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    public static boolean checkPixelFromCurrentScreen(BufferedImage smallerImage, BufferedImage biggerImage) throws AWTException {
+        int smallX = 0, smallY = 0;
+        int bigX = 0, bigY = 0;
+        int smallWidth = smallerImage.getWidth()-1, smallHeight = smallerImage.getHeight()-1;
+        int bigWidth = biggerImage.getWidth()-1, bigHeight = biggerImage.getHeight()-1;
+
+        while (bigY <= bigHeight) {
+            if (smallerImage.getRGB(smallX, smallY) == biggerImage.getRGB(bigX, bigY)) {
+                smallX++;
+                if (smallX == smallWidth) {
+                    smallX = 0;
+                    smallY++;
+                    if (smallY == smallHeight)
+                        return true;
+                }
+                System.out.println(smallX + " " + smallY);
+            }
+            else {
+                smallX = 0;
+                smallY = 0;
+            }
+            bigX++;
+            if (bigX == bigWidth) {
+                bigX = 0;
+                bigY++;
+            }
+        }
+        return false;
     }
 }

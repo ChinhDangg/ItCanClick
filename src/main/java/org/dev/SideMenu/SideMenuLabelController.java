@@ -40,6 +40,7 @@ public class SideMenuLabelController {
     }
 
     public Node createHBoxLabel(Label label, VBox collapseContent, MainJobController jobController) {
+        setIndicationIcon(jobController.getAppLevel());
         parentHBoxNode.getChildren().remove(sideLabel);
         parentHBoxNode.getChildren().add(label);
         if (collapseContent != null)

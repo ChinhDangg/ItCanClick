@@ -10,6 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import lombok.Setter;
 import org.dev.AppScene;
+import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Condition.ImageCheckResult;
@@ -48,6 +49,11 @@ public class ConditionRunController extends RunActivity implements Initializable
     public void takeToDisplay() {
         AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(parentScrollPane);
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
+    }
+
+    @Override
+    public AppLevel getAppLevel() {
+        return AppLevel.Condition;
     }
 
     public boolean checkCondition(Condition condition) {

@@ -135,7 +135,7 @@ public class SideMenuController implements Initializable {
         runSideHierarchyChildren.clear();
 
         VBox operationRunSideContent = operationRunController.getOperationRunSideContent();
-        Node operationRunSideHBoxLabel = getNewSideHBoxLabel(operationRunController.getOperationNameRunLabel(),
+        Node operationRunSideHBoxLabel = getNewSideHBoxLabel(new Label(operationRunController.getOperationNameRunLabel().getText()),
                 operationRunSideContent, operationRunController);
         runSideHierarchyChildren.add(operationRunSideHBoxLabel);
         runSideHierarchyChildren.add(operationRunSideContent);

@@ -1,6 +1,5 @@
 package org.dev.Operation;
 
-import org.dev.Enum.AppLevel;
 import org.dev.Operation.Data.AppData;
 
 public interface DataController extends MainJobController{
@@ -10,8 +9,6 @@ public interface DataController extends MainJobController{
     void loadSavedData(AppData appData);
 
     void addSavedData(AppData data);
-
-    AppLevel getAppLevel();
 
     void removeSavedData(DataController dataController);
 }

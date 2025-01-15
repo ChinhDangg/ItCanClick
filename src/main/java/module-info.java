@@ -5,7 +5,6 @@ module org.dev {
     requires static lombok;
     requires tess4j;
     requires com.github.kwhat.jnativehook;
-    requires jdk.unsupported.desktop;
     requires jdk.compiler;
 
     exports org.dev;

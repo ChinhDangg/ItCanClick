@@ -1,4 +1,4 @@
-.menu-bar-hbox-container {
+#menu-bar-hbox-container {
     -fx-border-color: transparent transparent rgb(220, 220, 220) transparent;
     -fx-border-width: 0 0 1px 0;
 }
@@ -11,4 +11,3 @@ MenuBar {
     -fx-background-color: rgb(220, 220, 220);
     -fx-background-radius: 5px;
 }
-

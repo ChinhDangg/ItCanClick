@@ -14,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import org.dev.AppScene;
+import org.dev.Enum.AppLevel;
 import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Action.Action;
@@ -35,7 +36,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
     private ScrollPane entryConditionScrollPane, exitConditionScrollPane;
     @FXML
     private ImageView actionSavedImageView, actionPerformedImageView;
-    @FXML @Getter
+    @FXML
     private Label actionRunNameLabel;
     @FXML
     private Label actionStatusLabel;
@@ -70,6 +71,15 @@ public class ActionRunController extends RunActivity implements Initializable, M
     public void takeToDisplay() {
         AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(mainActionRunGroup);
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
+    }
+
+    @Override
+    public AppLevel getAppLevel() {
+        return AppLevel.Action;
+    }
+
+    public void changeActionRunName(String name) {
+        actionRunNameLabel.setText(name);
     }
 
     private void showActionRunPane(boolean visible) {
