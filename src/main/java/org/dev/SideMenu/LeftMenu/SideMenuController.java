@@ -1,4 +1,4 @@
-package org.dev.SideMenu;
+package org.dev.SideMenu.LeftMenu;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -48,6 +48,7 @@ public class SideMenuController implements Initializable {
 
     private final String className = this.getClass().getSimpleName();
     private static RightClickMenuController rightClickMenuController;
+    private double currentScale = 1.0;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -58,8 +59,10 @@ public class SideMenuController implements Initializable {
 
     // ------------------------------------------------------
     private void setScaleHierarchyVBox() {
-        double currentScale = 1.3;
-        mainSideHierarchyStackPane.getTransforms().add(new Scale(currentScale, currentScale, 0, 0));
+        if (currentScale != AppScene.currentGlobalScale) {
+            currentScale = AppScene.currentGlobalScale;
+            mainSideHierarchyStackPane.getTransforms().add(new Scale(currentScale, currentScale, 0, 0));
+        }
         AppScene.addLog(LogLevel.TRACE, className, "Scaled side menu: " + currentScale);
     }
 

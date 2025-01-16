@@ -21,7 +21,7 @@ import org.dev.Enum.LogLevel;
 import org.dev.Operation.Data.AppData;
 import org.dev.Operation.Data.OperationData;
 import org.dev.Operation.Data.TaskData;
-import org.dev.SideMenu.SideMenuController;
+import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class OperationController implements Initializable, Serializable, DataCon
     private final Label operationNameLabel = new Label();
     @Getter
     private VBox operationSideContent = new VBox();
-    private double currentGlobalScale = 1;
+    private double currentScale = 1;
     private final String className = this.getClass().getSimpleName();
 
     @Override
@@ -84,11 +84,11 @@ public class OperationController implements Initializable, Serializable, DataCon
     }
 
     private void loadMainOperationVBox() {
-        if (currentGlobalScale != AppScene.currentGlobalScale) {
-            currentGlobalScale = AppScene.currentGlobalScale;
-            mainOperationVBox.getTransforms().add(new Scale(currentGlobalScale, currentGlobalScale, 0, 0));
+        if (currentScale != AppScene.currentGlobalScale) {
+            currentScale = AppScene.currentGlobalScale;
+            mainOperationVBox.getTransforms().add(new Scale(currentScale, currentScale, 0, 0));
         }
-        AppScene.addLog(LogLevel.TRACE, className, "Loaded operation vbox with scale: " + currentGlobalScale);
+        AppScene.addLog(LogLevel.TRACE, className, "Loaded operation vbox with scale: " + currentScale);
     }
 
     private void changeOperationName() {
@@ -154,7 +154,7 @@ public class OperationController implements Initializable, Serializable, DataCon
         changeScrollPaneView(minimizedTaskPane);
     }
     private void changeScrollPaneView(Node minimizedTaskPane) {
-        double targetPaneY = minimizedTaskPane.getBoundsInParent().getMinY() * currentGlobalScale;
+        double targetPaneY = minimizedTaskPane.getBoundsInParent().getMinY() * currentScale;
         double contentHeight = operationScrollPane.getContent().getBoundsInLocal().getHeight();
         double scrollPaneHeight = operationScrollPane.getViewportBounds().getHeight();
         double vValue = Math.min(targetPaneY / (contentHeight - scrollPaneHeight), 1.00);

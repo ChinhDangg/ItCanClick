@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<ScrollPane fx:id="sideMenuMainScrollPane" prefHeight="100.0" styleClass="left-border-only" stylesheets="@../../../styles/SideMenu/sideBarStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.SideMenuController">
+<ScrollPane fx:id="sideMenuMainScrollPane" prefHeight="100.0" styleClass="left-border-only" stylesheets="@../../../../styles/SideMenu/sideBarStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.LeftMenu.SideMenuController">
    <content>
       <VBox>
          <children>

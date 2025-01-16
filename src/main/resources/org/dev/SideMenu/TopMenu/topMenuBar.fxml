@@ -11,13 +11,14 @@
 <?import javafx.scene.shape.Polygon?>
 <?import javafx.scene.shape.Rectangle?>
 
-<HBox id="menu-bar-hbox-container" fx:id="topMenuBarMainHBox" spacing="10.0" stylesheets="@../../../styles/SideMenu/menuBarStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.MenuBarController">
+<HBox id="menu-bar-hbox-container" fx:id="topMenuBarMainHBox" spacing="10.0" stylesheets="@../../../../styles/SideMenu/menuBarStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.TopMenu.MenuBarController">
    <children>
       <MenuBar>
          <menus>
             <Menu mnemonicParsing="false" text="File">
                <items>
                   <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" text="Save" />
+                  <MenuItem fx:id="settingMenuItem" mnemonicParsing="false" text="Setting" />
                   <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" text="Exit" />
                </items>
             </Menu>

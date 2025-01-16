@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane fx:id="sideBarMainStackPane" stylesheets="@../../../styles/SideMenu/sideBarStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.SideBarController">
+<StackPane fx:id="sideBarMainStackPane" stylesheets="@../../../../styles/SideMenu/sideBarStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.LeftMenu.SideBarController">
    <children>
       <VBox spacing="10.0" styleClass="left-border-only">
          <children>
@@ -17,7 +17,7 @@
                      <children>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../../images/icons/folder-icon.png" />
+                              <Image url="@../../../../images/icons/folder-icon.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -33,7 +33,7 @@
                      <children>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../../images/icons/play-button-icon.png" />
+                              <Image url="@../../../../images/icons/play-button-icon.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -49,7 +49,7 @@
                      <children>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../../images/icons/log-file-icon.png" />
+                              <Image url="@../../../../images/icons/log-file-icon.png" />
                            </image>
                         </ImageView>
                      </children>

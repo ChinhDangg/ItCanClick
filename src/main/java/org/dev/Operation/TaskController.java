@@ -20,7 +20,7 @@ import org.dev.Enum.LogLevel;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.Data.AppData;
 import org.dev.Operation.Data.TaskData;
-import org.dev.SideMenu.SideMenuController;
+import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;

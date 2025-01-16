@@ -21,7 +21,7 @@ import org.dev.Operation.Action.Action;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.MainJobController;
-import org.dev.SideMenu.SideMenuController;
+import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;

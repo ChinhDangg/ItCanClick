@@ -15,6 +15,10 @@ import org.dev.Operation.Data.OperationData;
 import org.dev.Operation.OperationController;
 import org.dev.RunOperation.OperationRunController;
 import org.dev.Enum.CurrentTab;
+import org.dev.SideMenu.LeftMenu.SideBarController;
+import org.dev.SideMenu.TopMenu.MenuBarController;
+import org.dev.SideMenu.TopMenu.SettingMenuController;
+import org.dev.SideMenu.TopMenu.WindowSizeMode;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,6 +38,7 @@ public class AppScene {
     public static Node currentDisplayNode;
 
     public static MenuBarController menuBarController;
+    public static SettingMenuController settingMenuController;
     public static SideBarController sideBarController;
     public static BottomPaneController bottomPaneController;
     public static CenterBannerController centerBannerController;
@@ -45,6 +50,7 @@ public class AppScene {
 
     public static double currentGlobalScale = 1.3;
     public static boolean isOperationRunning = false;
+    public static boolean isMaximized = false;
 
     /*
     Layout:
@@ -69,12 +75,16 @@ public class AppScene {
         primaryCenterStackPane.getChildren().add(mainCenterVBox);
         primaryCenterStackPane.getChildren().add(mainNotificationStackPane);
 
+        loadSettingPane();
+        bottomPaneController.setDebug(settingMenuController.isDebug());
+        bottomPaneController.setTrace(settingMenuController.isTrace());
+        currentGlobalScale = settingMenuController.getGlobalScaleValue();
+
         mainNotificationStackPane.getChildren().add(loadTopNotificationBannerPane());
         mainNotificationStackPane.getChildren().add(loadCenterBannerPane());
         mainNotificationStackPane.setMouseTransparent(true);
 
-        primaryBorderPane.setPrefHeight(700);
-        primaryBorderPane.setPrefWidth(1200);
+        setPrimaryBorderPaneSize(settingMenuController.getWindowSizeMode());
         primaryBorderPane.getStylesheets().add(Objects.requireNonNull(AppScene.class.getResource("/styles/root.css")).toExternalForm());
         primaryBorderPane.setTop(loadTopMenuBar());
         primaryBorderPane.setCenter(primaryCenterStackPane);
@@ -93,7 +103,22 @@ public class AppScene {
     }
 
     // ------------------------------------------------------
+    private static void setPrimaryBorderPaneSize(WindowSizeMode mode) {
+        if (mode == WindowSizeMode.Maximized)
+            isMaximized = true;
+        else if (mode == WindowSizeMode.Compact) {
+            primaryBorderPane.setPrefHeight(400);
+            primaryBorderPane.setPrefWidth(750);
+            return;
+        }
+        primaryBorderPane.setPrefHeight(700);
+        primaryBorderPane.setPrefWidth(1200);
+    }
+
+    // ------------------------------------------------------
     public static void openCenterBanner(String title, String content) {
+        if (centerBannerController == null)
+            return;
         centerBannerController.openCenterBanner(title, content);
         mainNotificationStackPane.setMouseTransparent(false);
     }
@@ -267,10 +292,21 @@ public class AppScene {
             return null;
         }
     }
+    private static void loadSettingPane() {
+        AppScene.addLog(LogLevel.TRACE, className, "Loading setting menu pane");
+        try {
+            FXMLLoader settingMenuLoader = new FXMLLoader(AppScene.class.getResource("SideMenu/TopMenu/settingPane.fxml"));
+            settingMenuLoader.load();
+            settingMenuController = settingMenuLoader.getController();
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded setting menu pane");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading setting menu pane: " + e.getMessage());
+        }
+    }
     private static Node loadTopMenuBar() {
         AppScene.addLog(LogLevel.TRACE, className, "Loading Top menu bar");
         try {
-            FXMLLoader menuBarLoader = new FXMLLoader(AppScene.class.getResource("SideMenu/topMenuBar.fxml"));
+            FXMLLoader menuBarLoader = new FXMLLoader(AppScene.class.getResource("SideMenu/TopMenu/topMenuBar.fxml"));
             Node menuBarNode = menuBarLoader.load();
             menuBarController = menuBarLoader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Top menu bar");
@@ -283,7 +319,7 @@ public class AppScene {
     private static Node loadLeftSideBar() {
         AppScene.addLog(LogLevel.TRACE, className, "Loading Left Side Bar");
         try {
-            FXMLLoader sideBarLoader = new FXMLLoader(AppScene.class.getResource("SideMenu/sideBarPane.fxml"));
+            FXMLLoader sideBarLoader = new FXMLLoader(AppScene.class.getResource("SideMenu/LeftMenu/sideBarPane.fxml"));
             Node leftSideBarNode = sideBarLoader.load();
             sideBarController = sideBarLoader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Left Side Bar");

@@ -70,7 +70,7 @@ public class TextCondition extends Condition {
     }
 
     public static String readTextFromImage(BufferedImage image) throws TesseractException {
-        System.out.println("Read texts from an image");
+        AppScene.addLog(LogLevel.DEBUG, TextCondition.class.getSimpleName(), "Reading text from an image");
         ITesseract tess = new Tesseract();
         //tess.setTessVariable("debug_file", "/dev/null");
         tess.setDatapath("tessdata");

@@ -7,8 +7,9 @@ public class SmartClick extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        stage.setMinWidth(740.0);
+        stage.setMinWidth(750.0);
         stage.setScene(AppScene.getAppMainScene());
+        stage.setMaximized(AppScene.isMaximized);
         //stage.initStyle(StageStyle.UNDECORATED);
         stage.setOnCloseRequest(_ -> System.exit(0));
         stage.show();

@@ -1,4 +1,4 @@
-package org.dev.SideMenu;
+package org.dev.SideMenu.LeftMenu;
 
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
@@ -14,7 +14,6 @@ import org.dev.Enum.LogLevel;
 import org.dev.Operation.OperationController;
 import org.dev.RunOperation.OperationRunController;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 

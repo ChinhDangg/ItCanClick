@@ -1,4 +1,4 @@
-package org.dev.SideMenu;
+package org.dev.SideMenu.LeftMenu;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;

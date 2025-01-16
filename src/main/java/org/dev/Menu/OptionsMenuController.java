@@ -115,7 +115,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
                 mainImageView.setFitWidth(maxViewWidth);
             else if (checkingWidth < maxViewWidth && mainImageView.getFitWidth() != 0)
                 mainImageView.setFitWidth(0);
-            AppScene.addLog(LogLevel.TRACE, className, "Image width is adjusted to fit");
+            //AppScene.addLog(LogLevel.TRACE, className, "Image width is adjusted to fit");
         }
     }
     protected void adjustMainImageHeight(int checkingHeight) {
@@ -125,7 +125,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
                 mainImageView.setFitHeight(maxViewHeight);
             else if (checkingHeight < maxViewHeight && mainImageView.getFitHeight() != 0)
                 mainImageView.setFitHeight(0);
-            AppScene.addLog(LogLevel.TRACE, className, "Image height is adjusted to fit");
+            //AppScene.addLog(LogLevel.TRACE, className, "Image height is adjusted to fit");
         }
     }
 

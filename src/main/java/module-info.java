@@ -27,4 +27,8 @@ module org.dev {
     opens org.dev.Enum to javafx.fxml;
     exports org.dev.SideMenu;
     opens org.dev.SideMenu to javafx.fxml;
+    exports org.dev.SideMenu.TopMenu;
+    opens org.dev.SideMenu.TopMenu to javafx.fxml;
+    exports org.dev.SideMenu.LeftMenu;
+    opens org.dev.SideMenu.LeftMenu to javafx.fxml;
 }

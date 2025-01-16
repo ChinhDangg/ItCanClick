@@ -1,4 +1,4 @@
-package org.dev.SideMenu;
+package org.dev.SideMenu.LeftMenu;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -9,7 +9,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 import org.dev.Enum.AppLevel;
 import org.dev.Operation.DataController;
-import org.dev.Operation.MainJobController;
 
 import java.net.URL;
 import java.util.ResourceBundle;

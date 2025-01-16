@@ -11,14 +11,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class BottomPaneController implements Initializable {
@@ -32,8 +30,9 @@ public class BottomPaneController implements Initializable {
     @FXML
     private VBox topVBoxHeader, bottomTextVBox;
 
+    @Setter
+    private boolean isDebug, isTrace;
     private final String className = this.getClass().getSimpleName();
-    private boolean isTrace, isDebug;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -44,7 +43,6 @@ public class BottomPaneController implements Initializable {
         bottomTextVBox.heightProperty().addListener((_, _, _) -> logScrollPane.setVvalue(1.0));
         bottomMainStackPane.setVisible(false);
         bottomMainStackPane.setManaged(false);
-        readProperties();
     }
 
     private double maxHeight = Double.MAX_VALUE;
@@ -78,14 +76,13 @@ public class BottomPaneController implements Initializable {
             return;
         if (logLevel == LogLevel.DEBUG && !isDebug)
             return;
-
         if (logLevel == LogLevel.INFO)
             Platform.runLater(() -> AppScene.showNotification(content));
         else if (logLevel == LogLevel.WARN || logLevel == LogLevel.ERROR)
             AppScene.openCenterBanner(logLevel.name(), content);
 
         TextFlow line = getLogLine(logLevel, className, content);
-        //System.out.println(logLevel + " " + className + " " + content);
+        System.out.println(logLevel + " " + className + " " + content);
         Platform.runLater(() -> bottomTextVBox.getChildren().add(line));
     }
 
@@ -136,16 +133,4 @@ public class BottomPaneController implements Initializable {
         };
     }
 
-    private void readProperties() {
-        Properties properties = new Properties();
-        try (InputStream input = getClass().getResourceAsStream("/application.properties")) {
-            if (input == null)
-                throw new IOException("Unable to find application.properties");
-            properties.load(input);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        isTrace = Boolean.parseBoolean(properties.getProperty("app.config.log-trace"));
-        isDebug = Boolean.parseBoolean(properties.getProperty("app.config.log-debug"));
-    }
 }

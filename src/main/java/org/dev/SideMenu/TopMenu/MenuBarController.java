@@ -1,4 +1,4 @@
-package org.dev.SideMenu;
+package org.dev.SideMenu.TopMenu;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,7 +25,7 @@ public class MenuBarController implements Initializable {
     @FXML
     private HBox topMenuBarMainHBox;
     @FXML
-    private MenuItem saveMenuItem, exitMenuItem;
+    private MenuItem saveMenuItem, exitMenuItem, settingMenuItem;
     @FXML
     private MenuItem newOperationMenuItem, openSavedOperationMenuItem;
     @FXML
@@ -40,6 +40,7 @@ public class MenuBarController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         saveMenuItem.setOnAction(this::save);
         exitMenuItem.setOnAction(this::exit);
+        settingMenuItem.setOnAction(this::openSetting);
         newOperationMenuItem.setOnAction(this::createNewOperationEvent);
         openSavedOperationMenuItem.setOnAction(this::openSavedOperationEvent);
         startRunStackPaneButton.setOnMouseClicked(this::startOperationRunEvent);
@@ -79,17 +80,26 @@ public class MenuBarController implements Initializable {
         return null;
     }
 
-    public void exit(ActionEvent event) {
-        System.out.println("Exit all");
+    private void openSetting(ActionEvent event) {
+        AppScene.settingMenuController.showSettingPopUp(topMenuBarMainHBox.getScene());
+    }
+
+    private void exit(ActionEvent event) {
+        AppScene.addLog(LogLevel.DEBUG, className, "Exit in 3s");
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         System.exit(0);
     }
 
-    public void createNewOperationEvent(ActionEvent event) {
+    private void createNewOperationEvent(ActionEvent event) {
         AppScene.loadEmptyOperation();
         AppScene.updateOperationSideMenuHierarchy();
     }
 
-    public void openSavedOperationEvent(ActionEvent event) {
+    private void openSavedOperationEvent(ActionEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on open saved operation");
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select a File");
@@ -106,7 +116,7 @@ public class MenuBarController implements Initializable {
         AppScene.updateOperationSideMenuHierarchy();
     }
 
-    public void startOperationRunEvent(MouseEvent event) {
+    private void startOperationRunEvent(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start operation");
         boolean loadedOperationRun = AppScene.loadAndDisplayOperationRun();
         if (!loadedOperationRun)
@@ -116,7 +126,7 @@ public class MenuBarController implements Initializable {
         setOperationRunning(true);
     }
 
-    public void stopOperationRunEvent(MouseEvent event) {
+    private void stopOperationRunEvent(MouseEvent event) {
         AppScene.stopOperationRun();
         setOperationRunning(false);
     }
