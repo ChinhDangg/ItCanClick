@@ -63,6 +63,8 @@ public class TextCondition extends Condition {
     }
 
     private boolean checkTextInList(String readText) {
+        if (readText.isEmpty())
+            return false;
         for (String s : savedText)
             if (s.contains(readText) || readText.contains(s))
                 return true;

@@ -86,7 +86,7 @@ public class SettingMenuController implements Initializable {
     private void decreaseScaleValue(MouseEvent mouseEvent) { updateScaleValue(Math.max(scaleValue - 0.1, 0.5)); }
     private void increaseScaleValue(MouseEvent mouseEvent) { updateScaleValue(Math.min(scaleValue + 0.1, 2.0)); }
     private void updateScaleValue(double newValue) {
-        scaleValue = newValue;
+        scaleValue = Math.round(newValue * 10) / 10.0;
         scaleValueLabel.setText(String.valueOf(scaleValue));
     }
 

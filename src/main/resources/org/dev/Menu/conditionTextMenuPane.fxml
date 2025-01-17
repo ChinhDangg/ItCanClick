@@ -137,143 +137,143 @@
             </StackPane>
             <StackPane>
                <children>
-                  <HBox spacing="20.0">
+                  <VBox spacing="5.0">
                      <children>
-                        <VBox spacing="5.0">
+                        <HBox spacing="20.0">
                            <children>
-                              <VBox>
-                                 <children>
-                                    <Label text="Extending the reading box:" />
-                                    <VBox spacing="5.0">
-                                       <children>
-                                          <HBox alignment="CENTER_LEFT" spacing="5.0">
-                                             <children>
-                                                <Label text="X">
-                                                   <font>
-                                                      <Font size="14.0" />
-                                                   </font>
-                                                </Label>
-                                                <Group>
-                                                   <children>
-                                                      <StackPane focusTraversable="true" fx:id="xMinusButton">
-                                                         <children>
-                                                            <Line endX="-78.22222900390625" startX="-95.49999237060547" />
-                                                         </children>
-                                                         <styleClass>
-                                                            <String fx:value="stackpane-button" />
-                                                            <String fx:value="stepper-button" />
-                                                            <String fx:value="focusable-button" />
-                                                         </styleClass>
-                                                      </StackPane>
-                                                   </children>
-                                                </Group>
-                                                <Group>
-                                                   <children>
-                                                      <StackPane focusTraversable="true" fx:id="xPlusButton">
-                                                         <children>
-                                                            <Line endX="-78.22222900390625" startX="-95.49999237060547" />
-                                                            <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
-                                                         </children>
-                                                         <styleClass>
-                                                            <String fx:value="stackpane-button" />
-                                                            <String fx:value="stepper-button" />
-                                                            <String fx:value="focusable-button" />
-                                                         </styleClass>
-                                                      </StackPane>
-                                                   </children>
-                                                </Group>
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="5.0">
-                                             <children>
-                                                <Label text="Y">
-                                                   <font>
-                                                      <Font size="14.0" />
-                                                   </font>
-                                                </Label>
-                                                <Group>
-                                                   <children>
-                                                      <StackPane fx:id="yMinusButton" focusTraversable="true">
-                                                         <children>
-                                                            <Line endX="-78.22222900390625" startX="-95.49999237060547" />
-                                                         </children>
-                                                         <styleClass>
-                                                            <String fx:value="stackpane-button" />
-                                                            <String fx:value="stepper-button" />
-                                                            <String fx:value="focusable-button" />
-                                                         </styleClass>
-                                                      </StackPane>
-                                                   </children>
-                                                </Group>
-                                                <Group>
-                                                   <children>
-                                                      <StackPane fx:id="yPlusButton" focusTraversable="true">
-                                                         <children>
-                                                            <Line endX="-78.22222900390625" startX="-95.49999237060547" />
-                                                            <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
-                                                         </children>
-                                                         <styleClass>
-                                                            <String fx:value="stackpane-button" />
-                                                            <String fx:value="stepper-button" />
-                                                            <String fx:value="focusable-button" />
-                                                         </styleClass>
-                                                      </StackPane>
-                                                   </children>
-                                                </Group>
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                       <padding>
-                                          <Insets left="15.0" />
-                                       </padding>
-                                    </VBox>
-                                 </children>
-                              </VBox>
-                              <HBox alignment="CENTER_LEFT" spacing="5.0">
-                                 <children>
-                                    <Label text="Scale">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Label>
-                                    <Group>
-                                       <children>
-                                          <StackPane fx:id="textScaleMinusButton" focusTraversable="true">
-                                             <children>
-                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
-                                             </children>
-                                             <styleClass>
-                                                <String fx:value="stackpane-button" />
-                                                <String fx:value="stepper-button" />
-                                                <String fx:value="focusable-button" />
-                                             </styleClass>
-                                          </StackPane>
-                                       </children>
-                                    </Group>
-                                    <Group>
-                                       <children>
-                                          <StackPane fx:id="textScalePlusButton" focusTraversable="true">
-                                             <children>
-                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
-                                                <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
-                                             </children>
-                                             <styleClass>
-                                                <String fx:value="stackpane-button" />
-                                                <String fx:value="stepper-button" />
-                                                <String fx:value="focusable-button" />
-                                             </styleClass>
-                                          </StackPane>
-                                       </children>
-                                    </Group>
-                                    <Label fx:id="currentTextScaleLabel" text="1">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Label>
-                                 </children>
-                              </HBox>
                               <VBox spacing="5.0">
                                  <children>
+                                    <VBox>
+                                       <children>
+                                          <Label text="Extending the reading box:" />
+                                          <VBox spacing="5.0">
+                                             <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                                   <children>
+                                                      <Label text="X">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Group>
+                                                         <children>
+                                                            <StackPane focusTraversable="true" fx:id="xMinusButton">
+                                                               <children>
+                                                                  <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                               </children>
+                                                               <styleClass>
+                                                                  <String fx:value="stackpane-button" />
+                                                                  <String fx:value="stepper-button" />
+                                                                  <String fx:value="focusable-button" />
+                                                               </styleClass>
+                                                            </StackPane>
+                                                         </children>
+                                                      </Group>
+                                                      <Group>
+                                                         <children>
+                                                            <StackPane focusTraversable="true" fx:id="xPlusButton">
+                                                               <children>
+                                                                  <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                                  <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                                               </children>
+                                                               <styleClass>
+                                                                  <String fx:value="stackpane-button" />
+                                                                  <String fx:value="stepper-button" />
+                                                                  <String fx:value="focusable-button" />
+                                                               </styleClass>
+                                                            </StackPane>
+                                                         </children>
+                                                      </Group>
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                                   <children>
+                                                      <Label text="Y">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Group>
+                                                         <children>
+                                                            <StackPane fx:id="yMinusButton" focusTraversable="true">
+                                                               <children>
+                                                                  <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                               </children>
+                                                               <styleClass>
+                                                                  <String fx:value="stackpane-button" />
+                                                                  <String fx:value="stepper-button" />
+                                                                  <String fx:value="focusable-button" />
+                                                               </styleClass>
+                                                            </StackPane>
+                                                         </children>
+                                                      </Group>
+                                                      <Group>
+                                                         <children>
+                                                            <StackPane fx:id="yPlusButton" focusTraversable="true">
+                                                               <children>
+                                                                  <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                                  <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                                               </children>
+                                                               <styleClass>
+                                                                  <String fx:value="stackpane-button" />
+                                                                  <String fx:value="stepper-button" />
+                                                                  <String fx:value="focusable-button" />
+                                                               </styleClass>
+                                                            </StackPane>
+                                                         </children>
+                                                      </Group>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                             <padding>
+                                                <Insets left="15.0" />
+                                             </padding>
+                                          </VBox>
+                                       </children>
+                                    </VBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                       <children>
+                                          <Label text="Scale">
+                                             <font>
+                                                <Font size="14.0" />
+                                             </font>
+                                          </Label>
+                                          <Group>
+                                             <children>
+                                                <StackPane fx:id="textScaleMinusButton" focusTraversable="true">
+                                                   <children>
+                                                      <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                   </children>
+                                                   <styleClass>
+                                                      <String fx:value="stackpane-button" />
+                                                      <String fx:value="stepper-button" />
+                                                      <String fx:value="focusable-button" />
+                                                   </styleClass>
+                                                </StackPane>
+                                             </children>
+                                          </Group>
+                                          <Group>
+                                             <children>
+                                                <StackPane fx:id="textScalePlusButton" focusTraversable="true">
+                                                   <children>
+                                                      <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                      <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                                   </children>
+                                                   <styleClass>
+                                                      <String fx:value="stackpane-button" />
+                                                      <String fx:value="stepper-button" />
+                                                      <String fx:value="focusable-button" />
+                                                   </styleClass>
+                                                </StackPane>
+                                             </children>
+                                          </Group>
+                                          <Label fx:id="currentTextScaleLabel" text="1">
+                                             <font>
+                                                <Font size="14.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
                                     <HBox alignment="CENTER_LEFT" spacing="5.0">
                                        <children>
                                           <StackPane fx:id="addTextButton" focusTraversable="true">
@@ -293,43 +293,57 @@
                                           <TextField fx:id="addTextTextField" prefHeight="25.0" prefWidth="161.0" />
                                        </children>
                                     </HBox>
-                                    <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                 </children>
+                                 <padding>
+                                    <Insets left="15.0" />
+                                 </padding>
+                              </VBox>
+                              <VBox spacing="5.0">
+                                 <children>
+                                    <VBox>
                                        <children>
-                                          <StackPane fx:id="popTextButton" focusTraversable="true">
-                                             <children>
-                                                <Label text="Pop" />
-                                             </children>
-                                             <styleClass>
-                                                <String fx:value="stackpane-button" />
-                                                <String fx:value="initiate-button" />
-                                                <String fx:value="focusable-button" />
-                                             </styleClass>
-                                          </StackPane>
+                                          <Label text="Extending the outside box:" />
                                           <HBox alignment="CENTER_LEFT" spacing="5.0">
                                              <children>
-                                                <Label text="Registered Text:" />
-                                                <Label fx:id="registeredTextLabel" text="None" />
+                                                <Group>
+                                                   <children>
+                                                      <StackPane fx:id="outsideBoxMinusButton" focusTraversable="true">
+                                                         <children>
+                                                            <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                         </children>
+                                                         <styleClass>
+                                                            <String fx:value="stackpane-button" />
+                                                            <String fx:value="stepper-button" />
+                                                            <String fx:value="focusable-button" />
+                                                         </styleClass>
+                                                      </StackPane>
+                                                   </children>
+                                                </Group>
+                                                <Group>
+                                                   <children>
+                                                      <StackPane fx:id="outsideBoxPlusButton" focusTraversable="true">
+                                                         <children>
+                                                            <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                            <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                                         </children>
+                                                         <styleClass>
+                                                            <String fx:value="stackpane-button" />
+                                                            <String fx:value="stepper-button" />
+                                                            <String fx:value="focusable-button" />
+                                                         </styleClass>
+                                                      </StackPane>
+                                                   </children>
+                                                </Group>
                                              </children>
                                           </HBox>
                                        </children>
-                                    </HBox>
-                                 </children>
-                              </VBox>
-                           </children>
-                           <padding>
-                              <Insets left="15.0" />
-                           </padding>
-                        </VBox>
-                        <VBox spacing="5.0">
-                           <children>
-                              <VBox>
-                                 <children>
-                                    <Label text="Extending the outside box:" />
+                                    </VBox>
                                     <HBox alignment="CENTER_LEFT" spacing="5.0">
                                        <children>
+                                          <Label text="Zoom" />
                                           <Group>
                                              <children>
-                                                <StackPane fx:id="outsideBoxMinusButton" focusTraversable="true">
+                                                <StackPane fx:id="zoomMinusButton" focusTraversable="true">
                                                    <children>
                                                       <Line endX="-78.22222900390625" startX="-95.49999237060547" />
                                                    </children>
@@ -343,7 +357,7 @@
                                           </Group>
                                           <Group>
                                              <children>
-                                                <StackPane fx:id="outsideBoxPlusButton" focusTraversable="true">
+                                                <StackPane fx:id="zoomPlusButton" focusTraversable="true">
                                                    <children>
                                                       <Line endX="-78.22222900390625" startX="-95.49999237060547" />
                                                       <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
@@ -356,92 +370,85 @@
                                                 </StackPane>
                                              </children>
                                           </Group>
+                                          <Label fx:id="currentZoomLabel" text="1" />
                                        </children>
                                     </HBox>
+                                    <HBox spacing="10.0">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                             <children>
+                                                <Group>
+                                                   <children>
+                                                      <StackPane fx:id="stopReadingConditionButton" focusTraversable="true">
+                                                         <children>
+                                                            <Label text="Stop" />
+                                                         </children>
+                                                         <styleClass>
+                                                            <String fx:value="stackpane-button" />
+                                                            <String fx:value="initiate-button" />
+                                                            <String fx:value="focusable-button" />
+                                                         </styleClass>
+                                                      </StackPane>
+                                                   </children>
+                                                </Group>
+                                                <Label text="Press F1" />
+                                             </children>
+                                          </HBox>
+                                          <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                             <children>
+                                                <Group>
+                                                   <children>
+                                                      <StackPane fx:id="startReadingConditionButton" focusTraversable="true">
+                                                         <children>
+                                                            <Label text="Start" />
+                                                         </children>
+                                                         <styleClass>
+                                                            <String fx:value="stackpane-button" />
+                                                            <String fx:value="initiate-button" />
+                                                            <String fx:value="focusable-button" />
+                                                         </styleClass>
+                                                      </StackPane>
+                                                   </children>
+                                                </Group>
+                                                <Label text="Press F2" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </HBox>
+                                    <CheckBox fx:id="fitImageCheckBox" mnemonicParsing="false" selected="true" text="Fit Image" />
                                  </children>
                               </VBox>
-                              <HBox alignment="CENTER_LEFT" spacing="5.0">
-                                 <children>
-                                    <Label text="Zoom" />
-                                    <Group>
-                                       <children>
-                                          <StackPane fx:id="zoomMinusButton" focusTraversable="true">
-                                             <children>
-                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
-                                             </children>
-                                             <styleClass>
-                                                <String fx:value="stackpane-button" />
-                                                <String fx:value="stepper-button" />
-                                                <String fx:value="focusable-button" />
-                                             </styleClass>
-                                          </StackPane>
-                                       </children>
-                                    </Group>
-                                    <Group>
-                                       <children>
-                                          <StackPane fx:id="zoomPlusButton" focusTraversable="true">
-                                             <children>
-                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
-                                                <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
-                                             </children>
-                                             <styleClass>
-                                                <String fx:value="stackpane-button" />
-                                                <String fx:value="stepper-button" />
-                                                <String fx:value="focusable-button" />
-                                             </styleClass>
-                                          </StackPane>
-                                       </children>
-                                    </Group>
-                                    <Label fx:id="currentZoomLabel" text="1" />
-                                 </children>
-                              </HBox>
-                              <HBox spacing="10.0">
-                                 <children>
-                                    <HBox alignment="CENTER_LEFT" spacing="5.0">
-                                       <children>
-                                          <Group>
-                                             <children>
-                                                <StackPane fx:id="stopReadingConditionButton" focusTraversable="true">
-                                                   <children>
-                                                      <Label text="Stop" />
-                                                   </children>
-                                                   <styleClass>
-                                                      <String fx:value="stackpane-button" />
-                                                      <String fx:value="initiate-button" />
-                                                      <String fx:value="focusable-button" />
-                                                   </styleClass>
-                                                </StackPane>
-                                             </children>
-                                          </Group>
-                                          <Label text="Press F1" />
-                                       </children>
-                                    </HBox>
-                                    <HBox alignment="CENTER_LEFT" spacing="5.0">
-                                       <children>
-                                          <Group>
-                                             <children>
-                                                <StackPane fx:id="startReadingConditionButton" focusTraversable="true">
-                                                   <children>
-                                                      <Label text="Start" />
-                                                   </children>
-                                                   <styleClass>
-                                                      <String fx:value="stackpane-button" />
-                                                      <String fx:value="initiate-button" />
-                                                      <String fx:value="focusable-button" />
-                                                   </styleClass>
-                                                </StackPane>
-                                             </children>
-                                          </Group>
-                                          <Label text="Press F2" />
-                                       </children>
-                                    </HBox>
-                                 </children>
-                              </HBox>
-                              <CheckBox fx:id="fitImageCheckBox" mnemonicParsing="false" selected="true" text="Fit Image" />
                            </children>
-                        </VBox>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="5.0">
+                           <children>
+                              <StackPane fx:id="popTextButton" focusTraversable="true">
+                                 <children>
+                                    <Label text="Pop" />
+                                 </children>
+                                 <styleClass>
+                                    <String fx:value="stackpane-button" />
+                                    <String fx:value="initiate-button" />
+                                    <String fx:value="focusable-button" />
+                                 </styleClass>
+                              </StackPane>
+                              <HBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label text="Registered Text:" />
+                                    <ScrollPane maxHeight="36.0" maxWidth="340.0" HBox.hgrow="ALWAYS">
+                                       <content>
+                                          <Label fx:id="registeredTextLabel" text="None" />
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </HBox>
+                           </children>
+                           <padding>
+                              <Insets left="15.0" />
+                           </padding>
+                        </HBox>
                      </children>
-                  </HBox>
+                  </VBox>
                </children>
             </StackPane>
             <StackPane alignment="BOTTOM_CENTER">

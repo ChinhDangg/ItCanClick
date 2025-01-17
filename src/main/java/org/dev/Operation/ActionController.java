@@ -157,7 +157,7 @@ public class ActionController implements Initializable, DataController, Activity
             return;
         }
         if (numberOfCondition < 5)
-            addNewCondition(entryConditionList, entryConditionHBox);
+            addCondition(entryConditionList, entryConditionHBox, null);
     }
 
     private void addNewExitCondition(MouseEvent event) {
@@ -172,34 +172,33 @@ public class ActionController implements Initializable, DataController, Activity
             return;
         }
         if (numberOfCondition < 5)
-            addNewCondition(exitConditionList, exitConditionHBox);
+            addCondition(exitConditionList, exitConditionHBox, null);
     }
 
-    private void addNewCondition(List<ConditionController> whichController, HBox whichPane) {
-        AppScene.addLog(LogLevel.TRACE, className, "Loading Condition Pane");
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("conditionPane.fxml"));
-            Node pane = loader.load();
-            whichController.add(loader.getController());
-            whichPane.getChildren().add(pane);
-            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Condition Pane");
-        } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition pane - addNewCondition: " + e.getMessage());
-        }
-    }
-
-    private void addSavedCondition(List<ConditionController> whichController, HBox whichPane, Condition condition) {
+    private void addCondition(List<ConditionController> whichController, HBox whichPane, Condition condition) {
         AppScene.addLog(LogLevel.TRACE, className, "Loading Condition Pane");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("conditionPane.fxml"));
             Node pane = loader.load();
             ConditionController controller = loader.getController();
-            controller.loadSavedCondition(condition);
+            controller.setParentActionController(this);
+            if (condition != null)
+                controller.loadSavedCondition(condition);
             whichController.add(controller);
             whichPane.getChildren().add(pane);
-            AppScene.addLog(LogLevel.DEBUG, className, "Loading Condition Pane");
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Condition Pane");
         } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition pane - addSavedCondition: " + e.getMessage());
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading condition pane: " + e.getMessage());
+        }
+    }
+
+    public void removeCondition(ConditionController conditionController) {
+        if (entryConditionList.remove(conditionController)) {
+            entryConditionHBox.getChildren().remove(conditionController.getParentNode());
+        }
+        else {
+            exitConditionList.remove(conditionController);
+            exitConditionHBox.getChildren().remove(conditionController.getParentNode());
         }
     }
 
@@ -247,10 +246,10 @@ public class ActionController implements Initializable, DataController, Activity
         List<Condition> entryConditions = actionData.getEntryConditionList();
         if (entryConditions != null)
             for (Condition entryCondition : entryConditions)
-                addSavedCondition(entryConditionList, entryConditionHBox, entryCondition);
+                addCondition(entryConditionList, entryConditionHBox, entryCondition);
         List<Condition> exitConditions = actionData.getExitConditionList();
         if (exitConditions != null)
             for (Condition exitCondition : exitConditions)
-                addSavedCondition(exitConditionList, exitConditionHBox, exitCondition);
+                addCondition(exitConditionList, exitConditionHBox, exitCondition);
     }
 }

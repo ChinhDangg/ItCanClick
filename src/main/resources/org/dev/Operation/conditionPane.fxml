@@ -14,9 +14,9 @@
          <children>
             <Pane prefHeight="125.0" prefWidth="198.0" style="-fx-border-color: black; -fx-border-width: 1px;">
                <children>
-                  <StackPane prefHeight="131.0" prefWidth="198.0">
+                  <StackPane alignment="TOP_CENTER" prefHeight="131.0" prefWidth="198.0">
                      <children>
-                        <ImageView fx:id="conditionImageView" fitHeight="131.0" fitWidth="198.0" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="conditionImageView" fitHeight="125.0" fitWidth="198.0" pickOnBounds="true" preserveRatio="true" />
                      </children>
                   </StackPane>
                </children>

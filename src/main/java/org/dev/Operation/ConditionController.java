@@ -3,12 +3,13 @@ package org.dev.Operation;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
+import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.ConditionRequirement;
 import org.dev.Enum.LogLevel;
@@ -25,6 +26,8 @@ public class ConditionController implements Initializable, ActivityController {
     @FXML
     private ImageView conditionImageView;
 
+    @Setter
+    private ActionController parentActionController;
     @Getter
     private Condition condition;
     @Getter
@@ -34,7 +37,10 @@ public class ConditionController implements Initializable, ActivityController {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         conditionStackPane.setOnMouseClicked(this::openConditionOptionPane);
-        conditionStackPane.setPadding(new javafx.geometry.Insets(10));
+    }
+
+    public Node getParentNode() {
+        return conditionStackPane;
     }
 
     public void registerReadingCondition(Condition condition) {
@@ -59,8 +65,7 @@ public class ConditionController implements Initializable, ActivityController {
     }
 
     public void removeThisConditionFromParent() {
-        HBox parent = (HBox) conditionStackPane.getParent();
-        parent.getChildren().remove(conditionStackPane);
+        parentActionController.removeCondition(this);
         AppScene.addLog(LogLevel.DEBUG, className, "Condition removed");
     }
 
