@@ -144,7 +144,7 @@ public class OperationController implements Initializable, Serializable, DataCon
     private void createTaskSideContent(MinimizedTaskController controller) {
         VBox taskSideContent = controller.getTaskController().getTaskSideContent();
         Node taskLabelHBox = SideMenuController.getNewSideHBoxLabel(controller.getTaskNameLabel(), taskSideContent, controller, this);
-        operationSideContent.getChildren().addAll(taskLabelHBox, taskSideContent);
+        operationSideContent.getChildren().add(new VBox(taskLabelHBox, taskSideContent));
         AppScene.addLog(LogLevel.TRACE, className, "Created operation side content");
     }
 
@@ -193,8 +193,7 @@ public class OperationController implements Initializable, Serializable, DataCon
         AppScene.addLog(LogLevel.DEBUG, className, "Removed selected task: " + changeIndex);
         updateTaskIndex(changeIndex);
         // update side menu
-        operationSideContent.getChildren().remove(changeIndex * 2);
-        operationSideContent.getChildren().remove(changeIndex * 2);
+        operationSideContent.getChildren().remove(changeIndex);
     }
     @Override
     public void removeSavedData(DataController dataController) {
@@ -203,14 +202,13 @@ public class OperationController implements Initializable, Serializable, DataCon
     }
 
     private void moveTaskUp(MouseEvent event) {
-        System.out.println(operationSideContent.getChildren().size());
         if (currentSelectedTaskPane == null)
             return;
         ObservableList<Node> children = operationVBox.getChildren();
         int numberOfTasks = children.size();
         if (numberOfTasks < 2)
             return;
-        Node selectedNode = currentSelectedTaskPane.getParent();
+        Node selectedNode = currentSelectedTaskPane;
         int selectedTaskPaneIndex = children.indexOf(selectedNode);
         int changeIndex = selectedTaskPaneIndex+1;
         if (changeIndex == numberOfTasks)
@@ -229,7 +227,7 @@ public class OperationController implements Initializable, Serializable, DataCon
         int numberOfTasks = children.size();
         if (numberOfTasks < 2)
             return;
-        Node selectedNode = currentSelectedTaskPane.getParent();
+        Node selectedNode = currentSelectedTaskPane;
         int selectedTaskPaneIndex = children.indexOf(selectedNode);
         if (selectedTaskPaneIndex == 0)
             return;
@@ -243,8 +241,8 @@ public class OperationController implements Initializable, Serializable, DataCon
     private void updateTaskPaneList(ObservableList<Node> children, int selectedIndex, int changeIndex) {
         taskList.add(changeIndex, taskList.remove(selectedIndex));
         updateTaskPreviousOption(changeIndex);
-        children.remove(currentSelectedTaskPane.getParent());
-        children.add(changeIndex, currentSelectedTaskPane.getParent());
+        children.remove(currentSelectedTaskPane);
+        children.add(changeIndex, currentSelectedTaskPane);
     }
     private void updateTaskSideContent(int selectedIndex, int changeIndex) {
         ObservableList<Node> taskSideContent = operationSideContent.getChildren();
@@ -270,12 +268,12 @@ public class OperationController implements Initializable, Serializable, DataCon
     }
 
     @Override
-    public AppData getSavedData() {
+    public OperationData getSavedData() {
         OperationData operationData = new OperationData();
-        operationData.setOperation(operation);
+        operationData.setOperation(operation.getDeepCopied());
         List<TaskData> taskDataList = new ArrayList<>();
         for (MinimizedTaskController taskController : taskList)
-            taskDataList.add((TaskData) taskController.getSavedData());
+            taskDataList.add(taskController.getSavedData());
         operationData.setTaskDataList(taskDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got operation data");
         return operationData;

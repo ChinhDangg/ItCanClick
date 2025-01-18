@@ -10,6 +10,8 @@ import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Operation.ImageSerialization;
 import org.dev.Menu.ConditionTextMenuController;
+import org.dev.Operation.MainJob;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -31,6 +33,12 @@ public class TextCondition extends Condition {
         this.displayImage = displayImage;
         currentTextScale = textScale;
         savedText = texts;
+    }
+
+    @Override
+    public TextCondition getDeepCopied() {
+        return new TextCondition(chosenReadingCondition, mainImage, mainImageBoundingBox, not, required, displayImage,
+                currentTextScale, savedText);
     }
 
     @Override

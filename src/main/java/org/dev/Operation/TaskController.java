@@ -98,7 +98,7 @@ public class TaskController implements Initializable, DataController {
             int numberOfActions = taskVBox.getChildren().size();
             if (numberOfActions == 0)
                 actionController.disablePreviousOptions();
-            taskVBox.getChildren().add(numberOfActions, actionPane);
+            taskVBox.getChildren().add(actionPane);
             actionList.add(actionController);
             // update side menu
             Node actionHBoxLabel = SideMenuController.getNewSideHBoxLabel(actionController.getActionNameLabel(),
@@ -214,11 +214,11 @@ public class TaskController implements Initializable, DataController {
     }
 
     @Override
-    public AppData getSavedData() {
+    public TaskData getSavedData() {
         TaskData taskData = new TaskData();
         List<ActionData> actionData = new ArrayList<>();
         for (ActionController actionController : actionList)
-            actionData.add((ActionData) actionController.getSavedData());
+            actionData.add(actionController.getSavedData());
         taskData.setActionDataList(actionData);
         AppScene.addLog(LogLevel.TRACE, className, "Got task data");
         return taskData;

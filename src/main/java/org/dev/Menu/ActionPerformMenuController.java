@@ -78,21 +78,13 @@ public class ActionPerformMenuController extends OptionsMenuController {
             AppScene.addLog(LogLevel.INFO, className, "A key has not been registered for key action");
             return;
         }
-        Action newAction = getCorrespondAction(actionTypes);
+        Action newAction = Action.getCorrespondAction(actionTypes);
         newAction.setActionOptions(attempt, progressiveSearchCheckBox.isSelected(), progressiveSearchTime, waitBeforeTime,
                 waitAfterTime, actionTypes, currentMainImage, currentDisplayImage, mainImageBoundingBox, registeredKey);
         actionController.registerActionPerform(newAction);
         AppScene.addLog(LogLevel.INFO, className, "Saved registered action");
     }
-    private Action getCorrespondAction(ActionTypes actionTypes) {
-        return switch (actionTypes) {
-            case MouseClick -> new ActionMouseClick();
-            case MouseDoubleClick -> new ActionMouseDoubleClick();
-            case KeyClick -> new ActionKeyClick();
-            case KeyPress -> new ActionKeyPress();
-            case KeyPressMouseClick -> new ActionKeyPressMouseClick();
-        };
-    }
+
     @Override
     protected void backToPreviousMenu(MouseEvent event) {
         if (visible) {

@@ -94,7 +94,7 @@ public class OperationRunController implements Initializable, MainJobController 
 
     // ------------------------------------------------------
     public void startOperation(OperationController operationController) {
-        OperationData operationData = (OperationData) operationController.getSavedData();
+        OperationData operationData = operationController.getSavedData();
         if (operationData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation data is null - cannot start");
             return;

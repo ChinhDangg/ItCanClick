@@ -7,12 +7,14 @@ import org.dev.Enum.ActionTypes;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.ImageSerialization;
+import org.dev.Operation.MainJob;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
 @Getter
-public abstract class Action implements Serializable {
+public abstract class Action implements MainJob, Serializable {
 
     @Setter
     protected String actionName = "Action Name";
@@ -50,6 +52,27 @@ public abstract class Action implements Serializable {
     public BufferedImage getSeenImage() throws AWTException {
         BufferedImage fullImage = Condition.getFullImage(mainImageBoundingBox, displayImage);
         return Condition.createImageWithEdges(mainImageBoundingBox, fullImage);
+    }
+
+    public static Action getCorrespondAction(ActionTypes actionTypes) {
+        return switch (actionTypes) {
+            case MouseClick -> new ActionMouseClick();
+            case MouseDoubleClick -> new ActionMouseDoubleClick();
+            case KeyClick -> new ActionKeyClick();
+            case KeyPress -> new ActionKeyPress();
+            case KeyPressMouseClick -> new ActionKeyPressMouseClick();
+        };
+    }
+
+    @Override
+    public Action getDeepCopied() {
+        Action action = getCorrespondAction(chosenActionPerform);
+        action.setActionName(actionName);
+        action.setRequired(required);
+        action.setPreviousPass(previousPass);
+        action.setActionOptions(attempt, isProgressiveSearch(), progressiveSearchTime, waitBeforeTime, getWaitAfterTime(),
+                chosenActionPerform, mainImage, displayImage, mainImageBoundingBox, keyCode);
+        return action;
     }
 
     public abstract void performAction();

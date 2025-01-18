@@ -211,20 +211,20 @@ public class ActionController implements Initializable, DataController, Activity
     public AppLevel getAppLevel() { return AppLevel.Action; }
 
     @Override
-    public AppData getSavedData() {
+    public ActionData getSavedData() {
         if (action == null)
             return null;
         ActionData actionData = new ActionData();
         action.setRequired(requiredCheckBox.isSelected());
         action.setPreviousPass(previousPassCheckBox.isSelected());
         action.setActionName(actionNameLabel.getText());
-        actionData.setAction(action);
+        actionData.setAction(action.getDeepCopied());
         List<Condition> entryConditions = new ArrayList<>();
         List<Condition> exitConditions = new ArrayList<>();
         for (ConditionController c : entryConditionList)
-            entryConditions.add(c.getCondition());
+            entryConditions.add(c.getCondition().getDeepCopied());
         for (ConditionController c : exitConditionList)
-            exitConditions.add(c.getCondition());
+            exitConditions.add(c.getCondition().getDeepCopied());
         actionData.setEntryConditionList(entryConditions);
         actionData.setExitConditionList(exitConditions);
         AppScene.addLog(LogLevel.TRACE, className, "Got action data");

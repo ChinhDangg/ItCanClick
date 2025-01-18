@@ -36,7 +36,7 @@ public class MinimizedTaskController implements Initializable, DataController {
 
     @Getter
     private final Label taskNameLabel = new Label();
-    @Getter @Setter
+    @Getter
     private TaskController taskController;
     @Getter
     private Task task = new Task();
@@ -67,7 +67,6 @@ public class MinimizedTaskController implements Initializable, DataController {
         updateTaskName(name);
     }
     private void updateTaskName(String name) {
-        task.setTaskName(name);
         taskNameLabel.setText(name);
         renameTextField.setText(name);
         taskController.changeTaskName(name);
@@ -105,14 +104,12 @@ public class MinimizedTaskController implements Initializable, DataController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("taskPane.fxml"));
             loader.load();
-            setTaskController(loader.getController());
+            taskController = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Task Pane");
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading task pane: " + e.getMessage());
         }
     }
-
-
 
     // ------------------------------------------------------
     private int repeatNumber = 0;
@@ -139,12 +136,15 @@ public class MinimizedTaskController implements Initializable, DataController {
     public AppLevel getAppLevel() { return AppLevel.Task; }
 
     @Override
-    public AppData getSavedData() {
-        TaskData taskData = (TaskData) taskController.getSavedData();
+    public TaskData getSavedData() {
+        TaskData taskData = taskController.getSavedData();
         task.setRepeatNumber(repeatNumber);
         task.setRequired(requiredCheckBox.isSelected());
-        task.setPreviousPass(requiredCheckBox.isSelected());
-        taskData.setTask(task);
+        task.setPreviousPass(previousPassCheckBox.isSelected());
+        task.setTaskName(taskNameLabel.getText());
+        Task newCopiedTask = task.getDeepCopied();
+        System.out.println(newCopiedTask.getTaskName());
+        taskData.setTask(newCopiedTask);
         AppScene.addLog(LogLevel.TRACE, className, "Get Task Data");
         return taskData;
     }

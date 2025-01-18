@@ -1,12 +1,15 @@
 package org.dev.Operation.Condition;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Menu.ConditionPixelMenuController;
 import org.dev.Operation.ImageSerialization;
+import org.dev.Operation.MainJob;
 import org.dev.RunOperation.RunningStatus;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -28,6 +31,11 @@ public class PixelCondition extends Condition {
         super(chosenReadingCondition, mainImage, mainImageBoundingBox, not, required);
         this.displayImage = displayImage;
         this.globalSearch = globalSearch;
+    }
+
+    @Override
+    public PixelCondition getDeepCopied() {
+        return new PixelCondition(chosenReadingCondition, mainImage, mainImageBoundingBox, not, required, displayImage, globalSearch);
     }
 
     @Override

@@ -4,12 +4,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.Enum.ReadingCondition;
+import org.dev.Operation.MainJob;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
 @Getter @Setter
-public abstract class Condition implements Serializable {
+public abstract class Condition implements MainJob, Serializable {
     protected ReadingCondition chosenReadingCondition;
     protected transient BufferedImage mainImage;
     protected transient BufferedImage displayImage;
@@ -30,6 +32,12 @@ public abstract class Condition implements Serializable {
         this.not = not;
         this.required = required;
     }
+
+    @Override
+    public Condition getDeepCopied() {
+        return null;
+    }
+
     public BufferedImage getMainDisplayImage() {
         return displayImage;
     }

@@ -24,11 +24,13 @@ import java.util.ResourceBundle;
 /**
  operationHBox
  operationSideContentVBox
+    VBox
     taskLabelHBox
     taskSideContentVBox
         actionLabelHBox
         actionLabelHBox
         actionLabelHBox
+    VBox
     taskLabelHBox
     taskSideContentVBox
         actionLabelHBox
