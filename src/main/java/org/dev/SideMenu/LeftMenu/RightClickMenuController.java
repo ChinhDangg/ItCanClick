@@ -57,7 +57,7 @@ public class RightClickMenuController implements Initializable {
     }
 
     private void enableSelectOption(AppLevel appLevel) {
-        if (appLevel == AppLevel.Task || appLevel == AppLevel.Action) {
+        if (appLevel == AppLevel.Task || appLevel == AppLevel.Action || appLevel == AppLevel.Condition) {
             copySection.setDisable(false);
             deleteSection.setDisable(false);
         }

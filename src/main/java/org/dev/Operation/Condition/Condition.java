@@ -3,6 +3,7 @@ package org.dev.Operation.Condition;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.dev.Enum.ConditionType;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Operation.MainJob;
 
@@ -34,13 +35,9 @@ public abstract class Condition implements MainJob, Serializable {
     }
 
     @Override
-    public Condition getDeepCopied() {
-        return null;
-    }
+    public Condition getDeepCopied() { return null; }
 
-    public BufferedImage getMainDisplayImage() {
-        return displayImage;
-    }
+    public BufferedImage getMainDisplayImage() { return displayImage; }
     public abstract ImageCheckResult checkCondition();
 
     public abstract String getExpectedResult();

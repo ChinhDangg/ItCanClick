@@ -9,6 +9,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -17,11 +18,13 @@ import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
 import org.dev.Enum.AppLevel;
+import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Action.Action;
-import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
 import org.dev.Operation.Data.AppData;
+import org.dev.Operation.Data.ConditionData;
+import org.dev.SideMenu.LeftMenu.SideMenuController;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -58,7 +61,7 @@ public class ActionController implements Initializable, DataController, Activity
     private final String className = this.getClass().getSimpleName();
     private final List<ConditionController> entryConditionList = new ArrayList<>();
     private final List<ConditionController> exitConditionList = new ArrayList<>();
-
+    private ConditionType currentConditionTypeForPasting;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -120,13 +123,13 @@ public class ActionController implements Initializable, DataController, Activity
     }
     public void enablePreviousOptions() { previousPassCheckBox.setVisible(true); }
 
-    public void registerActionPerform(Action action) {
-        if (action == null) {
+    public void registerActionPerform(Action newAction) {
+        if (newAction == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Action is null - registerActionPerform");
             return;
         }
         isSet = true;
-        this.action = action;
+        action = newAction;
         if (action.getActionName() == null || action.getActionName().isBlank())
             action.setActionName(actionNameLabel.getText());
         displayActionImage(action.getDisplayImage());
@@ -151,13 +154,13 @@ public class ActionController implements Initializable, DataController, Activity
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
-        int numberOfCondition = getNumberOfCondition(entryConditionHBox);
-        if (numberOfCondition > 0 && !entryConditionList.get(numberOfCondition - 1).isSet()) {
-            AppScene.addLog(LogLevel.INFO, className, "Previous Entry Condition is not set");
-            return;
-        }
-        if (numberOfCondition < 5)
+        if (event.getButton() == MouseButton.PRIMARY) {
             addCondition(entryConditionList, entryConditionHBox, null);
+        }
+        else if (event.getButton() == MouseButton.SECONDARY) {
+            currentConditionTypeForPasting = ConditionType.Entry;
+            SideMenuController.rightClickMenuController.showRightMenu(event, this, this);
+        }
     }
 
     private void addNewExitCondition(MouseEvent event) {
@@ -166,24 +169,33 @@ public class ActionController implements Initializable, DataController, Activity
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
-        int numberOfCondition = getNumberOfCondition(exitConditionHBox);
-        if (numberOfCondition > 0 && !exitConditionList.get(numberOfCondition - 1).isSet()) {
-            AppScene.addLog(LogLevel.INFO, className, "Previous Exit Condition is not set");
-            return;
-        }
-        if (numberOfCondition < 5)
+        if (event.getButton() == MouseButton.PRIMARY) {
             addCondition(exitConditionList, exitConditionHBox, null);
+        }
+        else if (event.getButton() == MouseButton.SECONDARY) {
+            currentConditionTypeForPasting = ConditionType.Exit;
+            SideMenuController.rightClickMenuController.showRightMenu(event, this, this);
+        }
     }
 
-    private void addCondition(List<ConditionController> whichController, HBox whichPane, Condition condition) {
+    private void addCondition(List<ConditionController> whichController, HBox whichPane, AppData condition) {
         AppScene.addLog(LogLevel.TRACE, className, "Loading Condition Pane");
         try {
+            int numberOfCondition = getNumberOfCondition(whichPane);
+            if (numberOfCondition > 0 && !whichController.get(numberOfCondition - 1).isSet()) {
+                AppScene.addLog(LogLevel.INFO, className, "Previous Condition is not set");
+                return;
+            }
+            if (numberOfCondition >= 5) {
+                AppScene.addLog(LogLevel.INFO, className, "Max number of condition's reached");
+                return;
+            }
             FXMLLoader loader = new FXMLLoader(getClass().getResource("conditionPane.fxml"));
             Node pane = loader.load();
             ConditionController controller = loader.getController();
             controller.setParentActionController(this);
             if (condition != null)
-                controller.loadSavedCondition(condition);
+                controller.loadSavedData(condition);
             whichController.add(controller);
             whichPane.getChildren().add(pane);
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Condition Pane");
@@ -192,7 +204,10 @@ public class ActionController implements Initializable, DataController, Activity
         }
     }
 
-    public void removeCondition(ConditionController conditionController) {
+    // ------------------------------------------------------
+    @Override
+    public void removeSavedData(DataController dataController) {
+        ConditionController conditionController = (ConditionController) dataController;
         if (entryConditionList.remove(conditionController)) {
             entryConditionHBox.getChildren().remove(conditionController.getParentNode());
         }
@@ -202,29 +217,36 @@ public class ActionController implements Initializable, DataController, Activity
         }
     }
 
-    // ------------------------------------------------------
     @Override
-    public void removeSavedData(DataController dataController) {}
-    @Override
-    public void addSavedData(AppData appData) {}
+    public void addSavedData(AppData appData) {
+        if (appData == null)
+            return;
+        if (currentConditionTypeForPasting == ConditionType.Entry)
+            addCondition(entryConditionList, entryConditionHBox, appData);
+        else if (currentConditionTypeForPasting == ConditionType.Exit)
+            addCondition(exitConditionList, exitConditionHBox, appData);
+    }
+
     @Override
     public AppLevel getAppLevel() { return AppLevel.Action; }
 
     @Override
     public ActionData getSavedData() {
-        if (action == null)
+        if (action == null) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error - Empty action being used as data");
             return null;
+        }
         ActionData actionData = new ActionData();
         action.setRequired(requiredCheckBox.isSelected());
         action.setPreviousPass(previousPassCheckBox.isSelected());
         action.setActionName(actionNameLabel.getText());
         actionData.setAction(action.getDeepCopied());
-        List<Condition> entryConditions = new ArrayList<>();
-        List<Condition> exitConditions = new ArrayList<>();
+        List<ConditionData> entryConditions = new ArrayList<>();
+        List<ConditionData> exitConditions = new ArrayList<>();
         for (ConditionController c : entryConditionList)
-            entryConditions.add(c.getCondition().getDeepCopied());
+            entryConditions.add(c.getSavedData());
         for (ConditionController c : exitConditionList)
-            exitConditions.add(c.getCondition().getDeepCopied());
+            exitConditions.add(c.getSavedData());
         actionData.setEntryConditionList(entryConditions);
         actionData.setExitConditionList(exitConditions);
         AppScene.addLog(LogLevel.TRACE, className, "Got action data");
@@ -243,13 +265,13 @@ public class ActionController implements Initializable, DataController, Activity
         requiredCheckBox.setSelected(action.isRequired());
         previousPassCheckBox.setSelected(action.isPreviousPass());
         displayActionImage(action.getDisplayImage());
-        List<Condition> entryConditions = actionData.getEntryConditionList();
+        List<ConditionData> entryConditions = actionData.getEntryConditionList();
         if (entryConditions != null)
-            for (Condition entryCondition : entryConditions)
+            for (ConditionData entryCondition : entryConditions)
                 addCondition(entryConditionList, entryConditionHBox, entryCondition);
-        List<Condition> exitConditions = actionData.getExitConditionList();
+        List<ConditionData> exitConditions = actionData.getExitConditionList();
         if (exitConditions != null)
-            for (Condition exitCondition : exitConditions)
+            for (ConditionData exitCondition : exitConditions)
                 addCondition(exitConditionList, exitConditionHBox, exitCondition);
     }
 }

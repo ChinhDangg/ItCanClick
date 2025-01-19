@@ -20,6 +20,7 @@ import org.dev.Enum.LogLevel;
 import org.dev.Operation.Action.Action;
 import org.dev.Operation.Condition.Condition;
 import org.dev.Operation.Data.ActionData;
+import org.dev.Operation.Data.ConditionData;
 import org.dev.Operation.MainJobController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.awt.*;
@@ -158,7 +159,6 @@ public class ActionRunController extends RunActivity implements Initializable, M
             }
             AppScene.addLog(LogLevel.INFO, className, "Not found exit at action: " + actionName + " : " + count + "/" + totalAttempt);
         }
-        System.out.println("Exceeded number of attempt for performing " + actionName);
         AppScene.addLog(LogLevel.INFO, className, "Exceeded number of attempt at action: " + actionName);
         return false;
     }
@@ -201,34 +201,35 @@ public class ActionRunController extends RunActivity implements Initializable, M
         AppScene.addLog(LogLevel.INFO, className, "Performed action: " + action.getActionName());
     }
 
-    private boolean checkAllConditions(List<Condition> conditions, ConditionType conditionType) {
+    private boolean checkAllConditions(List<ConditionData> conditionData, ConditionType conditionType) {
         AppScene.addLog(LogLevel.INFO, className, "Start checking condition: " + conditionType);
-        if (conditions == null || conditions.isEmpty())
+        if (conditionData == null || conditionData.isEmpty())
             return true;
         Platform.runLater(() -> clearConditionHBox(conditionType));
         // all conditions are optional therefore only need one condition to pass
-        if (checkAllConditionsIsNotRequired(conditions)) {
-            for (Condition c : conditions) {
+        if (checkAllConditionsIsNotRequired(conditionData)) {
+            for (ConditionData c : conditionData) {
                 loadConditionRunPane(conditionType);
-                if (currentConditionRunController.checkCondition(c))
+                if (currentConditionRunController.checkCondition(c.getCondition()))
                     return true;
             }
             return false;
         }
         else { // only check required condition and they must pass
-            for (Condition c : conditions) {
+            for (ConditionData c : conditionData) {
                 loadConditionRunPane(conditionType);
-                if (c.isRequired() && !currentConditionRunController.checkCondition(c))
+                Condition condition = c.getCondition();
+                if (condition.isRequired() && !currentConditionRunController.checkCondition(condition))
                     return false;
             }
             return true;
         }
     }
-    private boolean checkAllConditionsIsNotRequired(List<Condition> conditions) {
-        if (conditions == null || conditions.isEmpty())
+    private boolean checkAllConditionsIsNotRequired(List<ConditionData> conditionData) {
+        if (conditionData == null || conditionData.isEmpty())
             return true;
-        for (Condition c : conditions)
-            if (c.isRequired())
+        for (ConditionData c : conditionData)
+            if (c.getCondition().isRequired())
                 return false;
         return true;
     }

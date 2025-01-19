@@ -6,18 +6,24 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.AppScene;
+import org.dev.Enum.AppLevel;
 import org.dev.Enum.ConditionRequirement;
 import org.dev.Enum.LogLevel;
 import org.dev.Operation.Condition.Condition;
+import org.dev.Operation.Data.AppData;
+import org.dev.Operation.Data.ConditionData;
+import org.dev.SideMenu.LeftMenu.SideMenuController;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ConditionController implements Initializable, ActivityController {
+public class ConditionController implements Initializable, DataController, ActivityController {
 
     @FXML
     private StackPane conditionStackPane;
@@ -39,17 +45,15 @@ public class ConditionController implements Initializable, ActivityController {
         conditionStackPane.setOnMouseClicked(this::openConditionOptionPane);
     }
 
-    public Node getParentNode() {
-        return conditionStackPane;
-    }
+    public Node getParentNode() { return conditionStackPane; }
 
-    public void registerReadingCondition(Condition condition) {
-        if (condition == null) {
+    public void registerReadingCondition(Condition newCondition) {
+        if (newCondition == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Condition is null - registerReadingCondition");
             return;
         }
         isSet = true;
-        this.condition = condition;
+        condition = newCondition;
         readingConditionLabel.setText(condition.getChosenReadingCondition().name());
         conditionImageView.setImage(SwingFXUtils.toFXImage(condition.getMainDisplayImage(), null));
         requirementStatusLabel.setText(condition.isRequired() ?
@@ -61,19 +65,49 @@ public class ConditionController implements Initializable, ActivityController {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
-        AppScene.openConditionMenuPane(this);
+        if (event.getButton() == MouseButton.PRIMARY)
+            AppScene.openConditionMenuPane(this);
+        else if (event.getButton() == MouseButton.SECONDARY) {
+            SideMenuController.rightClickMenuController.showRightMenu(event, this, parentActionController);
+        }
     }
 
     public void removeThisConditionFromParent() {
-        parentActionController.removeCondition(this);
+        parentActionController.removeSavedData(this);
         AppScene.addLog(LogLevel.DEBUG, className, "Condition removed");
     }
 
-    public void loadSavedCondition(Condition condition) {
+    @Override
+    public ConditionData getSavedData() {
         if (condition == null) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error - Empty condition being used as data");
+            return null;
+        }
+        ConditionData conditionData = new ConditionData();
+        conditionData.setCondition(condition.getDeepCopied());
+        return conditionData;
+    }
+
+    @Override
+    public void loadSavedData(AppData appData) {
+        if (appData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - cannot load null saved condition");
             return;
         }
-        registerReadingCondition(condition);
+        registerReadingCondition((Condition) appData);
+    }
+
+    @Override
+    public void addSavedData(AppData data) {}
+
+    @Override
+    public void removeSavedData(DataController dataController) {}
+
+    @Override
+    public void takeToDisplay() {}
+
+    @Override
+    public AppLevel getAppLevel() {
+        return AppLevel.Condition;
     }
 }

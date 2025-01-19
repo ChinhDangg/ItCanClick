@@ -14,6 +14,6 @@ public class ActionData implements AppData {
     @Serial
     private static final long serialVersionUID = 1L;
     private Action action;
-    private List<Condition> entryConditionList;
-    private List<Condition> exitConditionList;
+    private List<ConditionData> entryConditionList;
+    private List<ConditionData> exitConditionList;
 }
