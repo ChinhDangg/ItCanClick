@@ -1,6 +1,7 @@
 package org.dev.SideMenu.LeftMenu;
 
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -8,6 +9,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -49,8 +51,9 @@ public class SideMenuController implements Initializable {
     private Group newOperationGroupButton;
 
     private final String className = this.getClass().getSimpleName();
-    private static RightClickMenuController rightClickMenuController;
+    public static RightClickMenuController rightClickMenuController;
     private double currentScale = 1.0;
+    private static Node currentHighlightedLabel;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -98,14 +101,18 @@ public class SideMenuController implements Initializable {
         SideMenuLabelController controller = loadSideMenuLabelController();
         if (controller == null)
             return null;
-        return controller.createHBoxLabel(label, content, dataController, parentController, rightClickMenuController);
+        Node hBoxLabel = controller.createHBoxLabel(label, content, dataController);
+        hBoxLabel.setOnMouseClicked(event -> doubleClickAndRightClick(event, dataController, parentController, rightClickMenuController));
+        return hBoxLabel;
     }
 
     public static Node getNewSideHBoxLabel(Label label, VBox content, MainJobController jobController) {
         SideMenuLabelController controller = loadSideMenuLabelController();
         if (controller == null)
             return null;
-        return controller.createHBoxLabel(label, content, jobController);
+        Node hBoxLabel = controller.createHBoxLabel(label, content, jobController);
+        hBoxLabel.setOnMouseClicked(event -> doubleClick(event, jobController));
+        return hBoxLabel;
     }
 
     private static SideMenuLabelController loadSideMenuLabelController() {
@@ -117,6 +124,30 @@ public class SideMenuController implements Initializable {
             AppScene.addLog(LogLevel.ERROR, SideMenuController.class.getSimpleName(), "Error loading side menu label: " + e.getMessage());
             return null;
         }
+    }
+
+    private static void doubleClick(MouseEvent event, MainJobController jobController) {
+        if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+            jobController.takeToDisplay();
+            highlightLabel((Node) event.getSource());
+        }
+    }
+
+    private static void doubleClickAndRightClick(MouseEvent event, DataController dataController, DataController parentController, RightClickMenuController rightClickMenuController) {
+        if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+            dataController.takeToDisplay();
+            highlightLabel((Node) event.getSource());
+        }
+        else if (event.getButton() == MouseButton.SECONDARY) {
+            rightClickMenuController.showRightMenu(event, dataController, parentController);
+        }
+    }
+
+    private static void highlightLabel(Node clickedNode) {
+        if (currentHighlightedLabel != null)
+            currentHighlightedLabel.pseudoClassStateChanged(PseudoClass.getPseudoClass("highlighted"), false);
+        currentHighlightedLabel = clickedNode;
+        currentHighlightedLabel.pseudoClassStateChanged(PseudoClass.getPseudoClass("highlighted"), true);
     }
 
     // ------------------------------------------------------
