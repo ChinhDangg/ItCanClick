@@ -9,11 +9,11 @@ import org.dev.Enum.LogLevel;
 import org.dev.SideMenu.*;
 import org.dev.Menu.ActionMenuController;
 import org.dev.Menu.ConditionMenuController;
-import org.dev.Operation.ActionController;
-import org.dev.Operation.ConditionController;
-import org.dev.Operation.Data.OperationData;
-import org.dev.Operation.OperationController;
-import org.dev.RunOperation.OperationRunController;
+import org.dev.JobController.ActionController;
+import org.dev.JobController.ConditionController;
+import org.dev.JobData.OperationData;
+import org.dev.JobController.OperationController;
+import org.dev.RunJob.OperationRunController;
 import org.dev.Enum.CurrentTab;
 import org.dev.SideMenu.LeftMenu.SideBarController;
 import org.dev.SideMenu.TopMenu.MenuBarController;
@@ -162,7 +162,7 @@ public class AppScene {
             return false;
         }
         try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("RunOperation/operationRunPane.fxml"));
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("RunJob/operationRunPane.fxml"));
             loader.load();
             currentLoadedOperationRunController = loader.getController();
             displayCurrentOperationRun();
@@ -238,7 +238,7 @@ public class AppScene {
             return;
         }
         try {
-            FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("Operation/operationPane.fxml"));
+            FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("JobController/operationPane.fxml"));
             Node operationPane = loader.load();
             mainDisplayStackPane.getChildren().clear();
             mainDisplayStackPane.getChildren().add(operationPane);
@@ -256,7 +256,7 @@ public class AppScene {
             OperationData operationData = (OperationData) in.readObject();
             AppScene.addLog(LogLevel.TRACE, className, "Passed getting data");
 
-            FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("Operation/operationPane.fxml"));
+            FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("JobController/operationPane.fxml"));
             Node operationPane = loader.load();
             AppScene.addLog(LogLevel.TRACE, className, "Passed loading operation pane");
 

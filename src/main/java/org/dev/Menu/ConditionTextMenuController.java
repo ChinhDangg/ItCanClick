@@ -15,10 +15,10 @@ import javafx.scene.layout.StackPane;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
-import org.dev.Operation.ActivityController;
-import org.dev.Operation.Condition.Condition;
-import org.dev.Operation.Condition.TextCondition;
-import org.dev.Operation.ConditionController;
+import org.dev.JobController.ActivityController;
+import org.dev.Job.Condition.Condition;
+import org.dev.Job.Condition.TextCondition;
+import org.dev.JobController.ConditionController;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -65,8 +65,7 @@ public class ConditionTextMenuController extends OptionsMenuController implement
         if (condition != null && condition.getChosenReadingCondition() == ReadingCondition.Text) {
             TextCondition textCondition = (TextCondition) conditionController.getCondition();
             updateTextScaleValue(textCondition.getCurrentTextScale());
-            currentMainImage = condition.getMainImage();
-            displayMainImageView(currentMainImage);
+            displayMainImageView(Condition.getImageWithEdges(mainImageBoundingBox, currentDisplayImage, 0.5f));
             readTexts = textCondition.getSavedText();
             updateRegisteredTextLabel();
             notOptionCheckBox.setSelected(textCondition.isNot());
@@ -109,9 +108,9 @@ public class ConditionTextMenuController extends OptionsMenuController implement
             AppScene.addLog(LogLevel.WARN, className, "Reading text condition is not set - save failed");
             return;
         }
-        conditionController.registerReadingCondition(new TextCondition(ReadingCondition.Text, currentMainImage,
+        conditionController.registerReadingCondition(new TextCondition(ReadingCondition.Text, currentDisplayImage,
                 mainImageBoundingBox, notOptionCheckBox.isSelected(), requiredOptionCheckBox.isSelected(),
-                currentDisplayImage, currentTextScaleValue, readTexts));
+                currentTextScaleValue, readTexts));
         AppScene.addLog(LogLevel.INFO, className, "Saved");
     }
     @Override
@@ -150,27 +149,31 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     // ------------------------------------------------------
     private BufferedImage getDisplayImageForReadingText(int x, int y) throws AWTException {
         mainImageBoundingBox = new Rectangle(x, y, imageWidth, imageHeight);
-        currentMainImage = captureCurrentScreen(mainImageBoundingBox);
-        BufferedImage imageWithEdges = getImageWithEdges(currentMainImage, x, y, 0.5f);
-        if (currentTextScaleValue != 1.00) {
-            currentMainImage = getScaledImage(currentMainImage, currentTextScaleValue);
-            if (imageWithEdges != null)
-                imageWithEdges = getScaledImage(imageWithEdges, currentTextScaleValue);
-        }
-        currentDisplayImage = (imageWithEdges == null) ? currentMainImage : imageWithEdges;
+        Rectangle fullBounds = new Rectangle(x-outsideBoxWidth, y-outsideBoxWidth,
+                imageWidth+outsideBoxWidth*2, imageHeight+outsideBoxWidth*2);
+        currentDisplayImage = captureCurrentScreen(fullBounds);
+        BufferedImage imageWithEdges = Condition.getImageWithEdges(mainImageBoundingBox, currentDisplayImage, 0.5f);
+        if (currentTextScaleValue != 1.00)
+            imageWithEdges = getScaledImage(imageWithEdges, currentTextScaleValue);
         BufferedImage zoomedImage = getZoomedImage(imageWithEdges);
         if (zoomedImage != null)
             return zoomedImage;
-        return (imageWithEdges == null) ? currentMainImage : imageWithEdges;
+        return imageWithEdges;
     }
     private void readAndUpdateReadTextLabel() {
-        if (currentMainImage != null) {
-            try {
-                String readText = TextCondition.readTextFromImage(currentMainImage);
-                Platform.runLater(() -> readingResultLabel.setText(readText));
-            } catch (Exception e) {
-                AppScene.addLog(LogLevel.ERROR, className, "Error reading from image or updating read text label: " + e.getMessage());
-            }
+        if (currentDisplayImage == null)
+            return;
+        int x = (currentDisplayImage.getWidth()-mainImageBoundingBox.width)/2;
+        int y = (currentDisplayImage.getHeight()-mainImageBoundingBox.height)/2;
+        BufferedImage innerImage = currentDisplayImage.getSubimage(x, y,
+                (int) mainImageBoundingBox.getWidth(), (int) mainImageBoundingBox.getHeight());
+        if (currentTextScaleValue != 1.00)
+            innerImage = getScaledImage(innerImage, currentTextScaleValue);
+        try {
+            String readText = TextCondition.readTextFromImage(innerImage);
+            Platform.runLater(() -> readingResultLabel.setText(readText));
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error reading from image or updating read text label: " + e.getMessage());
         }
     }
 

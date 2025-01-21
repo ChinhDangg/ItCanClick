@@ -17,8 +17,10 @@ import javafx.scene.transform.Scale;
 import org.dev.AppScene;
 import org.dev.Enum.CurrentTab;
 import org.dev.Enum.LogLevel;
-import org.dev.Operation.*;
-import org.dev.RunOperation.OperationRunController;
+import org.dev.JobController.JobDataController;
+import org.dev.JobController.MainJobController;
+import org.dev.JobController.OperationController;
+import org.dev.RunJob.OperationRunController;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -97,12 +99,12 @@ public class SideMenuController implements Initializable {
     }
 
     // ------------------------------------------------------
-    public static Node getNewSideHBoxLabel(Label label, VBox content, DataController dataController, DataController parentController) {
+    public static Node getNewSideHBoxLabel(Label label, VBox content, JobDataController jobDataController, JobDataController parentController) {
         SideMenuLabelController controller = loadSideMenuLabelController();
         if (controller == null)
             return null;
-        Node hBoxLabel = controller.createHBoxLabel(label, content, dataController);
-        hBoxLabel.setOnMouseClicked(event -> doubleClickAndRightClick(event, dataController, parentController, rightClickMenuController));
+        Node hBoxLabel = controller.createHBoxLabel(label, content, jobDataController);
+        hBoxLabel.setOnMouseClicked(event -> doubleClickAndRightClick(event, jobDataController, parentController, rightClickMenuController));
         return hBoxLabel;
     }
 
@@ -133,13 +135,13 @@ public class SideMenuController implements Initializable {
         }
     }
 
-    private static void doubleClickAndRightClick(MouseEvent event, DataController dataController, DataController parentController, RightClickMenuController rightClickMenuController) {
+    private static void doubleClickAndRightClick(MouseEvent event, JobDataController jobDataController, JobDataController parentController, RightClickMenuController rightClickMenuController) {
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-            dataController.takeToDisplay();
+            jobDataController.takeToDisplay();
             highlightLabel((Node) event.getSource());
         }
         else if (event.getButton() == MouseButton.SECONDARY) {
-            rightClickMenuController.showRightMenu(event, dataController, parentController);
+            rightClickMenuController.showRightMenu(event, jobDataController, parentController);
         }
     }
 

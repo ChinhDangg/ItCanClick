@@ -9,11 +9,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
-import org.dev.Operation.Condition.Condition;
-import org.dev.Operation.Condition.PixelCondition;
-import org.dev.Operation.ConditionController;
+import org.dev.Job.Condition.Condition;
+import org.dev.Job.Condition.PixelCondition;
+import org.dev.JobController.ConditionController;
 import org.dev.Enum.ReadingCondition;
-import org.dev.Operation.ActivityController;
+import org.dev.JobController.ActivityController;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
@@ -53,14 +53,13 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
         Condition condition = conditionController.getCondition();
         if (condition != null && condition.getChosenReadingCondition() == ReadingCondition.Pixel) {
             PixelCondition pixelCondition = (PixelCondition) conditionController.getCondition();
-            currentMainImage = pixelCondition.getMainImage();
             displayMainImageView(pixelCondition.getDisplayImage());
             mainImageBoundingBox = pixelCondition.getMainImageBoundingBox();
             currentDisplayImage = pixelCondition.getDisplayImage();
             notOptionCheckBox.setSelected(pixelCondition.isNot());
             requiredOptionCheckBox.setSelected(pixelCondition.isRequired());
-            imageWidth = currentMainImage.getWidth();
-            imageHeight = currentMainImage.getHeight();
+            imageWidth = (int) mainImageBoundingBox.getWidth();
+            imageHeight = (int) mainImageBoundingBox.getHeight();
             outsideBoxWidth = (currentDisplayImage.getHeight() - imageHeight)/2;
             AppScene.addLog(LogLevel.TRACE, className, "Loaded preset reading pixel");
         }
@@ -92,13 +91,13 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             return;
         }
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on save button");
-        if (currentMainImage == null) {
+        if (currentDisplayImage == null) {
             AppScene.addLog(LogLevel.WARN, className, "Reading pixel condition is not set - save failed");
             return;
         }
-        conditionController.registerReadingCondition(new PixelCondition(ReadingCondition.Pixel, currentMainImage,
+        conditionController.registerReadingCondition(new PixelCondition(ReadingCondition.Pixel, currentDisplayImage,
                 mainImageBoundingBox, notOptionCheckBox.isSelected(), requiredOptionCheckBox.isSelected(),
-                currentDisplayImage, globalSearchCheckBox.isSelected()));
+                globalSearchCheckBox.isSelected()));
         AppScene.addLog(LogLevel.INFO, className, "Pixel - saved");
     }
     @Override
@@ -115,18 +114,16 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     // ------------------------------------------------------
     private BufferedImage getDisplayImageForReadingPixel(int x, int y) throws AWTException {
         mainImageBoundingBox = new Rectangle(x, y, imageWidth, imageHeight);
-        currentMainImage = captureCurrentScreen(mainImageBoundingBox);
-        //AppScene.addLog(LogLevel.TRACE, className, "Current screen is captured");
+        Rectangle fullBounds = new Rectangle(x-outsideBoxWidth, y-outsideBoxWidth,
+                imageWidth+outsideBoxWidth*2, imageHeight+outsideBoxWidth*2);
+        currentDisplayImage = captureCurrentScreen(fullBounds);
         BufferedImage box = (showHideLineCheckBox.isSelected()) ? drawBox(imageWidth, imageHeight, getPixelColor()) : null;
-        BufferedImage imageWithEdges = (box == null) ? getImageWithEdges(currentMainImage, x, y, 1.0f) :
-                getImageWithEdges(box, x, y, 1.0f);
-        currentDisplayImage = (imageWithEdges == null) ? currentMainImage : imageWithEdges;
+        BufferedImage imageWithEdges = (box == null) ? Condition.getImageWithEdges(mainImageBoundingBox, currentDisplayImage, 1.0f) :
+                Condition.getImageWithEdges(box, currentDisplayImage, 1.0f);
         BufferedImage zoomedImage = getZoomedImage(imageWithEdges);
         if (zoomedImage != null)
             return zoomedImage;
-        else if (imageWithEdges != null)
-            return imageWithEdges;
-        return (box == null) ? currentMainImage : box;
+        return imageWithEdges;
     }
     private BufferedImage drawBox(int width, int height, Color color) {
         BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -145,8 +142,6 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
         if (showHideLineCheckBox.isSelected())
             g.drawImage(drawBox(imageWidth, imageHeight, getPixelColor()),
                     outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);
-        else
-            g.drawImage(currentMainImage, outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);
         g.dispose();
         if (currentZoomValue != 1.00)
             displayMainImageView(getScaledImage(currentDisplayImage, currentZoomValue));

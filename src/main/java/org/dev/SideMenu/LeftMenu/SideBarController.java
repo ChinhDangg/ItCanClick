@@ -11,8 +11,8 @@ import lombok.Getter;
 import org.dev.AppScene;
 import org.dev.Enum.CurrentTab;
 import org.dev.Enum.LogLevel;
-import org.dev.Operation.OperationController;
-import org.dev.RunOperation.OperationRunController;
+import org.dev.JobController.OperationController;
+import org.dev.RunJob.OperationRunController;
 
 import java.net.URL;
 import java.util.ResourceBundle;

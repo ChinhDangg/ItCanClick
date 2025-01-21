@@ -11,12 +11,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
-import org.dev.Operation.ActivityController;
-import org.dev.Operation.Condition.TextCondition;
+import org.dev.JobController.ActivityController;
+import org.dev.Job.Condition.TextCondition;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,12 +65,10 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
         currentZoomLabel.setText(Double.toString(currentZoomValue));
         AppScene.addLog(LogLevel.DEBUG, className, "Updated Zoom value: " + currentZoomValue);
     }
-    protected BufferedImage getZoomedImage(BufferedImage imageWithEdges) {
+    protected BufferedImage getZoomedImage(BufferedImage image) {
         if (currentZoomValue == 1.00)
             return null;
-        if (imageWithEdges != null)
-            return getScaledImage(imageWithEdges, currentZoomValue);
-        return getScaledImage(currentMainImage, currentZoomValue);
+        return getScaledImage(image, currentZoomValue);
     }
 
     // ------------------------------------------------------
@@ -82,7 +79,6 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
     @FXML
     protected CheckBox fitImageCheckBox;
     protected BufferedImage currentDisplayImage = null;
-    protected BufferedImage currentMainImage = null;
     protected Rectangle mainImageBoundingBox = null;
     protected void toggleFillImageOption(ActionEvent event) {
         if (!fitImageCheckBox.isSelected()) {
@@ -115,7 +111,6 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
                 mainImageView.setFitWidth(maxViewWidth);
             else if (checkingWidth < maxViewWidth && mainImageView.getFitWidth() != 0)
                 mainImageView.setFitWidth(0);
-            //AppScene.addLog(LogLevel.TRACE, className, "Image width is adjusted to fit");
         }
     }
     protected void adjustMainImageHeight(int checkingHeight) {
@@ -125,7 +120,6 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
                 mainImageView.setFitHeight(maxViewHeight);
             else if (checkingHeight < maxViewHeight && mainImageView.getFitHeight() != 0)
                 mainImageView.setFitHeight(0);
-            //AppScene.addLog(LogLevel.TRACE, className, "Image height is adjusted to fit");
         }
     }
 
@@ -153,22 +147,6 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on y minus button");
         int step = 10;
         imageHeight = Math.max((imageHeight-step), 1);
-    }
-    protected BufferedImage getImageWithEdges(BufferedImage mainImage, int x, int y, float opacity) throws AWTException {
-        if (outsideBoxWidth != 0) {
-            BufferedImage outsideImage = captureCurrentScreen(new Rectangle(x-outsideBoxWidth, y-outsideBoxWidth,
-                    imageWidth+outsideBoxWidth*2, imageHeight+outsideBoxWidth*2));
-            BufferedImage imageWithEdges = new BufferedImage(outsideImage.getWidth(), outsideImage.getHeight(), outsideImage.getType());
-            Graphics2D g = imageWithEdges.createGraphics();
-            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
-            g.drawImage(outsideImage, 0, 0, null);
-            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-            g.drawImage(mainImage, outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);
-            g.dispose();
-            //AppScene.addLog(LogLevel.TRACE, className, "Get image with edges");
-            return imageWithEdges;
-        }
-        return null;
     }
     public static BufferedImage captureCurrentScreen(Rectangle rectangle) throws AWTException {
         return new Robot().createScreenCapture(rectangle);

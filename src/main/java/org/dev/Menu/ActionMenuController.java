@@ -13,9 +13,10 @@ import javafx.scene.input.MouseEvent;
 import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
 import org.dev.Enum.LogLevel;
-import org.dev.Operation.Action.Action;
-import org.dev.Operation.ActionController;
-import org.dev.Operation.ActivityController;
+import org.dev.Job.Action.Action;
+import org.dev.Job.Condition.Condition;
+import org.dev.JobController.ActionController;
+import org.dev.JobController.ActivityController;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -71,7 +72,9 @@ public class ActionMenuController extends MenuController implements Initializabl
         recheckContentVBox.setVisible(isControllerSet);
         recheckResultLabel.setText("");
         if (isControllerSet) {
-            mainImageView.setImage(SwingFXUtils.toFXImage(actionController.getAction().getDisplayImage(), null));
+            Action action = actionController.getAction();
+            mainImageView.setImage(SwingFXUtils.toFXImage(Condition.getImageWithEdges(
+                    action.getMainImageBoundingBox(), action.getDisplayImage(), 0.5f), null));
             readingTypeChoice.setValue(actionController.getAction().getChosenActionPerform());
         }
         else

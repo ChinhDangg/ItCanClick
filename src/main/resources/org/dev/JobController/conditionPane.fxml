@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane fx:id="conditionStackPane" stylesheets="@../../../styles/Operation/conditionPane.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.JobController.ConditionController">
+   <children>
+      <VBox alignment="CENTER">
+         <children>
+            <Pane prefHeight="125.0" prefWidth="198.0" style="-fx-border-color: black; -fx-border-width: 1px;">
+               <children>
+                  <StackPane alignment="TOP_CENTER" prefHeight="131.0" prefWidth="198.0">
+                     <children>
+                        <ImageView fx:id="conditionImageView" fitHeight="125.0" fitWidth="198.0" pickOnBounds="true" preserveRatio="true" />
+                     </children>
+                  </StackPane>
+               </children>
+            </Pane>
+            <StackPane prefHeight="17.0" prefWidth="197.0" styleClass="no-top-border">
+               <children>
+                  <Label fx:id="requirementStatusLabel" text="Required/Optional" />
+               </children>
+            </StackPane>
+            <Group>
+               <children>
+                  <StackPane styleClass="no-top-border">
+                     <children>
+                        <Label fx:id="readingConditionLabel" text="Read" />
+                     </children>
+                     <padding>
+                        <Insets left="7.0" right="7.0" />
+                     </padding>
+                  </StackPane>
+               </children>
+            </Group>
+         </children>
+      </VBox>
+   </children>
+</StackPane>

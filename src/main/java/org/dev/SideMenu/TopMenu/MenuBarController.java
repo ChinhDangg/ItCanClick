@@ -11,7 +11,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
-import org.dev.Operation.Data.OperationData;
+import org.dev.JobData.OperationData;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;

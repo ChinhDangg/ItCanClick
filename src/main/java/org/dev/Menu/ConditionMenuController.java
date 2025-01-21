@@ -13,10 +13,10 @@ import javafx.scene.layout.StackPane;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
-import org.dev.Operation.ActivityController;
-import org.dev.Operation.Condition.Condition;
-import org.dev.Operation.Condition.ImageCheckResult;
-import org.dev.Operation.ConditionController;
+import org.dev.JobController.ActivityController;
+import org.dev.Job.Condition.Condition;
+import org.dev.Job.Condition.ImageCheckResult;
+import org.dev.JobController.ConditionController;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -79,13 +79,14 @@ public class ConditionMenuController extends MenuController implements Initializ
 
     @Override
     public void loadMenu(ActivityController activityController) {
-
         this.conditionController = (ConditionController) activityController;
         boolean isControllerSet = conditionController.isSet();
         recheckContentVBox.setVisible(isControllerSet);
         updateRecheckResultLabel(false, null);
         if (isControllerSet) {
-            mainImageView.setImage(SwingFXUtils.toFXImage(conditionController.getCondition().getMainDisplayImage(), null));
+            Condition condition = conditionController.getCondition();
+            mainImageView.setImage(SwingFXUtils.toFXImage(Condition.getImageWithEdges(
+                    condition.getMainImageBoundingBox(), condition.getMainDisplayImage(), 0.5f), null));
             readingTypeChoice.setValue(conditionController.getCondition().getChosenReadingCondition());
         }
         else

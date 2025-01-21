@@ -13,7 +13,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
-import org.dev.Operation.ActivityController;
+import org.dev.JobController.ActivityController;
 import java.net.URL;
 import java.util.ResourceBundle;
 

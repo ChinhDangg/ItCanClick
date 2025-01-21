@@ -8,8 +8,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.dev.Enum.AppLevel;
-import org.dev.Operation.DataController;
-import org.dev.Operation.MainJobController;
+import org.dev.JobController.JobDataController;
+import org.dev.JobController.MainJobController;
 
 public class SideMenuLabelController {
     @FXML
@@ -19,8 +19,8 @@ public class SideMenuLabelController {
     @FXML
     private Label sideLabel;
 
-    public Node createHBoxLabel(Label label, VBox collapseContent, DataController dataController) {
-        AppLevel appLevel = dataController.getAppLevel();
+    public Node createHBoxLabel(Label label, VBox collapseContent, JobDataController jobDataController) {
+        AppLevel appLevel = jobDataController.getAppLevel();
         parentHBoxNode.getChildren().remove(sideLabel);
         if (appLevel == AppLevel.Action || appLevel == AppLevel.Condition) {
             labelIndicationImageView.setFitWidth(13);

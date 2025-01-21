@@ -13,9 +13,10 @@ import javafx.scene.layout.StackPane;
 import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
 import org.dev.Enum.LogLevel;
-import org.dev.Operation.Action.*;
-import org.dev.Operation.ActionController;
-import org.dev.Operation.ActivityController;
+import org.dev.Job.Action.*;
+import org.dev.Job.Condition.Condition;
+import org.dev.JobController.ActionController;
+import org.dev.JobController.ActivityController;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -68,7 +69,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
             return;
         }
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on save button");
-        if (currentMainImage == null) {
+        if (currentDisplayImage == null) {
             AppScene.addLog(LogLevel.INFO, className, "Please save an image for the action for future reference");
             return;
         }
@@ -79,7 +80,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         }
         Action newAction = Action.getCorrespondAction(actionTypes);
         newAction.setActionOptions(attempt, progressiveSearchCheckBox.isSelected(), progressiveSearchTime, waitBeforeTime,
-                waitAfterTime, actionTypes, currentMainImage, currentDisplayImage, mainImageBoundingBox, registeredKey);
+                waitAfterTime, actionTypes, currentDisplayImage, mainImageBoundingBox, registeredKey);
         actionController.registerActionPerform(newAction);
         AppScene.addLog(LogLevel.INFO, className, "Saved registered action");
     }
@@ -142,8 +143,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         updateWaitBeforeTimeLabel(action.getWaitBeforeTime());
         updateWaitAfterTimeLabel(action.getWaitAfterTime());
         currentDisplayImage = action.getDisplayImage();
-        displayMainImageView(currentDisplayImage);
-        currentMainImage = action.getMainImage();
+        displayMainImageView(Condition.getImageWithEdges(mainImageBoundingBox, currentDisplayImage, 0.5f));
         mainImageBoundingBox = action.getMainImageBoundingBox();
         AppScene.addLog(LogLevel.TRACE, className, "Preset action is loaded");
         return true;
@@ -215,16 +215,14 @@ public class ActionPerformMenuController extends OptionsMenuController {
     // ------------------------------------------------------
     private BufferedImage getDisplayImage(int x, int y) throws AWTException {
         mainImageBoundingBox = new Rectangle(x, y, imageWidth, imageHeight);
-        currentMainImage = captureCurrentScreen(mainImageBoundingBox);
-        //AppScene.addLog(LogLevel.TRACE, className, "Current screen is captured");
-        BufferedImage imageWithEdges = getImageWithEdges(currentMainImage, x, y, 0.5f);
-        currentDisplayImage = (imageWithEdges == null) ? currentMainImage : imageWithEdges;
+        Rectangle fullBounds = new Rectangle(x-outsideBoxWidth, y-outsideBoxWidth,
+                imageWidth+outsideBoxWidth*2, imageHeight+outsideBoxWidth*2);
+        currentDisplayImage = captureCurrentScreen(fullBounds);
+        BufferedImage imageWithEdges = Condition.getImageWithEdges(mainImageBoundingBox, currentDisplayImage, 0.5f);
         BufferedImage zoomedImage = getZoomedImage(imageWithEdges);
         if (zoomedImage != null)
             return zoomedImage;
-        else if (imageWithEdges != null)
-            return imageWithEdges;
-        return currentDisplayImage;
+        return imageWithEdges;
     }
 
     @Override
