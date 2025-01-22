@@ -40,6 +40,9 @@ public class TextCondition extends Condition {
     }
 
     @Override
+    public BufferedImage getMainDisplayImage() { return getImageWithEdges(mainImageBoundingBox, displayImage, 0.5f); }
+
+    @Override
     public String getExpectedResult() { return savedText.toString(); }
 
     @Override

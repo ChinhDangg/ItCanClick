@@ -47,6 +47,10 @@ public abstract class Action implements MainJob, Serializable {
         this.keyCode = keyCode;
     }
 
+    public BufferedImage getMainDisplayImage() {
+        return Condition.getImageWithEdges(mainImageBoundingBox, displayImage, 0.5f);
+    }
+
     public BufferedImage getSeenImage() throws AWTException {
         BufferedImage fullImage = Condition.getFullImage(mainImageBoundingBox, displayImage);
         return Condition.getImageWithEdges(mainImageBoundingBox, fullImage, 0.5f);

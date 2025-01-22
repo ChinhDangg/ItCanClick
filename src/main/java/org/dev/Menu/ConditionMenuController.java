@@ -2,6 +2,7 @@ package org.dev.Menu;
 
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -85,9 +86,8 @@ public class ConditionMenuController extends MenuController implements Initializ
         updateRecheckResultLabel(false, null);
         if (isControllerSet) {
             Condition condition = conditionController.getCondition();
-            mainImageView.setImage(SwingFXUtils.toFXImage(Condition.getImageWithEdges(
-                    condition.getMainImageBoundingBox(), condition.getMainDisplayImage(), 0.5f), null));
-            readingTypeChoice.setValue(conditionController.getCondition().getChosenReadingCondition());
+            mainImageView.setImage(SwingFXUtils.toFXImage(condition.getMainDisplayImage(), null));
+            readingTypeChoice.setValue(condition.getChosenReadingCondition());
         }
         else
             mainImageView.setImage(null);
@@ -113,7 +113,7 @@ public class ConditionMenuController extends MenuController implements Initializ
         try {
             Condition condition = conditionController.getCondition();
             ImageCheckResult checkedConditionResult = condition.checkCondition();
-            //Platform.runLater(() -> updateRecheckResultLabel(checkedConditionResult.isPass(), condition.getChosenReadingCondition().name()));
+            Platform.runLater(() -> updateRecheckResultLabel(checkedConditionResult.isPass(), condition.getChosenReadingCondition().name()));
             updateRecheckResultLabel(checkedConditionResult.isPass(), checkedConditionResult.getReadResult());
             recheckResultImageView.setImage(SwingFXUtils.toFXImage(checkedConditionResult.getDisplayImage(), null));
             AppScene.addLog(LogLevel.TRACE, className, "Condition recheck result: " + checkedConditionResult.getReadResult());

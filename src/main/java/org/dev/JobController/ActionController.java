@@ -132,7 +132,7 @@ public class ActionController implements Initializable, JobDataController, Activ
         action = newAction;
         if (action.getActionName() == null || action.getActionName().isBlank())
             action.setActionName(actionNameLabel.getText());
-        displayActionImage(action.getDisplayImage());
+        displayActionImage(action.getMainDisplayImage());
     }
 
     private void displayActionImage(BufferedImage image) {

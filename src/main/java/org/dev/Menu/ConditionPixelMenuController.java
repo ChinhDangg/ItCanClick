@@ -53,7 +53,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
         Condition condition = conditionController.getCondition();
         if (condition != null && condition.getChosenReadingCondition() == ReadingCondition.Pixel) {
             PixelCondition pixelCondition = (PixelCondition) conditionController.getCondition();
-            displayMainImageView(pixelCondition.getDisplayImage());
+            displayMainImageView(pixelCondition.getMainDisplayImage());
             mainImageBoundingBox = pixelCondition.getMainImageBoundingBox();
             currentDisplayImage = pixelCondition.getDisplayImage();
             notOptionCheckBox.setSelected(pixelCondition.isNot());
@@ -61,6 +61,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             imageWidth = (int) mainImageBoundingBox.getWidth();
             imageHeight = (int) mainImageBoundingBox.getHeight();
             outsideBoxWidth = (currentDisplayImage.getHeight() - imageHeight)/2;
+            globalSearchCheckBox.setSelected(pixelCondition.isGlobalSearch());
             AppScene.addLog(LogLevel.TRACE, className, "Loaded preset reading pixel");
         }
         else
@@ -117,7 +118,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
         Rectangle fullBounds = new Rectangle(x-outsideBoxWidth, y-outsideBoxWidth,
                 imageWidth+outsideBoxWidth*2, imageHeight+outsideBoxWidth*2);
         currentDisplayImage = captureCurrentScreen(fullBounds);
-        BufferedImage box = (showHideLineCheckBox.isSelected()) ? drawBox(imageWidth, imageHeight, getPixelColor()) : null;
+        BufferedImage box = (showHideLineCheckBox.isSelected()) ? PixelCondition.drawBox(imageWidth, imageHeight, getPixelColor()) : null;
         BufferedImage imageWithEdges = (box == null) ? Condition.getImageWithEdges(mainImageBoundingBox, currentDisplayImage, 1.0f) :
                 Condition.getImageWithEdges(box, currentDisplayImage, 1.0f);
         BufferedImage zoomedImage = getZoomedImage(imageWithEdges);
@@ -125,42 +126,38 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             return zoomedImage;
         return imageWithEdges;
     }
-    private BufferedImage drawBox(int width, int height, Color color) {
-        BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = temp.createGraphics();
-        g.setColor(color);
-        g.fillRect(0, 0, width, height);
-        g.dispose();
-        return temp;
-    }
 
     // ------------------------------------------------------
     private void showHideBoxAction(javafx.event.ActionEvent event) {
         if (currentDisplayImage == null || !mouseStopped)
             return;
-        Graphics2D g = currentDisplayImage.createGraphics();
+        BufferedImage tempImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = tempImage.createGraphics();
+        g.drawImage(currentDisplayImage, 0, 0, null);
         if (showHideLineCheckBox.isSelected())
-            g.drawImage(drawBox(imageWidth, imageHeight, getPixelColor()),
+            g.drawImage(PixelCondition.drawBox(imageWidth, imageHeight, getPixelColor()),
                     outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);
         g.dispose();
         if (currentZoomValue != 1.00)
-            displayMainImageView(getScaledImage(currentDisplayImage, currentZoomValue));
+            displayMainImageView(getScaledImage(tempImage, currentZoomValue));
         else
-            displayMainImageView(currentDisplayImage);
+            displayMainImageView(tempImage);
     }
     private void changePixelLineColor(javafx.event.ActionEvent event) {
         if (currentDisplayImage == null || !mouseStopped)
             return;
         showHideLineCheckBox.setSelected(true);
         AppScene.addLog(LogLevel.DEBUG, className, "Change pixel line color");
-        Graphics2D g = currentDisplayImage.createGraphics();
-        g.drawImage(drawBox(imageWidth, imageHeight, getPixelColor()),
+        BufferedImage tempImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = tempImage.createGraphics();
+        g.drawImage(currentDisplayImage, 0, 0, null);
+        g.drawImage(PixelCondition.drawBox(imageWidth, imageHeight, getPixelColor()),
                 outsideBoxWidth, outsideBoxWidth, imageWidth, imageHeight, null);
         g.dispose();
         if (currentZoomValue != 1.00)
-            displayMainImageView(getScaledImage(currentDisplayImage, currentZoomValue));
+            displayMainImageView(getScaledImage(tempImage, currentZoomValue));
         else
-            displayMainImageView(currentDisplayImage);
+            displayMainImageView(tempImage);
     }
     private Color getPixelColor() {
         return blackWhiteLineCheckBox.isSelected() ? Color.BLACK : Color.WHITE;

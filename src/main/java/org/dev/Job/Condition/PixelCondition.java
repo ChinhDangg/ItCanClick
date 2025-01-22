@@ -33,6 +33,12 @@ public class PixelCondition extends Condition {
     }
 
     @Override
+    public BufferedImage getMainDisplayImage() {
+        BufferedImage box = drawBox(mainImageBoundingBox.width, mainImageBoundingBox.height, Color.BLACK);
+        return getImageWithEdges(box, displayImage, 1.0f);
+    }
+
+    @Override
     public String getExpectedResult() { return ReadingCondition.Pixel.name(); }
 
     @Override
@@ -51,6 +57,15 @@ public class PixelCondition extends Condition {
             AppScene.addLog(LogLevel.ERROR, className, "Error checking pixel condition: " + e.getMessage());
             return null;
         }
+    }
+
+    public static BufferedImage drawBox(int width, int height, Color color) {
+        BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = temp.createGraphics();
+        g.setColor(color);
+        g.fillRect(0, 0, width, height);
+        g.dispose();
+        return temp;
     }
 
     private ImageCheckResult checkPixelFromBoundingBox(Rectangle boundingBox, BufferedImage fullImage) throws AWTException {

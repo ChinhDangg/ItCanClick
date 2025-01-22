@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.dev.Job.MainJob;
-
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -13,16 +12,16 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Task implements TaskObject, Serializable {
+public class TaskGroup implements TaskObject, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-    private String taskName = "Task Name";
+    private String taskGroupName = "Task Group Name";
     private boolean required;
     private boolean previousPass;
     private int repeatNumber;
 
     @Override
-    public Task getDeepCopied() {
-        return new Task(taskName, required, previousPass, repeatNumber);
+    public MainJob getDeepCopied() {
+        return new TaskGroup(taskGroupName, required, previousPass, repeatNumber);
     }
 }

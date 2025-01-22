@@ -65,12 +65,16 @@ public class ConditionTextMenuController extends OptionsMenuController implement
         if (condition != null && condition.getChosenReadingCondition() == ReadingCondition.Text) {
             TextCondition textCondition = (TextCondition) conditionController.getCondition();
             updateTextScaleValue(textCondition.getCurrentTextScale());
-            displayMainImageView(Condition.getImageWithEdges(mainImageBoundingBox, currentDisplayImage, 0.5f));
-            readTexts = textCondition.getSavedText();
+            displayMainImageView(textCondition.getMainDisplayImage());
             updateRegisteredTextLabel();
+            readTexts = textCondition.getSavedText();
+            currentDisplayImage = condition.getDisplayImage();
             notOptionCheckBox.setSelected(textCondition.isNot());
             requiredOptionCheckBox.setSelected(textCondition.isRequired());
             mainImageBoundingBox = textCondition.getMainImageBoundingBox();
+            imageWidth = (int) mainImageBoundingBox.getWidth();
+            imageHeight = (int) mainImageBoundingBox.getHeight();
+            outsideBoxWidth = (currentDisplayImage.getHeight() - imageHeight)/2;
             AppScene.addLog(LogLevel.TRACE, className, "Loaded preset reading text condition");
         }
         else

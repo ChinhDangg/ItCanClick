@@ -21,7 +21,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MinimizedTaskController implements Initializable, JobDataController {
-    @FXML
+    @FXML @Getter
     private Node parentNode;
     @FXML
     private StackPane taskNameAreaStackPane;
