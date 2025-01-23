@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.String?>
-<?import java.net.URL?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
@@ -14,104 +12,80 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="parentNode" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.JobController.MinimizedTaskController">
+
+<VBox fx:id="parentNode" spacing="5.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.JobController.MinimizedTaskController">
    <children>
+      <StackPane fx:id="taskNameAreaStackPane">
+         <children>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="69.0" stroke="BLACK" strokeType="INSIDE" width="292.0" />
+            <Group>
+               <children>
+                  <TextField fx:id="renameTextField" alignment="CENTER" prefHeight="27.0" prefWidth="287.0" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Task Name" />
+               </children>
+            </Group>
+         </children>
+      </StackPane>
       <HBox spacing="5.0">
          <children>
             <StackPane>
                <children>
-                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="101.0" stroke="BLACK" strokeType="INSIDE" width="27.0" />
-                  <Label fx:id="taskIndexLabel" text="1">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Label>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="74.0" />
+                  <CheckBox fx:id="requiredCheckBox" mnemonicParsing="false" selected="true" text="Required" />
                </children>
             </StackPane>
-            <VBox spacing="5.0">
+            <StackPane>
                <children>
-                  <StackPane fx:id="taskNameAreaStackPane">
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="109.0" />
+                  <Group>
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="69.0" stroke="BLACK" strokeType="INSIDE" width="292.0" />
-                        <Group>
+                        <HBox alignment="CENTER_LEFT" spacing="5.0">
                            <children>
-                              <TextField fx:id="renameTextField" alignment="CENTER" style="-fx-border-color: transparent; -fx-background-color: transparent;" text="Task Name" />
-                           </children>
-                        </Group>
-                     </children>
-                  </StackPane>
-                  <HBox spacing="5.0">
-                     <children>
-                        <StackPane>
-                           <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="74.0" />
-                              <CheckBox fx:id="requiredCheckBox" mnemonicParsing="false" selected="true" text="Required" />
-                           </children>
-                        </StackPane>
-                        <StackPane>
-                           <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="109.0" />
-                              <Group>
+                              <Label text="Repeat">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Label>
+                              <HBox spacing="5.0">
                                  <children>
-                                    <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                    <StackPane fx:id="repeatMinusButton" focusTraversable="true">
                                        <children>
-                                          <Label text="Repeat">
-                                             <font>
-                                                <Font size="10.0" />
-                                             </font>
-                                          </Label>
-                                          <HBox spacing="5.0">
-                                             <children>
-                                                <StackPane fx:id="repeatMinusButton" focusTraversable="true">
-                                                   <children>
-                                                      <Line endX="-85.0" startX="-95.0" />
-                                                   </children>
-                                                   <styleClass>
-                                                      <String fx:value="focusable-button" />
-                                                      <String fx:value="repeat-stepper-button" />
-                                                   </styleClass>
-                                                </StackPane>
-                                                <StackPane fx:id="repeatPlusButton" focusTraversable="true">
-                                                   <children>
-                                                      <Line endX="-85.0" startX="-95.0" />
-                                                      <Line endX="-85.0" rotate="-90.0" startX="-95.0" />
-                                                   </children>
-                                                   <styleClass>
-                                                      <String fx:value="focusable-button" />
-                                                      <String fx:value="repeat-stepper-button" />
-                                                   </styleClass>
-                                                </StackPane>
-                                             </children>
-                                          </HBox>
-                                          <Label fx:id="repeatNumberLabel" prefHeight="17.0" prefWidth="12.0" text="0">
-                                             <font>
-                                                <Font size="10.0" />
-                                             </font>
-                                          </Label>
+                                          <Line endX="-85.0" startX="-95.0" />
                                        </children>
-                                    </HBox>
+                                       <styleClass>
+                                          <String fx:value="focusable-button" />
+                                          <String fx:value="repeat-stepper-button" />
+                                       </styleClass>
+                                    </StackPane>
+                                    <StackPane fx:id="repeatPlusButton" focusTraversable="true">
+                                       <children>
+                                          <Line endX="-85.0" startX="-95.0" />
+                                          <Line endX="-85.0" rotate="-90.0" startX="-95.0" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="focusable-button" />
+                                          <String fx:value="repeat-stepper-button" />
+                                       </styleClass>
+                                    </StackPane>
                                  </children>
-                              </Group>
+                              </HBox>
+                              <Label fx:id="repeatNumberLabel" prefHeight="17.0" prefWidth="12.0" text="0">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Label>
                            </children>
-                        </StackPane>
-                        <StackPane>
-                           <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="98.0" />
-                              <CheckBox fx:id="previousPassCheckBox" mnemonicParsing="false" text="Previous Pass" />
-                           </children>
-                        </StackPane>
+                        </HBox>
                      </children>
-                  </HBox>
+                  </Group>
                </children>
-            </VBox>
+            </StackPane>
+            <StackPane>
+               <children>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="26.0" stroke="BLACK" strokeType="INSIDE" width="98.0" />
+                  <CheckBox fx:id="previousPassCheckBox" mnemonicParsing="false" text="Previous Pass" />
+               </children>
+            </StackPane>
          </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
       </HBox>
    </children>
-   <stylesheets>
-      <URL value="@../../../styles/root.css" />
-      <URL value="@../../../styles/Operation/minimizedTaskPane.css" />
-   </stylesheets>
-</StackPane>
+</VBox>

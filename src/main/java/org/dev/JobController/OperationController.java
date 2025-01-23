@@ -20,8 +20,8 @@ import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.JobData.JobData;
 import org.dev.JobData.OperationData;
-import org.dev.JobData.TaskData;
 import org.dev.Job.Operation;
+import org.dev.JobData.TaskGroupData;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.io.Serializable;
 import java.net.URL;
@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class OperationController implements Initializable, Serializable, JobDataController {
-
     @FXML
     private ScrollPane operationScrollPane;
     @FXML
@@ -45,8 +44,7 @@ public class OperationController implements Initializable, Serializable, JobData
     private HBox addTaskButton;
 
     @Getter
-    private final List<MinimizedTaskController> taskList = new ArrayList<>();
-    @Getter
+    private final List<TaskGroupController> taskList = new ArrayList<>();
     private Operation operation = new Operation();
     @Getter
     private final Label operationNameLabel = new Label();
@@ -57,7 +55,7 @@ public class OperationController implements Initializable, Serializable, JobData
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        addTaskButton.setOnMouseClicked(this::addMinimizedTaskAction);
+        addTaskButton.setOnMouseClicked(this::addTaskGroupAction);
         removeTaskButton.setOnMouseClicked(this::removeSelectedTaskPane);
         moveTaskUpButton.setOnMouseClicked(this::moveTaskUp);
         moveTaskDownButton.setOnMouseClicked(this::moveTaskDown);
@@ -76,14 +74,6 @@ public class OperationController implements Initializable, Serializable, JobData
     public void setVisible(boolean visible) { getParentNode().setVisible(visible); }
     public Node getParentNode() { return operationScrollPane; }
 
-    @Override
-    public void takeToDisplay() {
-        AppScene.closeActionMenuPane();
-        AppScene.closeConditionMenuPane();
-        AppScene.backToOperationScene();
-        AppScene.addLog(LogLevel.TRACE, className, "Take to display");
-    }
-
     private void loadMainOperationVBox() {
         if (currentScale != AppScene.currentGlobalScale) {
             currentScale = AppScene.currentGlobalScale;
@@ -99,7 +89,6 @@ public class OperationController implements Initializable, Serializable, JobData
             renameTextField.setText(operation.getOperationName());
             return;
         }
-        operation.setOperationName(name);
         updateOperationName(name);
     }
     private void updateOperationName(String name) {
@@ -108,8 +97,16 @@ public class OperationController implements Initializable, Serializable, JobData
         AppScene.addLog(LogLevel.DEBUG, className, "Updated operation name: " + name);
     }
 
+    @Override
+    public void takeToDisplay() {
+        AppScene.closeActionMenuPane();
+        AppScene.closeConditionMenuPane();
+        AppScene.backToOperationScene();
+        AppScene.addLog(LogLevel.TRACE, className, "Take to display");
+    }
+
     // ------------------------------------------------------
-    private void addMinimizedTaskAction(MouseEvent event) {
+    private void addTaskGroupAction(MouseEvent event) {
         if (AppScene.isOperationRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
@@ -123,28 +120,26 @@ public class OperationController implements Initializable, Serializable, JobData
     @Override
     public void addSavedData(JobData taskData) {
         try {
-            AppScene.addLog(LogLevel.TRACE, className, "Loading Minimized Task Pane");
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("minimizedTaskPane.fxml"));
+            AppScene.addLog(LogLevel.TRACE, className, "Loading Task Group Pane");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("taskGroupPane.fxml"));
             Node taskPane = loader.load();
             taskPane.setOnMouseClicked(this::selectTheTaskPaneAction);
-            MinimizedTaskController controller = loader.getController();
-            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Minimized Task Pane");
+            TaskGroupController controller = loader.getController();
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Task Group Pane");
             if (taskData != null)
                 controller.loadSavedData(taskData);
-            int numberOfTask = operationVBox.getChildren().size();
-            if (numberOfTask == 0)
-                controller.disablePreviousOption();
+            int numberOfTask = taskList.size();
             controller.setTaskIndex(numberOfTask + 1);
-            operationVBox.getChildren().add(numberOfTask, taskPane);
+            operationVBox.getChildren().add(taskPane);
             taskList.add(controller);
             createTaskSideContent(controller);
         } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding minimized task pane: " + e.getMessage());
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding task group pane: " + e.getMessage());
         }
     }
-    private void createTaskSideContent(MinimizedTaskController controller) {
-        VBox taskSideContent = controller.getTaskController().getTaskSideContent();
-        Node taskLabelHBox = SideMenuController.getNewSideHBoxLabel(controller.getTaskNameLabel(), taskSideContent, controller, this);
+    private void createTaskSideContent(TaskGroupController controller) {
+        VBox taskSideContent = controller.getTaskGroupSideContent();
+        Node taskLabelHBox = SideMenuController.getNewSideHBoxLabel(controller.getTaskGroupNameLabel(), taskSideContent, controller, this);
         operationSideContent.getChildren().add(new VBox(taskLabelHBox, taskSideContent));
         AppScene.addLog(LogLevel.TRACE, className, "Created operation side content");
     }
@@ -154,10 +149,18 @@ public class OperationController implements Initializable, Serializable, JobData
         selectTheTaskPane(minimizedTaskPane);
         changeScrollPaneView(minimizedTaskPane);
     }
-    private void changeScrollPaneView(Node minimizedTaskPane) {
-        double targetPaneY = minimizedTaskPane.getBoundsInParent().getMinY() * currentScale;
+    private void changeScrollPaneView(Node taskPane) {
+        double targetPaneY = taskPane.getBoundsInParent().getMinY();
+        Node parentChecking = taskPane.getParent();
+        while (parentChecking != mainOperationVBox) {
+            targetPaneY += parentChecking.getBoundsInParent().getMinY();
+            parentChecking = parentChecking.getParent();
+        }
+        targetPaneY += parentChecking.getBoundsInParent().getMinY();
+        targetPaneY *= currentScale;
         double contentHeight = operationScrollPane.getContent().getBoundsInLocal().getHeight();
         double scrollPaneHeight = operationScrollPane.getViewportBounds().getHeight();
+        targetPaneY -= scrollPaneHeight / 3;
         double vValue = Math.min(targetPaneY / (contentHeight - scrollPaneHeight), 1.00);
         operationScrollPane.setVvalue(vValue);
         AppScene.addLog(LogLevel.TRACE, className, "Operation Scroll Pane v value changed: " + vValue);
@@ -188,8 +191,6 @@ public class OperationController implements Initializable, Serializable, JobData
     }
     private void removeTask(int changeIndex) {
         taskList.remove(changeIndex);
-        if (changeIndex == 0 && !taskList.isEmpty())
-            taskList.getFirst().disablePreviousOption();
         operationVBox.getChildren().remove(changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Removed selected task: " + changeIndex);
         updateTaskIndex(changeIndex);
@@ -198,7 +199,7 @@ public class OperationController implements Initializable, Serializable, JobData
     }
     @Override
     public void removeSavedData(JobDataController jobDataController) {
-        int changeIndex = taskList.indexOf((MinimizedTaskController) jobDataController);
+        int changeIndex = taskList.indexOf((TaskGroupController) jobDataController);
         removeTask(changeIndex);
     }
 
@@ -241,7 +242,6 @@ public class OperationController implements Initializable, Serializable, JobData
     }
     private void updateTaskPaneList(ObservableList<Node> children, int selectedIndex, int changeIndex) {
         taskList.add(changeIndex, taskList.remove(selectedIndex));
-        updateTaskPreviousOption(changeIndex);
         children.remove(currentSelectedTaskPane);
         children.add(changeIndex, currentSelectedTaskPane);
     }
@@ -250,12 +250,6 @@ public class OperationController implements Initializable, Serializable, JobData
         Node temp = taskSideContent.get(selectedIndex);
         taskSideContent.remove(selectedIndex);
         taskSideContent.add(changeIndex, temp);
-    }
-    private void updateTaskPreviousOption(int index) {
-        if (index < 2) {
-            taskList.get(0).disablePreviousOption();
-            taskList.get(1).enablePreviousOption();
-        }
     }
     private void updateTaskIndex(int start) {
         for (int j = start; j < taskList.size(); j++)
@@ -271,10 +265,11 @@ public class OperationController implements Initializable, Serializable, JobData
     @Override
     public OperationData getSavedData() {
         OperationData operationData = new OperationData();
+        operation.setOperationName(operationNameLabel.getText());
         operationData.setOperation(operation.getDeepCopied());
-        List<TaskData> taskDataList = new ArrayList<>();
-        for (MinimizedTaskController taskController : taskList)
-            taskDataList.add(taskController.getSavedData());
+        List<TaskGroupData> taskDataList = new ArrayList<>();
+        for (TaskGroupController taskGroupController : taskList)
+            taskDataList.add(taskGroupController.getSavedData());
         operationData.setTaskDataList(taskDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got operation data");
         return operationData;
@@ -289,7 +284,7 @@ public class OperationController implements Initializable, Serializable, JobData
         OperationData operationData = (OperationData) jobData;
         this.operation = operationData.getOperation();
         updateOperationName(operation.getOperationName());
-        for (TaskData data : operationData.getTaskDataList())
+        for (TaskGroupData data : operationData.getTaskDataList())
             addSavedData(data);
     }
 }

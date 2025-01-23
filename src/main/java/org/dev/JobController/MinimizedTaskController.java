@@ -26,7 +26,7 @@ public class MinimizedTaskController implements Initializable, JobDataController
     @FXML
     private StackPane taskNameAreaStackPane;
     @FXML
-    private Label taskIndexLabel, repeatNumberLabel;
+    private Label repeatNumberLabel;
     @FXML
     private TextField renameTextField;
     @FXML
@@ -38,7 +38,6 @@ public class MinimizedTaskController implements Initializable, JobDataController
     private final Label taskNameLabel = new Label();
     @Getter
     private TaskController taskController;
-    @Getter
     private Task task = new Task();
     private final String className = this.getClass().getSimpleName();
 
@@ -61,7 +60,7 @@ public class MinimizedTaskController implements Initializable, JobDataController
         String name = renameTextField.getText();
         name = name.strip();
         if (name.isBlank()) {
-            renameTextField.setText(task.getTaskName());
+            renameTextField.setText(taskNameLabel.getText());
             return;
         }
         updateTaskName(name);
@@ -74,7 +73,6 @@ public class MinimizedTaskController implements Initializable, JobDataController
     }
 
     public boolean isSet() { return (taskController != null && taskController.isSet()); }
-    public void setTaskIndex(int newIndex) { taskIndexLabel.setText(Integer.toString(newIndex)); }
     public void disablePreviousOption() {
         previousPassCheckBox.setSelected(false);
         previousPassCheckBox.setVisible(false);

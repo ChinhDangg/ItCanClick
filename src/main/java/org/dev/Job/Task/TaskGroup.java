@@ -12,16 +12,15 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskGroup implements TaskObject, Serializable {
+public class TaskGroup implements Serializable, MainJob {
     @Serial
     private static final long serialVersionUID = 1L;
     private String taskGroupName = "Task Group Name";
     private boolean required;
-    private boolean previousPass;
-    private int repeatNumber;
+    private boolean disabled;
 
     @Override
-    public MainJob getDeepCopied() {
-        return new TaskGroup(taskGroupName, required, previousPass, repeatNumber);
+    public TaskGroup getDeepCopied() {
+        return new TaskGroup(taskGroupName, required, disabled);
     }
 }

@@ -57,8 +57,6 @@ public class TaskController implements Initializable, JobDataController {
         taskVBox.heightProperty().addListener((_, _, _) -> Platform.runLater(() -> taskScrollPane.setVvalue(1.0)));
     }
 
-    public boolean isSet() { return (!actionList.isEmpty() && actionList.getFirst().isSet()); }
-
     private void loadMainTaskVBox() {
         if (currentGlobalScale != AppScene.currentGlobalScale) {
             currentGlobalScale = AppScene.currentGlobalScale;
@@ -66,8 +64,8 @@ public class TaskController implements Initializable, JobDataController {
         }
     }
 
+    public boolean isSet() { return (!actionList.isEmpty() && actionList.getFirst().isSet()); }
     public void openTaskPane() { AppScene.displayNewCenterNode(taskScrollPane); }
-
     private void backToPreviousAction(MouseEvent event) { AppScene.backToOperationScene(); }
     public void changeTaskName(String name) { taskNameLabel.setText(name); }
 

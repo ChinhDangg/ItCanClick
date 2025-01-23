@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Task implements TaskObject, Serializable {
+public class Task implements Serializable, MainJob {
     @Serial
     private static final long serialVersionUID = 1L;
     private String taskName = "Task Name";

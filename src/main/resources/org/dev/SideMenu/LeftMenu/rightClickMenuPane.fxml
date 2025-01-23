@@ -30,6 +30,28 @@
             </ImageView>
          </children>
       </HBox>
+      <HBox id="new-task-hbox-content" fx:id="newTaskGroupSection" alignment="CENTER_LEFT" spacing="5.0" styleClass="hbox-content">
+         <children>
+            <StackPane prefWidth="20.0">
+               <children>
+                  <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../../images/icons/group-icon.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </StackPane>
+            <StackPane alignment="CENTER_LEFT" prefWidth="120.0">
+               <children>
+                  <Label text="Task Group">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
       <HBox id="new-task-hbox-content" fx:id="newTaskSection" alignment="CENTER_LEFT" spacing="5.0" styleClass="hbox-content">
          <children>
             <StackPane prefWidth="20.0">

@@ -17,7 +17,7 @@ public class RightClickMenuController implements Initializable {
     @FXML
     private VBox parentNode;
     @FXML
-    private HBox newTaskSection, newActionSection, copySection, pasteSection, deleteSection;
+    private HBox newTaskGroupSection, newTaskSection, newActionSection, copySection, pasteSection, deleteSection;
 
     private Popup rightMenuPopup;
     private JobDataController currentParentJobDataController;
@@ -31,6 +31,7 @@ public class RightClickMenuController implements Initializable {
         rightMenuPopup.setAutoHide(true);
         newActionSection.setOnMouseClicked(this::addNewAction);
         newTaskSection.setOnMouseClicked(this::addNewTask);
+        newTaskGroupSection.setOnMouseClicked(this::addNewTaskGroup);
         copySection.setOnMouseClicked(this::copyData);
         pasteSection.setOnMouseClicked(this::pasteData);
         deleteSection.setOnMouseClicked(this::deleteData);
@@ -47,7 +48,11 @@ public class RightClickMenuController implements Initializable {
 
     private void enableNewLevelOption(AppLevel appLevel) {
         if (appLevel == AppLevel.Operation)
+            newTaskGroupSection.setDisable(false);
+        else if (appLevel == AppLevel.TaskGroup) {
+            newTaskGroupSection.setDisable(false);
             newTaskSection.setDisable(false);
+        }
         else if (appLevel == AppLevel.Task) {
             newTaskSection.setDisable(false);
             newActionSection.setDisable(false);
@@ -57,7 +62,7 @@ public class RightClickMenuController implements Initializable {
     }
 
     private void enableSelectOption(AppLevel appLevel) {
-        if (appLevel == AppLevel.Task || appLevel == AppLevel.Action || appLevel == AppLevel.Condition) {
+        if (appLevel == AppLevel.TaskGroup || appLevel == AppLevel.Task || appLevel == AppLevel.Action || appLevel == AppLevel.Condition) {
             copySection.setDisable(false);
             deleteSection.setDisable(false);
         }
@@ -70,6 +75,7 @@ public class RightClickMenuController implements Initializable {
 
     private void disableAllSelectOption() {
         boolean disable = true;
+        newTaskGroupSection.setDisable(disable);
         newTaskSection.setDisable(disable);
         newActionSection.setDisable(disable);
         copySection.setDisable(disable);
@@ -77,8 +83,8 @@ public class RightClickMenuController implements Initializable {
         deleteSection.setDisable(disable);
     }
 
-    private void addNewAction(MouseEvent event) {
-        if (currentJobDataController.getAppLevel() == AppLevel.Action)
+    private void addNewTaskGroup(MouseEvent event) {
+        if (currentJobDataController.getAppLevel() == AppLevel.TaskGroup)
             currentParentJobDataController.addSavedData(null);
         else
             currentJobDataController.addSavedData(null);
@@ -87,6 +93,14 @@ public class RightClickMenuController implements Initializable {
 
     private void addNewTask(MouseEvent event) {
         if (currentJobDataController.getAppLevel() == AppLevel.Task)
+            currentParentJobDataController.addSavedData(null);
+        else
+            currentJobDataController.addSavedData(null);
+        hideRightMenu();
+    }
+
+    private void addNewAction(MouseEvent event) {
+        if (currentJobDataController.getAppLevel() == AppLevel.Action)
             currentParentJobDataController.addSavedData(null);
         else
             currentJobDataController.addSavedData(null);

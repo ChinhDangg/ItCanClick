@@ -47,17 +47,21 @@ public class SideMenuLabelController {
         String path = "/images/icons/";
         if (appLevel == AppLevel.Operation)
             path += "operation-icon.png";
+        else if (appLevel == AppLevel.TaskGroup) {
+            path += "group-icon.png";
+            parentHBoxNode.setStyle("-fx-padding: 0 0 0 10");
+        }
         else if (appLevel == AppLevel.Task) {
             path += "task-icon.png";
-            parentHBoxNode.setStyle("-fx-padding: 0 0 0 10");
+            parentHBoxNode.setStyle("-fx-padding: 0 0 0 20");
         }
         else if (appLevel == AppLevel.Action) {
             path += "action-icon.png";
-            parentHBoxNode.setStyle("-fx-padding: 0 0 0 20");
+            parentHBoxNode.setStyle("-fx-padding: 0 0 0 30");
         }
         else if (appLevel == AppLevel.Condition) {
             path += "condition-icon.png";
-            parentHBoxNode.setStyle("-fx-padding: 0 0 0 30");
+            parentHBoxNode.setStyle("-fx-padding: 0 0 0 40");
         }
         Image image = new Image(String.valueOf(this.getClass().getResource(path)));
         labelIndicationImageView.setImage(image);
