@@ -57,6 +57,8 @@ public class ActionController implements Initializable, JobDataController, Activ
     private ActionTypes chosenActionPerform;
     @Getter
     private final Label actionNameLabel = new Label();
+    @Setter
+    private TaskController parentTaskController;
 
     private final String className = this.getClass().getSimpleName();
     private final List<ConditionController> entryConditionList = new ArrayList<>();
@@ -75,31 +77,6 @@ public class ActionController implements Initializable, JobDataController, Activ
                 changeActionName();
             }
         });
-    }
-
-    @Override
-    public void takeToDisplay() {
-        AppScene.closeActionMenuPane();
-        AppScene.closeConditionMenuPane();
-        TaskController parentTaskController = findParentTaskController();
-        if (parentTaskController == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Fail - Parent task controller is null - takeToDisplay");
-            return;
-        }
-        if (mainActionParentNode.getScene() == null)
-            parentTaskController.openTaskPane();
-        parentTaskController.changeTaskScrollPaneView(mainActionParentNode);
-        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
-    }
-    private TaskController findParentTaskController() {
-        for (MinimizedTaskController taskController : AppScene.currentLoadedOperationController.getTaskList()) {
-            TaskController currentTaskController = taskController.getTaskController();
-            List<ActionController> actionList = currentTaskController.getActionList();
-            for (ActionController actionController : actionList)
-                if (actionController == this)
-                    return currentTaskController;
-        }
-        return null;
     }
 
     private void changeActionName() {
@@ -146,7 +123,6 @@ public class ActionController implements Initializable, JobDataController, Activ
         }
         AppScene.openActionMenuPane(this);
     }
-    public int getNumberOfCondition(HBox conditionBox) { return conditionBox.getChildren().size(); }
 
     private void addNewEntryCondition(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on add entry condition");
@@ -181,7 +157,7 @@ public class ActionController implements Initializable, JobDataController, Activ
     private void addCondition(List<ConditionController> whichController, HBox whichPane, JobData condition) {
         AppScene.addLog(LogLevel.TRACE, className, "Loading Condition Pane");
         try {
-            int numberOfCondition = getNumberOfCondition(whichPane);
+            int numberOfCondition = whichPane.getChildren().size();
             if (numberOfCondition > 0 && !whichController.get(numberOfCondition - 1).isSet()) {
                 AppScene.addLog(LogLevel.INFO, className, "Previous Condition is not set");
                 return;
@@ -206,36 +182,21 @@ public class ActionController implements Initializable, JobDataController, Activ
 
     // ------------------------------------------------------
     @Override
-    public void removeSavedData(JobDataController jobDataController) {
-        ConditionController conditionController = (ConditionController) jobDataController;
-        if (entryConditionList.remove(conditionController)) {
-            entryConditionHBox.getChildren().remove(conditionController.getParentNode());
-        }
-        else {
-            exitConditionList.remove(conditionController);
-            exitConditionHBox.getChildren().remove(conditionController.getParentNode());
-        }
-    }
-
-    @Override
-    public void addSavedData(JobData jobData) {
-        if (jobData == null)
-            return;
-        if (currentConditionTypeForPasting == ConditionType.Entry)
-            addCondition(entryConditionList, entryConditionHBox, jobData);
-        else if (currentConditionTypeForPasting == ConditionType.Exit)
-            addCondition(exitConditionList, exitConditionHBox, jobData);
-    }
-
-    @Override
     public AppLevel getAppLevel() { return AppLevel.Action; }
 
     @Override
+    public void takeToDisplay() {
+        AppScene.closeActionMenuPane();
+        AppScene.closeConditionMenuPane();
+        parentTaskController.openTaskPane();
+        parentTaskController.changeTaskScrollPaneView(mainActionParentNode);
+        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
+    }
+
+    @Override
     public ActionData getSavedData() {
-        if (action == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error - Empty action being used as data");
+        if (action == null)
             return null;
-        }
         ActionData actionData = new ActionData();
         action.setRequired(requiredCheckBox.isSelected());
         action.setPreviousPass(previousPassCheckBox.isSelected());
@@ -274,4 +235,39 @@ public class ActionController implements Initializable, JobDataController, Activ
             for (ConditionData exitCondition : exitConditions)
                 addCondition(exitConditionList, exitConditionHBox, exitCondition);
     }
+
+    @Override
+    public void addSavedData(JobData jobData) {
+        if (jobData == null) {
+            AppScene.addLog(LogLevel.INFO, className, "Condition data is empty - nothing to load");
+            return;
+        }
+        if (currentConditionTypeForPasting == ConditionType.Entry)
+            addCondition(entryConditionList, entryConditionHBox, jobData);
+        else if (currentConditionTypeForPasting == ConditionType.Exit)
+            addCondition(exitConditionList, exitConditionHBox, jobData);
+    }
+
+    @Override
+    public void removeSavedData(JobDataController jobDataController) {
+        ConditionController conditionController = (ConditionController) jobDataController;
+        if (entryConditionList.remove(conditionController)) {
+            entryConditionHBox.getChildren().remove(conditionController.getParentNode());
+        }
+        else {
+            exitConditionList.remove(conditionController);
+            exitConditionHBox.getChildren().remove(conditionController.getParentNode());
+        }
+    }
+
+    @Override
+    public void moveSavedDataUp(JobDataController jobDataController) {
+
+    }
+
+    @Override
+    public void moveSavedDataDown(JobDataController jobDataController) {
+
+    }
+
 }
