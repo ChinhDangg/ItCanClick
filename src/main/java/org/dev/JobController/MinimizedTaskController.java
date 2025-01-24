@@ -21,7 +21,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MinimizedTaskController implements Initializable, JobDataController {
-    @FXML @Getter
+    @FXML
     private Node parentNode;
     @FXML
     private StackPane taskNameAreaStackPane;
@@ -56,6 +56,16 @@ public class MinimizedTaskController implements Initializable, JobDataController
         });
     }
 
+    public boolean isSet() { return (taskController != null && taskController.isSet()); }
+    public void disablePreviousOption() {
+        previousPassCheckBox.setSelected(false);
+        previousPassCheckBox.setVisible(false);
+    }
+    public void enablePreviousOption() {
+        previousPassCheckBox.setSelected(false);
+        previousPassCheckBox.setVisible(true);
+    }
+
     private void changeTaskName() {
         String name = renameTextField.getText();
         name = name.strip();
@@ -70,23 +80,6 @@ public class MinimizedTaskController implements Initializable, JobDataController
         renameTextField.setText(name);
         taskController.changeTaskName(name);
         AppScene.addLog(LogLevel.DEBUG, className, "Updated minimized task name: " + name);
-    }
-
-    public boolean isSet() { return (taskController != null && taskController.isSet()); }
-    public void disablePreviousOption() {
-        previousPassCheckBox.setSelected(false);
-        previousPassCheckBox.setVisible(false);
-    }
-    public void enablePreviousOption() {
-        previousPassCheckBox.setSelected(false);
-        previousPassCheckBox.setVisible(true);
-    }
-
-    @Override
-    public void takeToDisplay() {
-        AppScene.currentLoadedOperationController.takeToDisplay();
-        AppScene.currentLoadedOperationController.changeOperationScrollPaneView(parentNode);
-        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
     // ------------------------------------------------------
@@ -127,11 +120,14 @@ public class MinimizedTaskController implements Initializable, JobDataController
 
     // ------------------------------------------------------
     @Override
-    public void addSavedData(JobData jobData) { taskController.addSavedData(jobData); }
-    @Override
-    public void removeSavedData(JobDataController jobDataController) { taskController.removeSavedData(jobDataController); }
-    @Override
     public AppLevel getAppLevel() { return AppLevel.Task; }
+
+    @Override
+    public void takeToDisplay() {
+        AppScene.currentLoadedOperationController.takeToDisplay();
+        AppScene.currentLoadedOperationController.changeOperationScrollPaneView(parentNode);
+        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
+    }
 
     @Override
     public TaskData getSavedData() {
@@ -159,4 +155,13 @@ public class MinimizedTaskController implements Initializable, JobDataController
         updateTaskName(task.getTaskName());
         AppScene.addLog(LogLevel.TRACE, className, "Loaded saved task data");
     }
+
+    @Override
+    public void addSavedData(JobData jobData) { taskController.addSavedData(jobData); }
+    @Override
+    public void removeSavedData(JobDataController jobDataController) { taskController.removeSavedData(jobDataController); }
+    @Override
+    public void moveSavedDataUp(JobDataController jobDataController) {}
+    @Override
+    public void moveSavedDataDown(JobDataController jobDataController) {}
 }

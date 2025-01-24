@@ -11,4 +11,8 @@ public interface JobDataController extends MainJobController {
     void addSavedData(JobData data);
 
     void removeSavedData(JobDataController jobDataController);
+
+    void moveSavedDataUp(JobDataController jobDataController);
+
+    void moveSavedDataDown(JobDataController jobDataController);
 }

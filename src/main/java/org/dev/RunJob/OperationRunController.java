@@ -127,23 +127,23 @@ public class OperationRunController implements Initializable, MainJobController 
     }
 
     private void runOperation(OperationData operationData) throws InterruptedException {
-        boolean pass = false;
-        for (TaskData taskData : operationData.getTaskDataList()) {
-            Task currentTask = taskData.getTask();
-            String taskName = currentTask.getTaskName();
-            loadAndAddNewTaskRunPane(currentTask.getTaskName());
-            if (pass && currentTask.isPreviousPass()) {
-                AppScene.addLog(LogLevel.INFO, className, "Previous is passed, Skipping task " + taskName);
-                continue;
-            }
-            pass = currentTaskRunController.startTask(taskData);
-            if (!currentTask.isRequired())
-                pass = true;
-            else if (!pass) { // task is required but failed
-                AppScene.addLog(LogLevel.INFO, className, "Fail performing task: " + taskName);
-                break;
-            }
-        }
+//        boolean pass = false;
+//        for (TaskData taskData : operationData.getTaskDataList()) {
+//            Task currentTask = taskData.getTask();
+//            String taskName = currentTask.getTaskName();
+//            loadAndAddNewTaskRunPane(currentTask.getTaskName());
+//            if (pass && currentTask.isPreviousPass()) {
+//                AppScene.addLog(LogLevel.INFO, className, "Previous is passed, Skipping task " + taskName);
+//                continue;
+//            }
+//            pass = currentTaskRunController.startTask(taskData);
+//            if (!currentTask.isRequired())
+//                pass = true;
+//            else if (!pass) { // task is required but failed
+//                AppScene.addLog(LogLevel.INFO, className, "Fail performing task: " + taskName);
+//                break;
+//            }
+//        }
     }
 
     private TaskRunController currentTaskRunController;

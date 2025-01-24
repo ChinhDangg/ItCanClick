@@ -31,6 +31,8 @@ public class ConditionController implements Initializable, JobDataController, Ac
     private Label requirementStatusLabel, readingConditionLabel;
     @FXML
     private ImageView conditionImageView;
+    @FXML
+    private Node notIndicationNode;
 
     @Setter
     private ActionController parentActionController;
@@ -54,6 +56,7 @@ public class ConditionController implements Initializable, JobDataController, Ac
         }
         isSet = true;
         condition = newCondition;
+        notIndicationNode.setVisible(condition.isNot());
         readingConditionLabel.setText(condition.getChosenReadingCondition().name());
         conditionImageView.setImage(SwingFXUtils.toFXImage(condition.getMainDisplayImage(), null));
         requirementStatusLabel.setText(condition.isRequired() ?
@@ -110,4 +113,9 @@ public class ConditionController implements Initializable, JobDataController, Ac
     public AppLevel getAppLevel() {
         return AppLevel.Condition;
     }
+
+    @Override
+    public void moveSavedDataDown(JobDataController jobDataController) {}
+    @Override
+    public void moveSavedDataUp(JobDataController jobDataController) {}
 }

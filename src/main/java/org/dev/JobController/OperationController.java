@@ -1,6 +1,5 @@
 package org.dev.JobController;
 
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,7 +10,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import lombok.Getter;
@@ -37,8 +35,6 @@ public class OperationController implements Initializable, Serializable, JobData
     @FXML
     private TextField renameTextField;
     @FXML
-    private StackPane removeTaskButton, moveTaskUpButton, moveTaskDownButton;
-    @FXML
     private VBox operationVBox;
     @FXML
     private HBox addTaskButton;
@@ -56,9 +52,6 @@ public class OperationController implements Initializable, Serializable, JobData
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         addTaskButton.setOnMouseClicked(this::addTaskGroupAction);
-        removeTaskButton.setOnMouseClicked(this::removeSelectedTaskPane);
-        moveTaskUpButton.setOnMouseClicked(this::moveTaskUp);
-        moveTaskDownButton.setOnMouseClicked(this::moveTaskDown);
         operationNameLabel.setText(renameTextField.getText());
         renameTextField.focusedProperty().addListener((_, _, newValue) -> {
             if (!newValue) {
@@ -67,7 +60,6 @@ public class OperationController implements Initializable, Serializable, JobData
             }
         });
         loadMainOperationVBox();
-        operationVBox.heightProperty().addListener((_, _, _) -> Platform.runLater(() -> operationScrollPane.setVvalue(1.0)));
     }
 
     public boolean isSet() { return !taskList.isEmpty() && taskList.getFirst().isSet(); }
@@ -97,14 +89,6 @@ public class OperationController implements Initializable, Serializable, JobData
         AppScene.addLog(LogLevel.DEBUG, className, "Updated operation name: " + name);
     }
 
-    @Override
-    public void takeToDisplay() {
-        AppScene.closeActionMenuPane();
-        AppScene.closeConditionMenuPane();
-        AppScene.backToOperationScene();
-        AppScene.addLog(LogLevel.TRACE, className, "Take to display");
-    }
-
     // ------------------------------------------------------
     private void addTaskGroupAction(MouseEvent event) {
         if (AppScene.isOperationRunning) {
@@ -116,32 +100,6 @@ public class OperationController implements Initializable, Serializable, JobData
             return;
         }
         addSavedData(null);
-    }
-    @Override
-    public void addSavedData(JobData taskData) {
-        try {
-            AppScene.addLog(LogLevel.TRACE, className, "Loading Task Group Pane");
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("taskGroupPane.fxml"));
-            Node taskPane = loader.load();
-            taskPane.setOnMouseClicked(this::selectTheTaskPaneAction);
-            TaskGroupController controller = loader.getController();
-            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Task Group Pane");
-            if (taskData != null)
-                controller.loadSavedData(taskData);
-            int numberOfTask = taskList.size();
-            controller.setTaskIndex(numberOfTask + 1);
-            operationVBox.getChildren().add(taskPane);
-            taskList.add(controller);
-            createTaskSideContent(controller);
-        } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding task group pane: " + e.getMessage());
-        }
-    }
-    private void createTaskSideContent(TaskGroupController controller) {
-        VBox taskSideContent = controller.getTaskGroupSideContent();
-        Node taskLabelHBox = SideMenuController.getNewSideHBoxLabel(controller.getTaskGroupNameLabel(), taskSideContent, controller, this);
-        operationSideContent.getChildren().add(new VBox(taskLabelHBox, taskSideContent));
-        AppScene.addLog(LogLevel.TRACE, className, "Created operation side content");
     }
 
     // ------------------------------------------------------
@@ -181,85 +139,17 @@ public class OperationController implements Initializable, Serializable, JobData
     private void setUnselected(Node taskPane) { taskPane.setStyle(""); }
 
     // ------------------------------------------------------
-    private void removeSelectedTaskPane(MouseEvent event) {
-        if (currentSelectedTaskPane == null)
-            return;
-        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on remove selected task");
-        int changeIndex = operationVBox.getChildren().indexOf(currentSelectedTaskPane);
-        removeTask(changeIndex);
-        currentSelectedTaskPane = null;
-    }
-    private void removeTask(int changeIndex) {
-        taskList.remove(changeIndex);
-        operationVBox.getChildren().remove(changeIndex);
-        AppScene.addLog(LogLevel.DEBUG, className, "Removed selected task: " + changeIndex);
-        updateTaskIndex(changeIndex);
-        // update side menu
-        operationSideContent.getChildren().remove(changeIndex);
-    }
-    @Override
-    public void removeSavedData(JobDataController jobDataController) {
-        int changeIndex = taskList.indexOf((TaskGroupController) jobDataController);
-        removeTask(changeIndex);
-    }
-
-    private void moveTaskUp(MouseEvent event) {
-        if (currentSelectedTaskPane == null)
-            return;
-        ObservableList<Node> children = operationVBox.getChildren();
-        int numberOfTasks = children.size();
-        if (numberOfTasks < 2)
-            return;
-        Node selectedNode = currentSelectedTaskPane;
-        int selectedTaskPaneIndex = children.indexOf(selectedNode);
-        int changeIndex = selectedTaskPaneIndex+1;
-        if (changeIndex == numberOfTasks)
-            return;
-        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on move-up selected task: " + changeIndex);
-        updateTaskPaneList(children, selectedTaskPaneIndex, changeIndex);
-        updateTaskIndex(changeIndex-1);
-        //update side menu
-        updateTaskSideContent(selectedTaskPaneIndex, changeIndex);
-    }
-
-    private void moveTaskDown(MouseEvent event) {
-        if (currentSelectedTaskPane == null)
-            return;
-        ObservableList<Node> children = operationVBox.getChildren();
-        int numberOfTasks = children.size();
-        if (numberOfTasks < 2)
-            return;
-        Node selectedNode = currentSelectedTaskPane;
-        int selectedTaskPaneIndex = children.indexOf(selectedNode);
-        if (selectedTaskPaneIndex == 0)
-            return;
-        int changeIndex = selectedTaskPaneIndex-1;
-        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on move-down selected task: " + changeIndex);
-        updateTaskPaneList(children, selectedTaskPaneIndex, changeIndex);
-        updateTaskIndex(changeIndex);
-        //update side menu
-        updateTaskSideContent(selectedTaskPaneIndex, changeIndex);
-    }
-    private void updateTaskPaneList(ObservableList<Node> children, int selectedIndex, int changeIndex) {
-        taskList.add(changeIndex, taskList.remove(selectedIndex));
-        children.remove(currentSelectedTaskPane);
-        children.add(changeIndex, currentSelectedTaskPane);
-    }
-    private void updateTaskSideContent(int selectedIndex, int changeIndex) {
-        ObservableList<Node> taskSideContent = operationSideContent.getChildren();
-        Node temp = taskSideContent.get(selectedIndex);
-        taskSideContent.remove(selectedIndex);
-        taskSideContent.add(changeIndex, temp);
-    }
-    private void updateTaskIndex(int start) {
-        for (int j = start; j < taskList.size(); j++)
-            taskList.get(j).setTaskIndex(j+1);
-    }
-
-    // ------------------------------------------------------
     @Override
     public AppLevel getAppLevel() {
         return AppLevel.Operation;
+    }
+
+    @Override
+    public void takeToDisplay() {
+        AppScene.closeActionMenuPane();
+        AppScene.closeConditionMenuPane();
+        AppScene.backToOperationScene();
+        AppScene.addLog(LogLevel.TRACE, className, "Take to display");
     }
 
     @Override
@@ -286,5 +176,101 @@ public class OperationController implements Initializable, Serializable, JobData
         updateOperationName(operation.getOperationName());
         for (TaskGroupData data : operationData.getTaskDataList())
             addSavedData(data);
+    }
+
+    @Override
+    public void addSavedData(JobData taskData) {
+        try {
+            AppScene.addLog(LogLevel.TRACE, className, "Loading Task Group Pane");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("taskGroupPane.fxml"));
+            Node taskPane = loader.load();
+            taskPane.setOnMouseClicked(this::selectTheTaskPaneAction);
+            TaskGroupController controller = loader.getController();
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Task Group Pane");
+            if (taskData != null)
+                controller.loadSavedData(taskData);
+            int numberOfTask = taskList.size();
+            controller.setTaskIndex(numberOfTask + 1);
+            operationVBox.getChildren().add(taskPane);
+            taskList.add(controller);
+            createTaskSideContent(controller);
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding task group pane: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void removeSavedData(JobDataController jobDataController) {
+        int changeIndex = taskList.indexOf((TaskGroupController) jobDataController);
+        removeTask(changeIndex);
+    }
+    private void removeTask(int changeIndex) {
+        taskList.remove(changeIndex);
+        operationVBox.getChildren().remove(changeIndex);
+        AppScene.addLog(LogLevel.DEBUG, className, "Removed selected task: " + changeIndex);
+        updateTaskIndex(changeIndex);
+        // update side menu
+        removeOperationSideContent(changeIndex);
+    }
+
+    @Override
+    public void moveSavedDataUp(JobDataController jobDataController) {
+        int numberOfTasks = taskList.size();
+        if (numberOfTasks < 2)
+            return;
+        int selectedTaskPaneIndex = taskList.indexOf((TaskGroupController) jobDataController);
+        if (selectedTaskPaneIndex == 0)
+            return;
+        int changeIndex = selectedTaskPaneIndex-1;
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on move-down selected task: " + changeIndex);
+        updateTaskPaneList(selectedTaskPaneIndex, changeIndex);
+        updateTaskIndex(changeIndex);
+        //update side menu
+        updateTaskSideContent(selectedTaskPaneIndex, changeIndex);
+    }
+
+    @Override
+    public void moveSavedDataDown(JobDataController jobDataController) {
+        int numberOfTasks = taskList.size();
+        if (numberOfTasks < 2)
+            return;
+        int selectedTaskPaneIndex = taskList.indexOf((TaskGroupController) jobDataController);
+        int changeIndex = selectedTaskPaneIndex+1;
+        if (changeIndex == numberOfTasks)
+            return;
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on move-up selected task: " + changeIndex);
+        updateTaskPaneList(selectedTaskPaneIndex, changeIndex);
+        updateTaskIndex(changeIndex-1);
+        //update side menu
+        updateTaskSideContent(selectedTaskPaneIndex, changeIndex);
+    }
+
+    private void updateTaskPaneList(int selectedIndex, int changeIndex) {
+        ObservableList<Node> children = operationVBox.getChildren();
+        Node taskGroupNode = children.get(selectedIndex);
+        taskList.add(changeIndex, taskList.remove(selectedIndex));
+        children.remove(taskGroupNode);
+        children.add(changeIndex, taskGroupNode);
+    }
+    private void updateTaskIndex(int start) {
+        for (int j = start; j < taskList.size(); j++)
+            taskList.get(j).setTaskIndex(j+1);
+    }
+
+    // ------------------------------------------------------
+    private void createTaskSideContent(TaskGroupController controller) {
+        VBox taskSideContent = controller.getTaskGroupSideContent();
+        Node taskLabelHBox = SideMenuController.getNewSideHBoxLabel(controller.getTaskGroupNameLabel(), taskSideContent, controller, this);
+        operationSideContent.getChildren().add(new VBox(taskLabelHBox, taskSideContent));
+        AppScene.addLog(LogLevel.TRACE, className, "Created operation side content");
+    }
+    private void removeOperationSideContent(int changeIndex) {
+        operationSideContent.getChildren().remove(changeIndex);
+    }
+    private void updateTaskSideContent(int selectedIndex, int changeIndex) {
+        ObservableList<Node> taskSideContent = operationSideContent.getChildren();
+        Node temp = taskSideContent.get(selectedIndex);
+        taskSideContent.remove(selectedIndex);
+        taskSideContent.add(changeIndex, temp);
     }
 }

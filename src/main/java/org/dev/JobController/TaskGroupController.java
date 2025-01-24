@@ -55,6 +55,8 @@ public class TaskGroupController implements Initializable, JobDataController {
         });
         addSavedData(null);
     }
+    public boolean isSet() { return !minimizedTaskList.isEmpty() && minimizedTaskList.getFirst().isSet(); }
+    public void setTaskIndex(int taskIndex) { taskIndexLabel.setText(Integer.toString(taskIndex)); }
 
     private void changeTaskGroupName() {
         String name = renameTextField.getText();
@@ -71,8 +73,9 @@ public class TaskGroupController implements Initializable, JobDataController {
         AppScene.addLog(LogLevel.DEBUG, className, "Updated task group name: " + name);
     }
 
-    public boolean isSet() { return !minimizedTaskList.isEmpty() && minimizedTaskList.getFirst().isSet(); }
-    public void setTaskIndex(int taskIndex) { taskIndexLabel.setText(Integer.toString(taskIndex)); }
+    // ------------------------------------------------------
+    @Override
+    public AppLevel getAppLevel() { return AppLevel.TaskGroup; }
 
     @Override
     public void takeToDisplay() {
@@ -80,9 +83,6 @@ public class TaskGroupController implements Initializable, JobDataController {
         AppScene.currentLoadedOperationController.changeOperationScrollPaneView(parentNode);
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
-
-    @Override
-    public AppLevel getAppLevel() { return AppLevel.TaskGroup; }
 
     @Override
     public TaskGroupData getSavedData() {
@@ -133,7 +133,6 @@ public class TaskGroupController implements Initializable, JobDataController {
         }
     }
 
-    // ------------------------------------------------------
     @Override
     public void removeSavedData(JobDataController jobDataController) {
         int changeIndex = minimizedTaskList.indexOf((MinimizedTaskController) jobDataController);
@@ -149,20 +148,8 @@ public class TaskGroupController implements Initializable, JobDataController {
         removeTaskGroupSideContent(changeIndex);
     }
 
-    private void moveTaskUp(JobDataController jobDataController) {
-        int numberOfTasks = minimizedTaskList.size();
-        if (numberOfTasks < 2)
-            return;
-        int selectedTaskIndex = minimizedTaskList.indexOf((MinimizedTaskController) jobDataController);
-        int changeIndex = selectedTaskIndex +1;
-        if (changeIndex == numberOfTasks)
-            return;
-        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on move-up selected task: " + changeIndex);
-        updateTaskPaneList(selectedTaskIndex, changeIndex);
-        //update side menu
-        updateTaskGroupSideContent(selectedTaskIndex, changeIndex);
-    }
-    private void moveTaskDown(JobDataController jobDataController) {
+    @Override
+    public void moveSavedDataUp(JobDataController jobDataController) {
         int numberOfTasks = minimizedTaskList.size();
         if (numberOfTasks < 2)
             return;
@@ -170,15 +157,30 @@ public class TaskGroupController implements Initializable, JobDataController {
         if (selectedTaskIndex == 0)
             return;
         int changeIndex = selectedTaskIndex -1;
-        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on move-down selected task: " + changeIndex);
         updateTaskPaneList(selectedTaskIndex, changeIndex);
+        AppScene.addLog(LogLevel.DEBUG, className, "Moved up task group: " + changeIndex);
+        //update side menu
+        updateTaskGroupSideContent(selectedTaskIndex, changeIndex);
+    }
+
+    @Override
+    public void moveSavedDataDown(JobDataController jobDataController) {
+        int numberOfTasks = minimizedTaskList.size();
+        if (numberOfTasks < 2)
+            return;
+        int selectedTaskIndex = minimizedTaskList.indexOf((MinimizedTaskController) jobDataController);
+        int changeIndex = selectedTaskIndex +1;
+        if (changeIndex == numberOfTasks)
+            return;
+        updateTaskPaneList(selectedTaskIndex, changeIndex);
+        AppScene.addLog(LogLevel.DEBUG, className, "Moved down task group: " + changeIndex);
         //update side menu
         updateTaskGroupSideContent(selectedTaskIndex, changeIndex);
     }
 
     private void updateTaskPaneList(int selectedIndex, int changeIndex) {
         ObservableList<Node> children = taskGroupVBox.getChildren();
-        Node minimizedTaskNode = minimizedTaskList.get(selectedIndex).getParentNode();
+        Node minimizedTaskNode = children.get(selectedIndex);
         minimizedTaskList.add(changeIndex, minimizedTaskList.remove(selectedIndex));
         updateTaskPreviousOption(changeIndex);
         children.remove(minimizedTaskNode);

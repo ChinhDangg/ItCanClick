@@ -26,18 +26,41 @@
                   <Label fx:id="requirementStatusLabel" text="Required/Optional" />
                </children>
             </StackPane>
-            <Group>
+            <StackPane>
                <children>
-                  <StackPane styleClass="no-top-border">
+                  <Group fx:id="notIndicationNode" StackPane.alignment="CENTER_LEFT">
                      <children>
-                        <Label fx:id="readingConditionLabel" text="Read" />
+                        <StackPane>
+                           <children>
+                              <StackPane styleClass="no-top-border">
+                                 <children>
+                                    <Label text="Not" />
+                                 </children>
+                                 <padding>
+                                    <Insets left="7.0" right="7.0" />
+                                 </padding>
+                              </StackPane>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" />
+                           </padding>
+                        </StackPane>
                      </children>
-                     <padding>
-                        <Insets left="7.0" right="7.0" />
-                     </padding>
-                  </StackPane>
+                  </Group>
+                  <Group StackPane.alignment="TOP_CENTER">
+                     <children>
+                        <StackPane styleClass="no-top-border">
+                           <children>
+                              <Label fx:id="readingConditionLabel" text="Read" />
+                           </children>
+                           <padding>
+                              <Insets left="7.0" right="7.0" />
+                           </padding>
+                        </StackPane>
+                     </children>
+                  </Group>
                </children>
-            </Group>
+            </StackPane>
          </children>
       </VBox>
    </children>

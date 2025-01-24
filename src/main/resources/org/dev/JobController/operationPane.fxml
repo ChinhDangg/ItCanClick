@@ -19,9 +19,9 @@
          <children>
             <Group>
                <children>
-                  <VBox fx:id="mainOperationVBox">
+                  <VBox fx:id="mainOperationVBox" spacing="15.0">
                      <children>
-                        <VBox prefHeight="68.0" spacing="10.0">
+                        <VBox spacing="10.0">
                            <children>
                               <StackPane>
                                  <children>
@@ -37,43 +37,6 @@
                                     </Group>
                                  </children>
                               </StackPane>
-                              <HBox spacing="5.0">
-                                 <children>
-                                    <StackPane fx:id="removeTaskButton" focusTraversable="true">
-                                       <children>
-                                          <Label text="Remove Task" />
-                                       </children>
-                                       <styleClass>
-                                          <String fx:value="stackpane-button" />
-                                          <String fx:value="update-button" />
-                                          <String fx:value="focusable-button" />
-                                       </styleClass>
-                                    </StackPane>
-                                    <StackPane fx:id="moveTaskUpButton" focusTraversable="true">
-                                       <children>
-                                          <Label text="Move Task Up" />
-                                       </children>
-                                       <styleClass>
-                                          <String fx:value="stackpane-button" />
-                                          <String fx:value="update-button" />
-                                          <String fx:value="focusable-button" />
-                                       </styleClass>
-                                    </StackPane>
-                                    <StackPane fx:id="moveTaskDownButton" focusTraversable="true">
-                                       <children>
-                                          <Label text="Move Task Down" />
-                                       </children>
-                                       <styleClass>
-                                          <String fx:value="stackpane-button" />
-                                          <String fx:value="update-button" />
-                                          <String fx:value="focusable-button" />
-                                       </styleClass>
-                                    </StackPane>
-                                 </children>
-                                 <VBox.margin>
-                                    <Insets left="5.0" />
-                                 </VBox.margin>
-                              </HBox>
                            </children>
                         </VBox>
                         <VBox spacing="10.0">
@@ -108,7 +71,7 @@
                               </StackPane>
                            </children>
                            <padding>
-                              <Insets bottom="5.0" top="10.0" />
+                              <Insets bottom="5.0" />
                            </padding>
                         </VBox>
                      </children>
