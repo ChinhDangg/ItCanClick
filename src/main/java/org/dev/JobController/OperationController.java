@@ -160,7 +160,7 @@ public class OperationController implements Initializable, Serializable, JobData
         List<TaskGroupData> taskDataList = new ArrayList<>();
         for (TaskGroupController taskGroupController : taskList)
             taskDataList.add(taskGroupController.getSavedData());
-        operationData.setTaskDataList(taskDataList);
+        operationData.setTaskGroupDataList(taskDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got operation data");
         return operationData;
     }
@@ -174,7 +174,7 @@ public class OperationController implements Initializable, Serializable, JobData
         OperationData operationData = (OperationData) jobData;
         this.operation = operationData.getOperation();
         updateOperationName(operation.getOperationName());
-        for (TaskGroupData data : operationData.getTaskDataList())
+        for (TaskGroupData data : operationData.getTaskGroupDataList())
             addSavedData(data);
     }
 

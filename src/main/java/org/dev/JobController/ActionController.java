@@ -1,5 +1,6 @@
 package org.dev.JobController;
 
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -238,10 +239,6 @@ public class ActionController implements Initializable, JobDataController, Activ
 
     @Override
     public void addSavedData(JobData jobData) {
-        if (jobData == null) {
-            AppScene.addLog(LogLevel.INFO, className, "Condition data is empty - nothing to load");
-            return;
-        }
         if (currentConditionTypeForPasting == ConditionType.Entry)
             addCondition(entryConditionList, entryConditionHBox, jobData);
         else if (currentConditionTypeForPasting == ConditionType.Exit)
@@ -262,12 +259,52 @@ public class ActionController implements Initializable, JobDataController, Activ
 
     @Override
     public void moveSavedDataUp(JobDataController jobDataController) {
-
+        ConditionController conditionController = (ConditionController) jobDataController;
+        WhichCondition whichCondition = getWhichConditionController(conditionController);
+        if (whichCondition == null)
+            return;
+        List<ConditionController> whichController = whichCondition.controllers;
+        int numberOfConditions = whichController.size();
+        if (numberOfConditions < 2)
+            return;
+        int selectedIndex = whichController.indexOf(conditionController);
+        if (selectedIndex < 0)
+            return;
+        int changeIndex = selectedIndex -1;
+        updateActionPaneList(whichController, whichCondition.whichHBox, selectedIndex, changeIndex);
+        AppScene.addLog(LogLevel.DEBUG, className, "Moved down condition: " + changeIndex);
     }
 
     @Override
     public void moveSavedDataDown(JobDataController jobDataController) {
-
+        ConditionController conditionController = (ConditionController) jobDataController;
+        WhichCondition whichCondition = getWhichConditionController(conditionController);
+        if (whichCondition == null)
+            return;
+        List<ConditionController> whichController = whichCondition.controllers;
+        int numberOfConditions = whichController.size();
+        if (numberOfConditions < 2)
+            return;
+        int selectedIndex = whichController.indexOf(conditionController);
+        int changeIndex = selectedIndex +1;
+        if (selectedIndex == numberOfConditions)
+            return;
+        updateActionPaneList(whichController, whichCondition.whichHBox, selectedIndex, changeIndex);
+        AppScene.addLog(LogLevel.DEBUG, className, "Moved down condition: " + changeIndex);
     }
-
+    private record WhichCondition(List<ConditionController> controllers, HBox whichHBox) {}
+    private WhichCondition getWhichConditionController(ConditionController controller) {
+        if (entryConditionList.contains(controller))
+            return new WhichCondition(entryConditionList, entryConditionHBox);
+        else if (exitConditionList.contains(controller))
+            return new WhichCondition(exitConditionList, exitConditionHBox);
+        return null;
+    }
+    private void updateActionPaneList(List<ConditionController> controllers, HBox whichHBox, int selectedIndex, int changeIndex) {
+        ObservableList<Node> children = whichHBox.getChildren();
+        Node conditionNode = children.get(selectedIndex);
+        controllers.add(changeIndex, controllers.remove((selectedIndex)));
+        children.remove(conditionNode);
+        children.add(changeIndex, conditionNode);
+    }
 }

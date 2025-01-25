@@ -20,7 +20,7 @@ import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.io.IOException;
 import java.util.List;
 
-public class TaskRunController extends RunActivity implements MainJobController {
+public class TaskRunController implements MainJobController {
 
     @FXML
     private Group mainTaskRunGroup;
@@ -30,7 +30,7 @@ public class TaskRunController extends RunActivity implements MainJobController 
     private VBox mainTaskRunVBox;
 
     @Getter
-    private VBox taskRunVBoxSideContent = new VBox();
+    private VBox taskRunSideContent = new VBox();
     private final String className = this.getClass().getSimpleName();
 
     @Override
@@ -66,19 +66,20 @@ public class TaskRunController extends RunActivity implements MainJobController 
         if (repeatNumber == -1) {
             AppScene.addLog(LogLevel.INFO, className, "Task is set to run Infinitely");
             for (int j = 0; j < Integer.MAX_VALUE; j++)
-                if (!runTask(taskData.getActionDataList(), taskName))
+                if (!runTask(taskData))
                     return false;
             return true;
         }
         for (int j = -1; j < repeatNumber; j++)
-            if (!runTask(taskData.getActionDataList(), taskName))
+            if (!runTask(taskData))
                 return false;
         return true;
     }
 
-    private boolean runTask(List<ActionData> actionDataList, String taskName) throws InterruptedException {
-        AppScene.addLog(LogLevel.INFO, className, "Start running task: " + taskName);
+    private boolean runTask(TaskData taskData) throws InterruptedException {
+        AppScene.addLog(LogLevel.INFO, className, "Start running task: " + taskData.getTask().getTaskName());
         boolean pass = false;
+        List<ActionData> actionDataList = taskData.getActionDataList();
         for (ActionData actionData : actionDataList) {
             Action currentAction = actionData.getAction();
             if (currentAction == null)
@@ -89,7 +90,6 @@ public class TaskRunController extends RunActivity implements MainJobController 
                 continue;
             }
             loadAndAddNewActionRunPane(currentAction.getActionName());
-            AppScene.addLog(LogLevel.INFO, className, "Start running action: " + actionName);
             pass = currentActionRunController.startAction(actionData);
             if (!currentAction.isRequired())
                 pass = true;
@@ -107,12 +107,11 @@ public class TaskRunController extends RunActivity implements MainJobController 
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("actionRunPane.fxml"));
             Node actionRunPaneGroup = fxmlLoader.load();
             currentActionRunController = fxmlLoader.getController();
-            currentActionRunController.changeActionRunName(actionName);
             VBox actionRunSideContent = currentActionRunController.getActionRunSideContent();
             Node actionRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(
                     new Label(actionName), actionRunSideContent, currentActionRunController);
             // update side hierarchy
-            Platform.runLater(() -> taskRunVBoxSideContent.getChildren().addAll(actionRunHBoxLabel, actionRunSideContent));
+            Platform.runLater(() -> taskRunSideContent.getChildren().addAll(actionRunHBoxLabel, actionRunSideContent));
             Platform.runLater(() -> mainTaskRunVBox.getChildren().add(actionRunPaneGroup));
         } catch (IOException e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading action run pane: " + e.getMessage());

@@ -9,8 +9,6 @@ import java.awt.image.BufferedImage;
 
 public abstract class RunActivity {
 
-    private final String className = this.getClass().getSimpleName();
-
     public void updateImageView(ImageView imageView, BufferedImage image) {
         if (image != null)
             imageView.setImage(SwingFXUtils.toFXImage(image, null));

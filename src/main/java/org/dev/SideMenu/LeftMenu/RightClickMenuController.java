@@ -17,7 +17,11 @@ public class RightClickMenuController implements Initializable {
     @FXML
     private VBox parentNode;
     @FXML
-    private HBox newTaskGroupSection, newTaskSection, newActionSection, copySection, pasteSection, deleteSection;
+    private HBox newTaskGroupSection, newTaskSection, newActionSection;
+    @FXML
+    private HBox moveUpSection, moveDownSection;
+    @FXML
+    private HBox copySection, pasteSection, deleteSection;
 
     private Popup rightMenuPopup;
     private JobDataController currentParentJobDataController;
@@ -32,6 +36,8 @@ public class RightClickMenuController implements Initializable {
         newActionSection.setOnMouseClicked(this::addNewAction);
         newTaskSection.setOnMouseClicked(this::addNewTask);
         newTaskGroupSection.setOnMouseClicked(this::addNewTaskGroup);
+        moveUpSection.setOnMouseClicked(this::moveUp);
+        moveDownSection.setOnMouseClicked(this::moveDown);
         copySection.setOnMouseClicked(this::copyData);
         pasteSection.setOnMouseClicked(this::pasteData);
         deleteSection.setOnMouseClicked(this::deleteData);
@@ -65,6 +71,8 @@ public class RightClickMenuController implements Initializable {
         if (appLevel == AppLevel.TaskGroup || appLevel == AppLevel.Task || appLevel == AppLevel.Action || appLevel == AppLevel.Condition) {
             copySection.setDisable(false);
             deleteSection.setDisable(false);
+            moveUpSection.setDisable(false);
+            moveDownSection.setDisable(false);
         }
         if (copiedJobDataController != null) {
             int order = copiedJobDataController.getAppLevel().getOrder() - appLevel.getOrder();
@@ -78,6 +86,8 @@ public class RightClickMenuController implements Initializable {
         newTaskGroupSection.setDisable(disable);
         newTaskSection.setDisable(disable);
         newActionSection.setDisable(disable);
+        moveUpSection.setDisable(disable);
+        moveDownSection.setDisable(disable);
         copySection.setDisable(disable);
         pasteSection.setDisable(disable);
         deleteSection.setDisable(disable);
@@ -105,6 +115,14 @@ public class RightClickMenuController implements Initializable {
         else
             currentJobDataController.addSavedData(null);
         hideRightMenu();
+    }
+
+    private void moveUp(MouseEvent event) {
+        currentParentJobDataController.moveSavedDataUp(currentJobDataController);
+    }
+
+    private void moveDown(MouseEvent event) {
+        currentParentJobDataController.moveSavedDataDown(currentJobDataController);
     }
 
     private void copyData(MouseEvent event) {

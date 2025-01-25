@@ -45,6 +45,7 @@ public class ConditionController implements Initializable, JobDataController, Ac
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         conditionStackPane.setOnMouseClicked(this::openConditionOptionPane);
+        notIndicationNode.setVisible(false);
     }
 
     public Node getParentNode() { return conditionStackPane; }
@@ -82,10 +83,8 @@ public class ConditionController implements Initializable, JobDataController, Ac
 
     @Override
     public ConditionData getSavedData() {
-        if (condition == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error - Empty condition being used as data");
+        if (condition == null)
             return null;
-        }
         ConditionData conditionData = new ConditionData();
         conditionData.setCondition(condition.getDeepCopied());
         return conditionData;

@@ -12,5 +12,5 @@ public class OperationData implements JobData {
     @Serial
     private static final long serialVersionUID = 1L;
     private Operation operation;
-    private List<TaskGroupData> taskDataList;
+    private List<TaskGroupData> taskGroupDataList;
 }

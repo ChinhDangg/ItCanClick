@@ -13,13 +13,14 @@ import lombok.Getter;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
+import org.dev.Job.Task.TaskGroup;
 import org.dev.JobData.OperationData;
-import org.dev.JobData.TaskData;
 import org.dev.JobController.MainJobController;
 import org.dev.JobController.OperationController;
-import org.dev.Job.Task.Task;
+import org.dev.JobData.TaskGroupData;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class OperationRunController implements Initializable, MainJobController {
@@ -127,35 +128,28 @@ public class OperationRunController implements Initializable, MainJobController 
     }
 
     private void runOperation(OperationData operationData) throws InterruptedException {
-//        boolean pass = false;
-//        for (TaskData taskData : operationData.getTaskDataList()) {
-//            Task currentTask = taskData.getTask();
-//            String taskName = currentTask.getTaskName();
-//            loadAndAddNewTaskRunPane(currentTask.getTaskName());
-//            if (pass && currentTask.isPreviousPass()) {
-//                AppScene.addLog(LogLevel.INFO, className, "Previous is passed, Skipping task " + taskName);
-//                continue;
-//            }
-//            pass = currentTaskRunController.startTask(taskData);
-//            if (!currentTask.isRequired())
-//                pass = true;
-//            else if (!pass) { // task is required but failed
-//                AppScene.addLog(LogLevel.INFO, className, "Fail performing task: " + taskName);
-//                break;
-//            }
-//        }
+        List<TaskGroupData> taskGroupDataList = operationData.getTaskGroupDataList();
+        for (TaskGroupData taskData : taskGroupDataList) {
+            TaskGroup currentTaskGroup = taskData.getTaskGroup();
+            String taskName = currentTaskGroup.getTaskGroupName();
+            loadAndAddNewTaskRunPane(taskName);
+            boolean pass = currentTaskGroupRunController.startTaskGroup(taskData);
+            if (currentTaskGroup.isRequired() && !pass) { // task is required but failed
+                AppScene.addLog(LogLevel.INFO, className, "Fail performing task group: " + taskName);
+                break;
+            }
+        }
     }
 
-    private TaskRunController currentTaskRunController;
+    private TaskGroupRunController currentTaskGroupRunController;
     private void loadAndAddNewTaskRunPane(String taskName) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("taskRunPane.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("taskGroupRunPane.fxml"));
             Node taskRunGroup = fxmlLoader.load();
-            currentTaskRunController = fxmlLoader.getController();
-            currentTaskRunController.changeTaskRunName(taskName);
-            VBox taskRunSideContent = currentTaskRunController.getTaskRunVBoxSideContent();
+            currentTaskGroupRunController = fxmlLoader.getController();
+            VBox taskRunSideContent = currentTaskGroupRunController.getTaskGroupRunSideContent();
             Node taskRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(
-                    new Label(taskName), taskRunSideContent, currentTaskRunController);
+                    new Label(taskName), taskRunSideContent, currentTaskGroupRunController);
             // update side hierarchy
             Platform.runLater(() -> operationRunSideContent.getChildren().addAll(taskRunHBoxLabel, taskRunSideContent));
             Platform.runLater(() -> runVBox.getChildren().add(taskRunGroup));

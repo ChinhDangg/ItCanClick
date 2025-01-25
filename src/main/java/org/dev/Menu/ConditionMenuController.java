@@ -113,8 +113,7 @@ public class ConditionMenuController extends MenuController implements Initializ
         try {
             Condition condition = conditionController.getCondition();
             ImageCheckResult checkedConditionResult = condition.checkCondition();
-            Platform.runLater(() -> updateRecheckResultLabel(checkedConditionResult.isPass(), condition.getChosenReadingCondition().name()));
-            updateRecheckResultLabel(checkedConditionResult.isPass(), checkedConditionResult.getReadResult());
+            Platform.runLater(() -> updateRecheckResultLabel(checkedConditionResult.isPass(), checkedConditionResult.getReadResult()));
             recheckResultImageView.setImage(SwingFXUtils.toFXImage(checkedConditionResult.getDisplayImage(), null));
             AppScene.addLog(LogLevel.TRACE, className, "Condition recheck result: " + checkedConditionResult.getReadResult());
         } catch(Exception e) {

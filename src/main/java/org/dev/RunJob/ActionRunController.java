@@ -79,10 +79,6 @@ public class ActionRunController extends RunActivity implements Initializable, M
         return AppLevel.Action;
     }
 
-    public void changeActionRunName(String name) {
-        actionRunNameLabel.setText(name);
-    }
-
     private void showActionRunPane(boolean visible) {
         actionRunVBox.setVisible(visible);
         actionRunVBox.setManaged(visible);
@@ -115,6 +111,7 @@ public class ActionRunController extends RunActivity implements Initializable, M
         }
         changeLabelText(actionRunNameLabel, action.getActionName());
         changeActionRunStatus(RunningStatus.Running);
+        AppScene.addLog(LogLevel.INFO, className, "Start running action: " + action.getActionName());
         return runAction(actionData);
     }
 
