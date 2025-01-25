@@ -69,15 +69,19 @@ public class PixelCondition extends Condition {
         return temp;
     }
 
-    private ImageCheckResult checkPixelFromBoundingBox(Rectangle boundingBox, BufferedImage fullImage) throws AWTException, IOException {
-        BufferedImage seen = ConditionPixelMenuController.captureCurrentScreen(boundingBox);
+    private ImageCheckResult checkPixelFromBoundingBox(Rectangle boundingBox, BufferedImage fullSaved) throws AWTException, IOException {
+        int fullImageWidth = fullSaved.getWidth(), fullImageHeight = fullSaved.getHeight();
+        int difX = (fullImageWidth - boundingBox.width)/2;
+        int difY = (fullImageHeight - boundingBox.height)/2;
+        Rectangle fullBounding = new Rectangle(boundingBox.x - difX, boundingBox.y - difY, fullImageWidth, fullImageHeight);
+        BufferedImage fullSeen = ConditionPixelMenuController.captureCurrentScreen(fullBounding);
 
-        int x = (fullImage.getWidth()-boundingBox.width)/2, y = (fullImage.getHeight()-boundingBox.height)/2;
-        BufferedImage saved = fullImage.getSubimage(x, y, boundingBox.width, boundingBox.height);
-        BufferedImage seenImageWithEdges = getFullImage(boundingBox, fullImage);
+        BufferedImage seen = fullSeen.getSubimage(difX, difY, boundingBox.width, boundingBox.height);
+        BufferedImage saved = fullSaved.getSubimage(difX, difY, boundingBox.width, boundingBox.height);
+        BufferedImage seenImageWithEdges = getFullImage(boundingBox, fullSaved);
 
-        ImageIO.write(seen, "png", new File("seen.png"));
-        ImageIO.write(saved, "png", new File("saved.png"));
+//        ImageIO.write(seen, "png", new File("seen.png"));
+//        ImageIO.write(saved, "png", new File("saved.png"));
 
         AppScene.addLog(LogLevel.TRACE, className, "Img1 type: " + seen.getType() + " | Img2 type: " + saved.getType());
         AppScene.addLog(LogLevel.TRACE, className, "Img1 color model: " + seen.getColorModel() + " | Img2 color model: " + saved.getColorModel());
@@ -92,7 +96,6 @@ public class PixelCondition extends Condition {
                     pass = false;
                     break;
                 }
-        System.out.println("Passed: " + pass);
         RunningStatus readResult = pass ? RunningStatus.Passed : RunningStatus.Failed;
         return new ImageCheckResult(readResult.name(), getImageWithEdges(boundingBox, seenImageWithEdges, 0.5f), pass);
     }
