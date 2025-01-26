@@ -17,7 +17,7 @@
          <children>
             <VBox fx:id="topVBoxHeader">
                <children>
-                  <StackPane fx:id="resizeStackPane" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="10.0">
+                  <StackPane fx:id="resizeStackPane" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="10.0" styleClass="top-border-only">
                      <cursor>
                         <Cursor fx:constant="S_RESIZE" />
                      </cursor>
@@ -69,7 +69,7 @@
                   </StackPane>
                </children>
             </VBox>
-            <ScrollPane fx:id="logScrollPane">
+            <ScrollPane fx:id="logScrollPane" styleClass="top-border-only">
                <content>
                   <VBox fx:id="bottomTextVBox" />
                </content>

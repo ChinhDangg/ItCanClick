@@ -35,7 +35,6 @@ public class AppScene {
     public static HBox mainCenterHBox = new HBox(); // will contain side menu and main display
     public static StackPane mainDisplayStackPane = new StackPane();
     public static StackPane mainNotificationStackPane = new StackPane();
-    public static Node currentDisplayNode;
 
     public static MenuBarController menuBarController;
     public static SettingMenuController settingMenuController;
@@ -194,24 +193,18 @@ public class AppScene {
 
     // ------------------------------------------------------
     public static void displayNewCenterNode(Node node) {
-        if (currentLoadedOperationController == null)
-            return;
-        currentLoadedOperationController.setVisible(false);
-        if (currentDisplayNode != null)
-            mainDisplayStackPane.getChildren().remove(currentDisplayNode);
-        currentDisplayNode = node;
-        mainDisplayStackPane.getChildren().add(currentDisplayNode);
+        mainDisplayStackPane.getChildren().clear();
+        mainDisplayStackPane.getChildren().add(node);
         AppScene.addLog(LogLevel.TRACE, className, "Displayed new center node");
     }
     public static void backToOperationScene() {
         if (currentLoadedOperationController == null)
             return;
-        if (currentDisplayNode != null)
-            mainDisplayStackPane.getChildren().remove(currentDisplayNode);
-        currentLoadedOperationController.setVisible(true);
+        displayNewCenterNode(currentLoadedOperationController.getParentNode());
         AppScene.addLog(LogLevel.TRACE, className, "Backed to Operation Scene");
     }
 
+    // ------------------------------------------------------
     public static void openConditionMenuPane(ConditionController conditionController) {
         conditionMenuController.loadMenu(conditionController);
         mainDisplayStackPane.getChildren().add(conditionMenuController.getMainMenuStackPane());
@@ -240,8 +233,7 @@ public class AppScene {
         try {
             FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("JobController/operationPane.fxml"));
             Node operationPane = loader.load();
-            mainDisplayStackPane.getChildren().clear();
-            mainDisplayStackPane.getChildren().add(operationPane);
+            displayNewCenterNode(operationPane);
             currentLoadedOperationController = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded empty operation pane");
         } catch (Exception e) {
@@ -263,13 +255,10 @@ public class AppScene {
             currentLoadedOperationController = loader.getController();
             AppScene.addLog(LogLevel.TRACE, className, "Passed getting controller");
 
-            mainDisplayStackPane.getChildren().clear();
-            AppScene.addLog(LogLevel.TRACE, className, "Passed clearing main display stack pane children");
-
             currentLoadedOperationController.loadSavedData(operationData);
             AppScene.addLog(LogLevel.TRACE, className, "Passed loading saved data");
 
-            mainDisplayStackPane.getChildren().add(operationPane);
+            displayNewCenterNode(operationPane);
             AppScene.addLog(LogLevel.TRACE, className, "Passed displaying operation pane");
 
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded saved operation: " + path);
