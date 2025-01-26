@@ -96,7 +96,8 @@ public class ConditionController implements Initializable, JobDataController, Ac
             AppScene.addLog(LogLevel.ERROR, className, "Fail - cannot load null saved condition");
             return;
         }
-        registerReadingCondition((Condition) jobData);
+        ConditionData conditionData = (ConditionData) jobData;
+        registerReadingCondition(conditionData.getCondition());
     }
 
     @Override

@@ -53,7 +53,6 @@ public class TaskGroupController implements Initializable, JobDataController {
                 changeTaskGroupName();
             }
         });
-        addSavedData(null);
     }
     public boolean isSet() { return !minimizedTaskList.isEmpty() && minimizedTaskList.getFirst().isSet(); }
     public void setTaskIndex(int taskIndex) { taskIndexLabel.setText(Integer.toString(taskIndex)); }

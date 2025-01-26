@@ -137,7 +137,6 @@ public class MinimizedTaskController implements Initializable, JobDataController
         task.setPreviousPass(previousPassCheckBox.isSelected());
         task.setTaskName(taskNameLabel.getText());
         Task newCopiedTask = task.getDeepCopied();
-        System.out.println(newCopiedTask.getTaskName());
         taskData.setTask(newCopiedTask);
         AppScene.addLog(LogLevel.TRACE, className, "Get Task Data");
         return taskData;

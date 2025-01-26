@@ -158,7 +158,7 @@ public class ActionController implements Initializable, JobDataController, Activ
     private void addCondition(List<ConditionController> whichController, HBox whichPane, JobData condition) {
         AppScene.addLog(LogLevel.TRACE, className, "Loading Condition Pane");
         try {
-            int numberOfCondition = whichPane.getChildren().size();
+            int numberOfCondition = whichController.size();
             if (numberOfCondition > 0 && !whichController.get(numberOfCondition - 1).isSet()) {
                 AppScene.addLog(LogLevel.INFO, className, "Previous Condition is not set");
                 return;
@@ -268,7 +268,7 @@ public class ActionController implements Initializable, JobDataController, Activ
         if (numberOfConditions < 2)
             return;
         int selectedIndex = whichController.indexOf(conditionController);
-        if (selectedIndex < 0)
+        if (selectedIndex == 0)
             return;
         int changeIndex = selectedIndex -1;
         updateActionPaneList(whichController, whichCondition.whichHBox, selectedIndex, changeIndex);
@@ -287,7 +287,7 @@ public class ActionController implements Initializable, JobDataController, Activ
             return;
         int selectedIndex = whichController.indexOf(conditionController);
         int changeIndex = selectedIndex +1;
-        if (selectedIndex == numberOfConditions)
+        if (changeIndex == numberOfConditions)
             return;
         updateActionPaneList(whichController, whichCondition.whichHBox, selectedIndex, changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved down condition: " + changeIndex);

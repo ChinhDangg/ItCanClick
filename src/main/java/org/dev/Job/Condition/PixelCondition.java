@@ -8,8 +8,6 @@ import org.dev.Enum.ReadingCondition;
 import org.dev.Menu.ConditionPixelMenuController;
 import org.dev.Job.ImageSerialization;
 import org.dev.RunJob.RunningStatus;
-
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -69,7 +67,7 @@ public class PixelCondition extends Condition {
         return temp;
     }
 
-    private ImageCheckResult checkPixelFromBoundingBox(Rectangle boundingBox, BufferedImage fullSaved) throws AWTException, IOException {
+    private ImageCheckResult checkPixelFromBoundingBox(Rectangle boundingBox, BufferedImage fullSaved) throws AWTException {
         int fullImageWidth = fullSaved.getWidth(), fullImageHeight = fullSaved.getHeight();
         int difX = (fullImageWidth - boundingBox.width)/2;
         int difY = (fullImageHeight - boundingBox.height)/2;
