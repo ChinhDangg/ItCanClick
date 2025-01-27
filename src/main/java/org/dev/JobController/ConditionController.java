@@ -18,6 +18,7 @@ import org.dev.Enum.LogLevel;
 import org.dev.Job.Condition.Condition;
 import org.dev.JobData.JobData;
 import org.dev.JobData.ConditionData;
+import org.dev.RunJob.JobRunController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
 
 import java.net.URL;
@@ -48,8 +49,6 @@ public class ConditionController implements Initializable, JobDataController, Ac
         notIndicationNode.setVisible(false);
     }
 
-    public Node getParentNode() { return conditionStackPane; }
-
     public void registerReadingCondition(Condition newCondition) {
         if (newCondition == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Condition is null - registerReadingCondition");
@@ -65,7 +64,7 @@ public class ConditionController implements Initializable, JobDataController, Ac
     }
 
     private void openConditionOptionPane(MouseEvent event) {
-        if (AppScene.isOperationRunning) {
+        if (AppScene.isRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
@@ -80,6 +79,10 @@ public class ConditionController implements Initializable, JobDataController, Ac
         parentActionController.removeSavedData(this);
         AppScene.addLog(LogLevel.DEBUG, className, "Condition removed");
     }
+
+    // ------------------------------------------------------
+    @Override
+    public Node getParentNode() { return conditionStackPane; }
 
     @Override
     public ConditionData getSavedData() {
@@ -118,4 +121,7 @@ public class ConditionController implements Initializable, JobDataController, Ac
     public void moveSavedDataDown(JobDataController jobDataController) {}
     @Override
     public void moveSavedDataUp(JobDataController jobDataController) {}
+
+    @Override
+    public JobRunController getRunJob() { return null; }
 }

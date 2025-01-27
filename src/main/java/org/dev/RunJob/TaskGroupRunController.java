@@ -12,14 +12,14 @@ import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Task.Task;
 import org.dev.Job.Task.TaskGroup;
-import org.dev.JobController.MainJobController;
+import org.dev.JobData.JobData;
 import org.dev.JobData.TaskData;
 import org.dev.JobData.TaskGroupData;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
 
 import java.util.List;
 
-public class TaskGroupRunController implements MainJobController {
+public class TaskGroupRunController implements JobRunController {
     @FXML
     private Node parentNode;
     @FXML
@@ -33,6 +33,9 @@ public class TaskGroupRunController implements MainJobController {
 
 
     @Override
+    public Node getParentNode() { return parentNode; }
+
+    @Override
     public AppLevel getAppLevel() {
         return AppLevel.TaskGroup;
     }
@@ -43,11 +46,13 @@ public class TaskGroupRunController implements MainJobController {
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
-    public boolean startTaskGroup(TaskGroupData taskGroupData) throws InterruptedException {
-        if (taskGroupData == null) {
+    @Override
+    public boolean startJob(JobData jobData) {
+        if (jobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task group data is null - cannot start");
             return false;
         }
+        TaskGroupData taskGroupData = (TaskGroupData) jobData;
         TaskGroup taskGroup  = taskGroupData.getTaskGroup();
         if (taskGroup == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task group is null - cannot start");
@@ -59,7 +64,7 @@ public class TaskGroupRunController implements MainJobController {
         return runTaskGroup(taskGroupData);
     }
 
-    private boolean runTaskGroup(TaskGroupData taskGroupData) throws InterruptedException {
+    private boolean runTaskGroup(TaskGroupData taskGroupData) {
         AppScene.addLog(LogLevel.INFO, className, "Start running task group " + taskGroupData.getTaskGroup().getTaskGroupName());
         boolean pass = false;
         List<TaskData> taskDataList = taskGroupData.getTaskDataList();
@@ -73,7 +78,7 @@ public class TaskGroupRunController implements MainJobController {
                 continue;
             }
             loadAndAddNewTaskRunPane(currentTask.getTaskName());
-            pass = currentTaskRunController.startTask(taskData);
+            pass = currentTaskRunController.startJob(taskData);
             if (!currentTask.isRequired())
                 pass = true;
             else if (!pass) { // task is required but failed

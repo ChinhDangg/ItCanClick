@@ -14,16 +14,15 @@ import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Task.TaskGroup;
+import org.dev.JobData.JobData;
 import org.dev.JobData.OperationData;
-import org.dev.JobController.MainJobController;
-import org.dev.JobController.OperationController;
 import org.dev.JobData.TaskGroupData;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class OperationRunController implements Initializable, MainJobController {
+public class OperationRunController implements Initializable, JobRunController {
     @FXML
     private ScrollPane operationRunScrollPane;
     @FXML
@@ -35,16 +34,11 @@ public class OperationRunController implements Initializable, MainJobController 
 
     @Getter
     private VBox operationRunSideContent = new VBox();
-    private Thread operationRunThread = null;
     private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loadMainOperationRunVBox();
-    }
-
-    public Node getParentNode() {
-        return operationRunScrollPane;
     }
 
     private double currentGlobalScale = 1.0;
@@ -53,6 +47,16 @@ public class OperationRunController implements Initializable, MainJobController 
             currentGlobalScale = AppScene.currentGlobalScale;
             mainOperationRunVBox.getTransforms().add(new Scale(currentGlobalScale, currentGlobalScale, 0, 0));
         }
+    }
+
+    @Override
+    public Node getParentNode() {
+        return operationRunScrollPane;
+    }
+
+    @Override
+    public AppLevel getAppLevel() {
+        return AppLevel.Operation;
     }
 
     @Override
@@ -65,11 +69,6 @@ public class OperationRunController implements Initializable, MainJobController 
         AppScene.closeConditionMenuPane();
         operationRunScrollPane.setVvalue(0.0);
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
-    }
-
-    @Override
-    public AppLevel getAppLevel() {
-        return AppLevel.Operation;
     }
 
     public void changeScrollPaneVValueView(Node node) {
@@ -89,56 +88,35 @@ public class OperationRunController implements Initializable, MainJobController 
         AppScene.addLog(LogLevel.TRACE, RunActivity.class.getSimpleName(), "Updated scroll pane v value: " + vValue);
     }
 
-    public void setVisible(boolean visible) { getParentNode().setVisible(visible); }
-
     private void changeOperationRunName(String newName) { operationNameRunLabel.setText(newName); }
 
     // ------------------------------------------------------
-    public void startOperation(OperationController operationController) {
-        OperationData operationData = operationController.getSavedData();
-        if (operationData == null) {
+    @Override
+    public boolean startJob(JobData jobData) {
+        if (jobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation data is null - cannot start");
-            return;
+            return false;
         }
+        OperationData operationData = (OperationData) jobData;
         String operationName = operationData.getOperation().getOperationName();
         changeOperationRunName(operationName);
-        AppScene.addLog(LogLevel.INFO, className, "Start running operation: " + operationName);
-
-        javafx.concurrent.Task<Void> operationRunTask = new javafx.concurrent.Task<>() {
-            @Override
-            protected Void call() {
-                try {
-                    runOperation(operationData);
-                    AppScene.addLog(LogLevel.INFO, className, "Finished running operation: " + operationName);
-                    Platform.runLater(() -> AppScene.setIsOperationRunning(false));
-                } catch (Exception e) {
-                    AppScene.addLog(LogLevel.ERROR, className, "Error to start run operation: " + e.getMessage());
-                }
-                return null;
-            }
-        };
-        operationRunThread = new Thread(operationRunTask);
-        AppScene.setIsOperationRunning(true);
-        operationRunThread.start();
+        return runOperation(operationData);
     }
 
-    public void stopOperation() {
-        operationRunThread.interrupt();
-        AppScene.setIsOperationRunning(false);
-    }
-
-    private void runOperation(OperationData operationData) throws InterruptedException {
+    private boolean runOperation(OperationData operationData) {
+        AppScene.addLog(LogLevel.INFO, className, "Start running operation: " + operationData.getOperation().getOperationName());
         List<TaskGroupData> taskGroupDataList = operationData.getTaskGroupDataList();
         for (TaskGroupData taskData : taskGroupDataList) {
             TaskGroup currentTaskGroup = taskData.getTaskGroup();
             String taskName = currentTaskGroup.getTaskGroupName();
             loadAndAddNewTaskRunPane(taskName);
-            boolean pass = currentTaskGroupRunController.startTaskGroup(taskData);
+            boolean pass = currentTaskGroupRunController.startJob(taskData);
             if (currentTaskGroup.isRequired() && !pass) { // task is required but failed
                 AppScene.addLog(LogLevel.INFO, className, "Fail performing task group: " + taskName);
-                break;
+                return false;
             }
         }
+        return true;
     }
 
     private TaskGroupRunController currentTaskGroupRunController;

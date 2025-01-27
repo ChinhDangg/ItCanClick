@@ -84,7 +84,7 @@ public class MinimizedTaskController implements Initializable, JobDataController
 
     // ------------------------------------------------------
     public void openTask(MouseEvent event) {
-        if (AppScene.isOperationRunning) {
+        if (AppScene.isRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot navigate");
             return;
         }

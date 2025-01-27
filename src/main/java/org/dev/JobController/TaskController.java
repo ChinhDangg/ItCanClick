@@ -19,6 +19,8 @@ import org.dev.Enum.LogLevel;
 import org.dev.JobData.ActionData;
 import org.dev.JobData.JobData;
 import org.dev.JobData.TaskData;
+import org.dev.RunJob.JobRunController;
+import org.dev.RunJob.TaskRunController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.net.URL;
 import java.util.ArrayList;
@@ -66,7 +68,7 @@ public class TaskController implements Initializable, JobDataController {
 
     // ------------------------------------------------------
     private void addNewActionPane(MouseEvent event) {
-        if (AppScene.isOperationRunning) {
+        if (AppScene.isRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
@@ -102,6 +104,9 @@ public class TaskController implements Initializable, JobDataController {
     private void setUnSelectedAction(Node actionPane) { actionPane.setStyle(""); }
 
     // ------------------------------------------------------
+    @Override
+    public Node getParentNode() { return taskScrollPane; }
+
     @Override
     public AppLevel getAppLevel() {
         return null;
@@ -217,6 +222,20 @@ public class TaskController implements Initializable, JobDataController {
         if (index < 2) {
             actionList.get(0).disablePreviousOptions();
             actionList.get(1).enablePreviousOptions();
+        }
+    }
+
+    @Override
+    public JobRunController getRunJob() {
+        try {
+            FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("RunJob/taskRunPane.fxml"));
+            loader.load();
+            TaskRunController taskRunController = loader.getController();
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Task Run");
+            return taskRunController;
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading Task Run Pane: " + e.getMessage());
+            return null;
         }
     }
 

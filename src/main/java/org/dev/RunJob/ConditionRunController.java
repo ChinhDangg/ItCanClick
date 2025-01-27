@@ -2,6 +2,7 @@ package org.dev.RunJob;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
@@ -46,14 +47,17 @@ public class ConditionRunController extends RunActivity implements Initializable
     }
 
     @Override
-    public void takeToDisplay() {
-        AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(parentScrollPane);
-        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
-    }
+    public Node getParentNode() { return mainConditionRunHBox; }
 
     @Override
     public AppLevel getAppLevel() {
         return AppLevel.Condition;
+    }
+
+    @Override
+    public void takeToDisplay() {
+        AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(parentScrollPane);
+        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
     public boolean checkCondition(Condition condition) {

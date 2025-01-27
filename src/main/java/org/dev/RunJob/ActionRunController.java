@@ -21,7 +21,7 @@ import org.dev.Job.Action.Action;
 import org.dev.Job.Condition.Condition;
 import org.dev.JobData.ActionData;
 import org.dev.JobData.ConditionData;
-import org.dev.JobController.MainJobController;
+import org.dev.JobData.JobData;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.awt.*;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ActionRunController extends RunActivity implements Initializable, MainJobController {
+public class ActionRunController extends RunActivity implements Initializable, JobRunController {
 
     @FXML
     private Group mainActionRunGroup;
@@ -69,14 +69,17 @@ public class ActionRunController extends RunActivity implements Initializable, M
     }
 
     @Override
-    public void takeToDisplay() {
-        AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(mainActionRunGroup);
-        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
-    }
+    public Node getParentNode() { return mainActionRunGroup; }
 
     @Override
     public AppLevel getAppLevel() {
         return AppLevel.Action;
+    }
+
+    @Override
+    public void takeToDisplay() {
+        AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(mainActionRunGroup);
+        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
     private void showActionRunPane(boolean visible) {
@@ -99,11 +102,13 @@ public class ActionRunController extends RunActivity implements Initializable, M
     }
 
     // ------------------------------------------------------
-    public boolean startAction(ActionData actionData) throws InterruptedException {
-        if (actionData == null) {
+    @Override
+    public boolean startJob(JobData jobData) {
+        if (jobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Action data is null - cannot start");
             return false;
         }
+        ActionData actionData = (ActionData) jobData;
         Action action = actionData.getAction();
         if (action == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Action is null - cannot start");
@@ -112,7 +117,12 @@ public class ActionRunController extends RunActivity implements Initializable, M
         changeLabelText(actionRunNameLabel, action.getActionName());
         changeActionRunStatus(RunningStatus.Running);
         AppScene.addLog(LogLevel.INFO, className, "Start running action: " + action.getActionName());
-        return runAction(actionData);
+        try {
+            return runAction(actionData);
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Fail to start running action: " + action.getActionName());
+            return false;
+        }
     }
 
     private boolean runAction(ActionData actionData) throws InterruptedException {

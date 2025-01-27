@@ -17,6 +17,8 @@ import org.dev.Job.Task.TaskGroup;
 import org.dev.JobData.JobData;
 import org.dev.JobData.TaskData;
 import org.dev.JobData.TaskGroupData;
+import org.dev.RunJob.JobRunController;
+import org.dev.RunJob.TaskGroupRunController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.net.URL;
 import java.util.ArrayList;
@@ -74,6 +76,9 @@ public class TaskGroupController implements Initializable, JobDataController {
 
     // ------------------------------------------------------
     @Override
+    public Node getParentNode() { return parentNode; }
+
+    @Override
     public AppLevel getAppLevel() { return AppLevel.TaskGroup; }
 
     @Override
@@ -106,6 +111,8 @@ public class TaskGroupController implements Initializable, JobDataController {
         }
         TaskGroupData taskGroupData = (TaskGroupData) jobData;
         this.taskGroup = taskGroupData.getTaskGroup();
+        requiredCheckBox.setSelected(taskGroup.isRequired());
+        disabledCheckBox.setSelected(taskGroup.isDisabled());
         updateTaskGroupName(taskGroup.getTaskGroupName());
         for (TaskData taskData : taskGroupData.getTaskDataList())
             addSavedData(taskData);
@@ -189,6 +196,20 @@ public class TaskGroupController implements Initializable, JobDataController {
         if (index < 2) {
             minimizedTaskList.get(0).disablePreviousOption();
             minimizedTaskList.get(1).enablePreviousOption();
+        }
+    }
+
+    @Override
+    public JobRunController getRunJob() {
+        try {
+            FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("RunJob/taskGroupRunPane.fxml"));
+            loader.load();
+            TaskGroupRunController taskGroupRunController = loader.getController();
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded task Group Run");
+            return taskGroupRunController;
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading Task Group Run Pane: " + e.getMessage());
+            return null;
         }
     }
 

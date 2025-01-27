@@ -25,6 +25,8 @@ import org.dev.Job.Action.Action;
 import org.dev.JobData.ActionData;
 import org.dev.JobData.JobData;
 import org.dev.JobData.ConditionData;
+import org.dev.RunJob.ActionRunController;
+import org.dev.RunJob.JobRunController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
 
 import java.awt.image.BufferedImage;
@@ -118,7 +120,7 @@ public class ActionController implements Initializable, JobDataController, Activ
     }
 
     private void openActionMenuPane(MouseEvent event) {
-        if (AppScene.isOperationRunning) {
+        if (AppScene.isRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
@@ -127,7 +129,7 @@ public class ActionController implements Initializable, JobDataController, Activ
 
     private void addNewEntryCondition(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on add entry condition");
-        if (AppScene.isOperationRunning) {
+        if (AppScene.isRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
@@ -142,7 +144,7 @@ public class ActionController implements Initializable, JobDataController, Activ
 
     private void addNewExitCondition(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on add exit condition");
-        if (AppScene.isOperationRunning) {
+        if (AppScene.isRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
@@ -182,6 +184,9 @@ public class ActionController implements Initializable, JobDataController, Activ
     }
 
     // ------------------------------------------------------
+    @Override
+    public Node getParentNode() { return mainActionParentNode; }
+
     @Override
     public AppLevel getAppLevel() { return AppLevel.Action; }
 
@@ -306,5 +311,19 @@ public class ActionController implements Initializable, JobDataController, Activ
         controllers.add(changeIndex, controllers.remove((selectedIndex)));
         children.remove(conditionNode);
         children.add(changeIndex, conditionNode);
+    }
+
+    @Override
+    public JobRunController getRunJob() {
+        try {
+            FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("RunJob/actionRunPane.fxml"));
+            loader.load();
+            ActionRunController actionRunController = loader.getController();
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Action Run");
+            return actionRunController;
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading Action Run Pane: " + e.getMessage());
+            return null;
+        }
     }
 }

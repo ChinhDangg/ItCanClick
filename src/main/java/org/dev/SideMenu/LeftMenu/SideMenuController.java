@@ -168,18 +168,17 @@ public class SideMenuController implements Initializable {
         AppScene.addLog(LogLevel.DEBUG, className, "Loaded Operation side hierarchy");
     }
 
-    public void loadOperationRunSideHierarchy(OperationRunController operationRunController) {
+    public void loadRunSideHierarchy(String name, VBox content, MainJobController jobController) {
         ObservableList<Node> runSideHierarchyChildren = runSideHierarchyVBox.getChildren();
         runSideHierarchyChildren.clear();
 
-        VBox operationRunSideContent = operationRunController.getOperationRunSideContent();
-        Node operationRunSideHBoxLabel = getNewSideHBoxLabel(new Label(operationRunController.getOperationNameRunLabel().getText()),
-                operationRunSideContent, operationRunController);
-        runSideHierarchyChildren.add(operationRunSideHBoxLabel);
-        runSideHierarchyChildren.add(operationRunSideContent);
+        Node runHBoxLabel = getNewSideHBoxLabel(new Label(name), content, jobController);
+        runSideHierarchyChildren.add(runHBoxLabel);
+        runSideHierarchyChildren.add(content);
 
-        AppScene.addLog(LogLevel.DEBUG, className, "Loaded Operation run side hierarchy");
+        AppScene.addLog(LogLevel.DEBUG, className, "Loaded run side hierarchy");
     }
+
 
     private RightClickMenuController loadRightClickMenu() {
         try {

@@ -19,9 +19,11 @@ public class RightClickMenuController implements Initializable {
     @FXML
     private HBox newTaskGroupSection, newTaskSection, newActionSection;
     @FXML
-    private HBox moveUpSection, moveDownSection;
+    private HBox runSection;
     @FXML
     private HBox copySection, pasteSection, deleteSection;
+    @FXML
+    private HBox moveUpSection, moveDownSection;
 
     private Popup rightMenuPopup;
     private JobDataController currentParentJobDataController;
@@ -36,11 +38,12 @@ public class RightClickMenuController implements Initializable {
         newActionSection.setOnMouseClicked(this::addNewAction);
         newTaskSection.setOnMouseClicked(this::addNewTask);
         newTaskGroupSection.setOnMouseClicked(this::addNewTaskGroup);
-        moveUpSection.setOnMouseClicked(this::moveUp);
-        moveDownSection.setOnMouseClicked(this::moveDown);
+        runSection.setOnMouseClicked(this::runJob);
         copySection.setOnMouseClicked(this::copyData);
         pasteSection.setOnMouseClicked(this::pasteData);
         deleteSection.setOnMouseClicked(this::deleteData);
+        moveUpSection.setOnMouseClicked(this::moveUp);
+        moveDownSection.setOnMouseClicked(this::moveDown);
     }
 
     public void showRightMenu(MouseEvent event, JobDataController jobDataController, JobDataController parentJobDataController) {
@@ -86,11 +89,12 @@ public class RightClickMenuController implements Initializable {
         newTaskGroupSection.setDisable(disable);
         newTaskSection.setDisable(disable);
         newActionSection.setDisable(disable);
-        moveUpSection.setDisable(disable);
-        moveDownSection.setDisable(disable);
+        runSection.setDisable(disable);
         copySection.setDisable(disable);
         pasteSection.setDisable(disable);
         deleteSection.setDisable(disable);
+        moveUpSection.setDisable(disable);
+        moveDownSection.setDisable(disable);
     }
 
     private void addNewTaskGroup(MouseEvent event) {
@@ -117,12 +121,8 @@ public class RightClickMenuController implements Initializable {
         hideRightMenu();
     }
 
-    private void moveUp(MouseEvent event) {
-        currentParentJobDataController.moveSavedDataUp(currentJobDataController);
-    }
-
-    private void moveDown(MouseEvent event) {
-        currentParentJobDataController.moveSavedDataDown(currentJobDataController);
+    private void runJob(MouseEvent event) {
+        hideRightMenu();
     }
 
     private void copyData(MouseEvent event) {
@@ -143,6 +143,14 @@ public class RightClickMenuController implements Initializable {
         if (currentJobDataController.getAppLevel() == AppLevel.Task)
             currentParentJobDataController.takeToDisplay();
         hideRightMenu();
+    }
+
+    private void moveUp(MouseEvent event) {
+        currentParentJobDataController.moveSavedDataUp(currentJobDataController);
+    }
+
+    private void moveDown(MouseEvent event) {
+        currentParentJobDataController.moveSavedDataDown(currentJobDataController);
     }
 
     private void hideRightMenu() {

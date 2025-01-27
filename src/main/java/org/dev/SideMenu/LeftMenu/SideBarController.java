@@ -7,10 +7,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import lombok.Getter;
 import org.dev.AppScene;
 import org.dev.Enum.CurrentTab;
 import org.dev.Enum.LogLevel;
+import org.dev.JobController.MainJobController;
 import org.dev.JobController.OperationController;
 import org.dev.RunJob.OperationRunController;
 
@@ -93,9 +95,9 @@ public class SideBarController implements Initializable {
         sideMenuController.loadOperationSideHierarchy(operationController);
     }
 
-    public void loadRunSideHierarchy(OperationRunController operationRunController) {
+    public void loadRunSideHierarchy(String name, VBox content, MainJobController mainJobController) {
         switchTab(CurrentTab.OperationRun);
-        sideMenuController.loadOperationRunSideHierarchy(operationRunController);
+        sideMenuController.loadRunSideHierarchy(name, content, mainJobController);
     }
 
     private void loadLeftSideMenu() {

@@ -13,7 +13,6 @@ import org.dev.JobController.ActionController;
 import org.dev.JobController.ConditionController;
 import org.dev.JobData.OperationData;
 import org.dev.JobController.OperationController;
-import org.dev.RunJob.OperationRunController;
 import org.dev.Enum.CurrentTab;
 import org.dev.SideMenu.LeftMenu.SideBarController;
 import org.dev.SideMenu.TopMenu.MenuBarController;
@@ -45,10 +44,9 @@ public class AppScene {
     public static ActionMenuController actionMenuController;
     public static ConditionMenuController conditionMenuController;
     public static OperationController currentLoadedOperationController;
-    public static OperationRunController currentLoadedOperationRunController;
 
     public static double currentGlobalScale = 1.3;
-    public static boolean isOperationRunning = false;
+    public static boolean isRunning = false;
     public static boolean isMaximized = false;
 
     /*
@@ -135,50 +133,22 @@ public class AppScene {
     }
 
     // ------------------------------------------------------
-    public static void setIsOperationRunning(boolean isRunning) {
-        isOperationRunning = isRunning;
+    public static void setIsRunning(boolean isRunning) {
+        AppScene.isRunning = isRunning;
         menuBarController.setOperationRunning(isRunning);
     }
 
     public static void startOperationRun() {
         if (currentLoadedOperationController == null)
             return;
+        setIsRunning(true);
         AppScene.addLog(LogLevel.INFO, className, "Starting operation");
-        currentLoadedOperationRunController.startOperation(currentLoadedOperationController);
+        currentLoadedOperationRunController.startOperation(currentLoadedOperationController.getSavedData());
     }
     public static void stopOperationRun() {
         AppScene.addLog(LogLevel.INFO, className, "Stopping operation");
         currentLoadedOperationRunController.stopOperation();
-    }
-
-    public static boolean loadAndDisplayOperationRun() {
-        if (isOperationRunning) {
-            AppScene.addLog(LogLevel.INFO, className, "Operation already running - cannot start");
-            return false;
-        }
-        if (currentLoadedOperationController == null) {
-            AppScene.addLog(LogLevel.INFO, className, "No operation found");
-            return false;
-        }
-        try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("RunJob/operationRunPane.fxml"));
-            loader.load();
-            currentLoadedOperationRunController = loader.getController();
-            displayCurrentOperationRun();
-            AppScene.addLog(LogLevel.DEBUG, className, "Loaded operation run");
-            return true;
-        } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading Operation Run Pane: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public static boolean displayCurrentOperationRun() {
-        if (currentLoadedOperationRunController == null)
-            return false;
-        displayNewCenterNode(currentLoadedOperationRunController.getParentNode());
-        AppScene.addLog(LogLevel.TRACE, className, "Displaying operation run");
-        return true;
+        setIsRunning(false);
     }
 
     // ------------------------------------------------------
@@ -187,8 +157,11 @@ public class AppScene {
             sideBarController.loadSideHierarchy(currentLoadedOperationController);
     }
     public static void updateOperationRunSideMenuHierarchy() {
-        if (currentLoadedOperationRunController != null)
-            sideBarController.loadRunSideHierarchy(currentLoadedOperationRunController);
+        if (currentLoadedOperationController == null)
+            return;
+        String name = currentLoadedOperationController.getOperationNameLabel().getText();
+        sideBarController.loadRunSideHierarchy(name, currentLoadedOperationController.getOperationSideContent(),
+                currentLoadedOperationController);
     }
 
     // ------------------------------------------------------

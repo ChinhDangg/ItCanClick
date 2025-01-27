@@ -1,6 +1,7 @@
 package org.dev.JobController;
 
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -13,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import lombok.Getter;
+import org.dev.App;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
@@ -20,7 +22,11 @@ import org.dev.JobData.JobData;
 import org.dev.JobData.OperationData;
 import org.dev.Job.Operation;
 import org.dev.JobData.TaskGroupData;
+import org.dev.RunJob.JobRunController;
+import org.dev.RunJob.OperationRunController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -64,7 +70,6 @@ public class OperationController implements Initializable, Serializable, JobData
 
     public boolean isSet() { return !taskList.isEmpty() && taskList.getFirst().isSet(); }
     public void setVisible(boolean visible) { getParentNode().setVisible(visible); }
-    public Node getParentNode() { return operationScrollPane; }
 
     private void loadMainOperationVBox() {
         if (currentScale != AppScene.currentGlobalScale) {
@@ -91,7 +96,7 @@ public class OperationController implements Initializable, Serializable, JobData
 
     // ------------------------------------------------------
     private void addTaskGroupAction(MouseEvent event) {
-        if (AppScene.isOperationRunning) {
+        if (AppScene.isRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
@@ -139,6 +144,9 @@ public class OperationController implements Initializable, Serializable, JobData
     private void setUnselected(Node taskPane) { taskPane.setStyle(""); }
 
     // ------------------------------------------------------
+    @Override
+    public Node getParentNode() { return operationScrollPane; }
+
     @Override
     public AppLevel getAppLevel() {
         return AppLevel.Operation;
@@ -255,6 +263,20 @@ public class OperationController implements Initializable, Serializable, JobData
     private void updateTaskIndex(int start) {
         for (int j = start; j < taskList.size(); j++)
             taskList.get(j).setTaskIndex(j+1);
+    }
+
+    @Override
+    public JobRunController getRunJob() {
+        try {
+            FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("RunJob/operationRunPane.fxml"));
+            loader.load();
+            OperationRunController operationRunController = loader.getController();
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Operation Run");
+            return operationRunController;
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading Operation Run Pane: " + e.getMessage());
+            return null;
+        }
     }
 
     // ------------------------------------------------------

@@ -13,6 +13,7 @@ import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Action.Action;
 import org.dev.JobData.ActionData;
+import org.dev.JobData.JobData;
 import org.dev.JobData.TaskData;
 import org.dev.JobController.MainJobController;
 import org.dev.Job.Task.Task;
@@ -20,7 +21,7 @@ import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.io.IOException;
 import java.util.List;
 
-public class TaskRunController implements MainJobController {
+public class TaskRunController implements JobRunController {
 
     @FXML
     private Group mainTaskRunGroup;
@@ -34,14 +35,17 @@ public class TaskRunController implements MainJobController {
     private final String className = this.getClass().getSimpleName();
 
     @Override
-    public void takeToDisplay() {
-        AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(mainTaskRunGroup);
-        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
-    }
+    public Node getParentNode() { return mainTaskRunVBox; }
 
     @Override
     public AppLevel getAppLevel() {
         return AppLevel.Task;
+    }
+
+    @Override
+    public void takeToDisplay() {
+        AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(mainTaskRunGroup);
+        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
     public void changeTaskRunName(String newName) {
@@ -49,11 +53,13 @@ public class TaskRunController implements MainJobController {
     }
 
     // ------------------------------------------------------
-    public boolean startTask(TaskData taskData) throws InterruptedException {
-        if (taskData == null) {
+    @Override
+    public boolean startJob(JobData jobData) {
+        if (jobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task data is null - cannot start");
             return false;
         }
+        TaskData taskData = (TaskData) jobData;
         Task currentTask = taskData.getTask();
         if (currentTask == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task is null - cannot start");
@@ -76,7 +82,7 @@ public class TaskRunController implements MainJobController {
         return true;
     }
 
-    private boolean runTask(TaskData taskData) throws InterruptedException {
+    private boolean runTask(TaskData taskData) {
         AppScene.addLog(LogLevel.INFO, className, "Start running task: " + taskData.getTask().getTaskName());
         boolean pass = false;
         List<ActionData> actionDataList = taskData.getActionDataList();
