@@ -64,7 +64,7 @@ public class ConditionController implements Initializable, JobDataController, Ac
     }
 
     private void openConditionOptionPane(MouseEvent event) {
-        if (AppScene.isRunning) {
+        if (AppScene.isJobRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
@@ -110,7 +110,7 @@ public class ConditionController implements Initializable, JobDataController, Ac
     public void removeSavedData(JobDataController jobDataController) {}
 
     @Override
-    public void takeToDisplay() {}
+    public void takeToDisplay(MainJobController parentController) {}
 
     @Override
     public AppLevel getAppLevel() {

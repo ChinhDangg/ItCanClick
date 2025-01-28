@@ -13,12 +13,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
+import lombok.NonNull;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Action.Action;
 import org.dev.Job.Condition.Condition;
+import org.dev.JobController.MainJobController;
 import org.dev.JobData.ActionData;
 import org.dev.JobData.ConditionData;
 import org.dev.JobData.JobData;
@@ -77,8 +79,9 @@ public class ActionRunController extends RunActivity implements Initializable, J
     }
 
     @Override
-    public void takeToDisplay() {
-        AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(mainActionRunGroup);
+    public void takeToDisplay(@NonNull MainJobController parentController) {
+        OperationRunController parentOperationRunController = (OperationRunController) parentController;
+        parentOperationRunController.changeScrollPaneVValueView(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 

@@ -10,12 +10,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
+import lombok.NonNull;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.JobData.JobData;
 import org.dev.JobData.TaskData;
 import org.dev.Job.Task.Task;
+import org.dev.RunJob.JobRunController;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -84,7 +86,7 @@ public class MinimizedTaskController implements Initializable, JobDataController
 
     // ------------------------------------------------------
     public void openTask(MouseEvent event) {
-        if (AppScene.isRunning) {
+        if (AppScene.isJobRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot navigate");
             return;
         }
@@ -120,12 +122,16 @@ public class MinimizedTaskController implements Initializable, JobDataController
 
     // ------------------------------------------------------
     @Override
+    public Node getParentNode() { return parentNode; }
+
+    @Override
     public AppLevel getAppLevel() { return AppLevel.Task; }
 
     @Override
-    public void takeToDisplay() {
-        AppScene.currentLoadedOperationController.takeToDisplay();
-        AppScene.currentLoadedOperationController.changeOperationScrollPaneView(parentNode);
+    public void takeToDisplay(@NonNull MainJobController parentController) {
+        OperationController parentOperationController = (OperationController) parentController;
+        parentOperationController.takeToDisplay(null);
+        parentOperationController.changeOperationScrollPaneView(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
@@ -163,4 +169,6 @@ public class MinimizedTaskController implements Initializable, JobDataController
     public void moveSavedDataUp(JobDataController jobDataController) {}
     @Override
     public void moveSavedDataDown(JobDataController jobDataController) {}
+    @Override
+    public JobRunController getRunJob() { return taskController.getRunJob(); }
 }

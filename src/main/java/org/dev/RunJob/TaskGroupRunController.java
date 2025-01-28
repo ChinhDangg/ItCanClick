@@ -7,11 +7,13 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
+import lombok.NonNull;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Task.Task;
 import org.dev.Job.Task.TaskGroup;
+import org.dev.JobController.MainJobController;
 import org.dev.JobData.JobData;
 import org.dev.JobData.TaskData;
 import org.dev.JobData.TaskGroupData;
@@ -31,7 +33,6 @@ public class TaskGroupRunController implements JobRunController {
     private VBox taskGroupRunSideContent = new VBox();
     private final String className = this.getClass().getSimpleName();
 
-
     @Override
     public Node getParentNode() { return parentNode; }
 
@@ -41,8 +42,9 @@ public class TaskGroupRunController implements JobRunController {
     }
 
     @Override
-    public void takeToDisplay() {
-        AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(parentNode);
+    public void takeToDisplay(@NonNull MainJobController parentController) {
+        OperationRunController parentOperationRunController = (OperationRunController) parentController;
+        parentOperationRunController.changeScrollPaneVValueView(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 

@@ -6,6 +6,7 @@ import java.util.List;
 
 public class JobStructure {
 
+    private JobDataController displayParentController;
     private JobDataController parentController;
     private JobDataController currentController;
 

@@ -118,8 +118,8 @@ public class MenuBarController implements Initializable {
 
     private void startOperationRunEvent(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start operation");
-        AppScene.updateOperationRunSideMenuHierarchy();
         AppScene.startOperationRun();
+        AppScene.displayCurrentRunJobNode();
         setOperationRunning(true);
     }
 

@@ -14,6 +14,7 @@ import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Task.TaskGroup;
+import org.dev.JobController.MainJobController;
 import org.dev.JobData.JobData;
 import org.dev.JobData.OperationData;
 import org.dev.JobData.TaskGroupData;
@@ -60,7 +61,7 @@ public class OperationRunController implements Initializable, JobRunController {
     }
 
     @Override
-    public void takeToDisplay() {
+    public void takeToDisplay(MainJobController parentController) {
         if (mainOperationRunVBox.getScene() == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation run scene is null - but take to display is called");
             return;

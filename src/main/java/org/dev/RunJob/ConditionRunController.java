@@ -9,6 +9,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import lombok.NonNull;
 import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
@@ -55,8 +56,9 @@ public class ConditionRunController extends RunActivity implements Initializable
     }
 
     @Override
-    public void takeToDisplay() {
-        AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(parentScrollPane);
+    public void takeToDisplay(@NonNull MainJobController parentController) {
+        OperationRunController parentOperationRunController = (OperationRunController) parentController;
+        parentOperationRunController.changeScrollPaneVValueView(parentScrollPane);
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 

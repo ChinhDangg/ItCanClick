@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
+import lombok.NonNull;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
@@ -43,8 +44,9 @@ public class TaskRunController implements JobRunController {
     }
 
     @Override
-    public void takeToDisplay() {
-        AppScene.currentLoadedOperationRunController.changeScrollPaneVValueView(mainTaskRunGroup);
+    public void takeToDisplay(@NonNull MainJobController parentController) {
+        OperationRunController parentOperationRunController = (OperationRunController) parentController;
+        parentOperationRunController.changeScrollPaneVValueView(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
@@ -96,7 +98,7 @@ public class TaskRunController implements JobRunController {
                 continue;
             }
             loadAndAddNewActionRunPane(currentAction.getActionName());
-            pass = currentActionRunController.startAction(actionData);
+            pass = currentActionRunController.startJob(actionData);
             if (!currentAction.isRequired())
                 pass = true;
             else if (!pass) { // action is required but failed

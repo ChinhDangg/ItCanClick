@@ -141,7 +141,7 @@ public class RightClickMenuController implements Initializable {
     private void deleteData(MouseEvent event) {
         currentParentJobDataController.removeSavedData(currentJobDataController);
         if (currentJobDataController.getAppLevel() == AppLevel.Task)
-            currentParentJobDataController.takeToDisplay();
+            currentParentJobDataController.takeToDisplay(null);
         hideRightMenu();
     }
 

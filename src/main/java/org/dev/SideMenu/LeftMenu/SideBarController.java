@@ -14,7 +14,6 @@ import org.dev.Enum.CurrentTab;
 import org.dev.Enum.LogLevel;
 import org.dev.JobController.MainJobController;
 import org.dev.JobController.OperationController;
-import org.dev.RunJob.OperationRunController;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -77,7 +76,7 @@ public class SideBarController implements Initializable {
         if (newTab == CurrentTab.Operation)
             AppScene.backToOperationScene();
         else {
-            boolean isDisplayed = AppScene.displayCurrentOperationRun();
+            boolean isDisplayed = AppScene.displayCurrentRunJobNode();
             if (!isDisplayed)
                 return false;
             isOperationRun = true;

@@ -68,7 +68,7 @@ public class TaskController implements Initializable, JobDataController {
 
     // ------------------------------------------------------
     private void addNewActionPane(MouseEvent event) {
-        if (AppScene.isRunning) {
+        if (AppScene.isJobRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
@@ -113,8 +113,8 @@ public class TaskController implements Initializable, JobDataController {
     }
 
     @Override
-    public void takeToDisplay() {
-        AppScene.addLog(LogLevel.WARN, className, "Empty take to display is called - advice to recheck");
+    public void takeToDisplay(MainJobController parentController) {
+        openTaskPane();
     }
 
     @Override
@@ -148,7 +148,6 @@ public class TaskController implements Initializable, JobDataController {
             Node actionPane = loader.load();
             actionPane.setOnMouseClicked(this::selectTheActionPaneAction);
             ActionController actionController = loader.getController();
-            actionController.setParentTaskController(this);
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Action Pane");
             if (actionData != null)
                 actionController.loadSavedData(actionData);

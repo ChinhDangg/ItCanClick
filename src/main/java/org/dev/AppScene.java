@@ -1,11 +1,16 @@
 package org.dev;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import org.dev.Enum.LogLevel;
+import org.dev.JobController.JobDataController;
+import org.dev.JobData.JobData;
+import org.dev.RunJob.JobRunController;
 import org.dev.SideMenu.*;
 import org.dev.Menu.ActionMenuController;
 import org.dev.Menu.ConditionMenuController;
@@ -44,9 +49,10 @@ public class AppScene {
     public static ActionMenuController actionMenuController;
     public static ConditionMenuController conditionMenuController;
     public static OperationController currentLoadedOperationController;
+    public static JobRunController currentJobRunController;
 
     public static double currentGlobalScale = 1.3;
-    public static boolean isRunning = false;
+    public static boolean isJobRunning = false;
     public static boolean isMaximized = false;
 
     /*
@@ -133,22 +139,58 @@ public class AppScene {
     }
 
     // ------------------------------------------------------
-    public static void setIsRunning(boolean isRunning) {
-        AppScene.isRunning = isRunning;
-        menuBarController.setOperationRunning(isRunning);
+    private static Thread runJobThread = null;
+
+    private static void setIsJobRunning(boolean isJobRunning) {
+        AppScene.isJobRunning = isJobRunning;
+        menuBarController.setOperationRunning(isJobRunning);
+    }
+
+    public static void startJobRun(JobDataController jobDataController) {
+        if (jobDataController == null)
+            return;
+        if (isJobRunning) {
+            AppScene.addLog(LogLevel.INFO, className, "Fail to start - as another job is running");
+            return;
+        }
+        setIsJobRunning(true);
+        AppScene.addLog(LogLevel.INFO, className, "Starting to run job");
+        Task<Void> runJobTask = getRunJobTask(jobDataController);
+        runJobThread = new Thread(runJobTask);
+        runJobThread.start();
+        setIsJobRunning(false);
+    }
+
+    private static Task<Void> getRunJobTask(JobDataController jobDataController) {
+        currentJobRunController = jobDataController.getRunJob();
+        JobData jobData = jobDataController.getSavedData();
+        return new Task<>() {
+            @Override
+            protected Void call() {
+                try {
+                    currentJobRunController.startJob(jobData);
+                    AppScene.addLog(LogLevel.INFO, className, "Finished running job");
+                    Platform.runLater(() -> setIsJobRunning(false));
+                } catch (Exception e) {
+                    AppScene.addLog(LogLevel.ERROR, className, "Error to start run job");
+                }
+                return null;
+            }
+        };
+    }
+
+    public static void stopRunJob() {
+        AppScene.addLog(LogLevel.INFO, className, "Stopping running job");
+        runJobThread.interrupt();
+        setIsJobRunning(false);
     }
 
     public static void startOperationRun() {
-        if (currentLoadedOperationController == null)
-            return;
-        setIsRunning(true);
-        AppScene.addLog(LogLevel.INFO, className, "Starting operation");
-        currentLoadedOperationRunController.startOperation(currentLoadedOperationController.getSavedData());
+        startJobRun(currentLoadedOperationController);
     }
+
     public static void stopOperationRun() {
-        AppScene.addLog(LogLevel.INFO, className, "Stopping operation");
-        currentLoadedOperationRunController.stopOperation();
-        setIsRunning(false);
+        stopRunJob();
     }
 
     // ------------------------------------------------------
@@ -170,11 +212,19 @@ public class AppScene {
         mainDisplayStackPane.getChildren().add(node);
         AppScene.addLog(LogLevel.TRACE, className, "Displayed new center node");
     }
+
     public static void backToOperationScene() {
         if (currentLoadedOperationController == null)
             return;
         displayNewCenterNode(currentLoadedOperationController.getParentNode());
         AppScene.addLog(LogLevel.TRACE, className, "Backed to Operation Scene");
+    }
+
+    public static boolean displayCurrentRunJobNode() {
+        if (currentJobRunController == null)
+            return false;
+        displayNewCenterNode(currentJobRunController.getParentNode());
+        return true;
     }
 
     // ------------------------------------------------------

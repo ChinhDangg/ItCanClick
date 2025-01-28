@@ -135,7 +135,8 @@ public class SideMenuController implements Initializable {
         }
     }
 
-    private static void doubleClickAndRightClick(MouseEvent event, JobDataController jobDataController, JobDataController parentController, RightClickMenuController rightClickMenuController) {
+    private static void doubleClickAndRightClick(MouseEvent event, JobDataController jobDataController,
+                                                 JobDataController parentController, RightClickMenuController rightClickMenuController) {
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
             jobDataController.takeToDisplay();
             highlightLabel((Node) event.getSource());

@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
+import lombok.NonNull;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
@@ -82,9 +83,10 @@ public class TaskGroupController implements Initializable, JobDataController {
     public AppLevel getAppLevel() { return AppLevel.TaskGroup; }
 
     @Override
-    public void takeToDisplay() {
-        AppScene.currentLoadedOperationController.takeToDisplay();
-        AppScene.currentLoadedOperationController.changeOperationScrollPaneView(parentNode);
+    public void takeToDisplay(@NonNull MainJobController parentController) {
+        OperationController parentOperationController = (OperationController) parentController;
+        parentOperationController.takeToDisplay(null);
+        parentOperationController.changeOperationScrollPaneView(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
@@ -205,7 +207,7 @@ public class TaskGroupController implements Initializable, JobDataController {
             FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("RunJob/taskGroupRunPane.fxml"));
             loader.load();
             TaskGroupRunController taskGroupRunController = loader.getController();
-            AppScene.addLog(LogLevel.DEBUG, className, "Loaded task Group Run");
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Task Group Run");
             return taskGroupRunController;
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading Task Group Run Pane: " + e.getMessage());

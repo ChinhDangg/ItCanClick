@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
@@ -60,8 +61,6 @@ public class ActionController implements Initializable, JobDataController, Activ
     private ActionTypes chosenActionPerform;
     @Getter
     private final Label actionNameLabel = new Label();
-    @Setter
-    private TaskController parentTaskController;
 
     private final String className = this.getClass().getSimpleName();
     private final List<ConditionController> entryConditionList = new ArrayList<>();
@@ -120,7 +119,7 @@ public class ActionController implements Initializable, JobDataController, Activ
     }
 
     private void openActionMenuPane(MouseEvent event) {
-        if (AppScene.isRunning) {
+        if (AppScene.isJobRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
@@ -129,7 +128,7 @@ public class ActionController implements Initializable, JobDataController, Activ
 
     private void addNewEntryCondition(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on add entry condition");
-        if (AppScene.isRunning) {
+        if (AppScene.isJobRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
@@ -144,7 +143,7 @@ public class ActionController implements Initializable, JobDataController, Activ
 
     private void addNewExitCondition(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on add exit condition");
-        if (AppScene.isRunning) {
+        if (AppScene.isJobRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
@@ -191,11 +190,12 @@ public class ActionController implements Initializable, JobDataController, Activ
     public AppLevel getAppLevel() { return AppLevel.Action; }
 
     @Override
-    public void takeToDisplay() {
+    public void takeToDisplay(@NonNull  MainJobController parentController) {
         AppScene.closeActionMenuPane();
         AppScene.closeConditionMenuPane();
-        parentTaskController.openTaskPane();
-        parentTaskController.changeTaskScrollPaneView(mainActionParentNode);
+        TaskController parentTaskController = (TaskController) parentController;
+        parentTaskController.takeToDisplay(null);
+        parentTaskController.changeTaskScrollPaneView(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
