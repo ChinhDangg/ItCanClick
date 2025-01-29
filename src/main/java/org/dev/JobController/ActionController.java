@@ -26,6 +26,7 @@ import org.dev.Job.Action.Action;
 import org.dev.JobData.ActionData;
 import org.dev.JobData.JobData;
 import org.dev.JobData.ConditionData;
+import org.dev.JobStructure;
 import org.dev.RunJob.ActionRunController;
 import org.dev.RunJob.JobRunController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
@@ -52,6 +53,9 @@ public class ActionController implements Initializable, JobDataController, Activ
     private HBox entryConditionHBox, exitConditionHBox;
     @FXML
     private StackPane entryAddButton, exitAddButton;
+
+    @Getter
+    private JobStructure jobStructure;
 
     @Getter
     private boolean isSet;

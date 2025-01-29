@@ -20,7 +20,7 @@ import org.dev.Enum.LogLevel;
 import org.dev.JobController.JobDataController;
 import org.dev.JobController.MainJobController;
 import org.dev.JobController.OperationController;
-import org.dev.RunJob.OperationRunController;
+import org.dev.JobStructure;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -99,25 +99,25 @@ public class SideMenuController implements Initializable {
     }
 
     // ------------------------------------------------------
-    public static Node getNewSideHBoxLabel(Label label, VBox content, JobDataController jobDataController, JobDataController parentController) {
-        SideMenuLabelController controller = loadSideMenuLabelController();
+    public static SideMenuLabelController getNewSideHBoxLabelController(String name, JobStructure jobStructure) {
+        SideMenuLabelController controller = getSideMenuLabelController();
         if (controller == null)
             return null;
-        Node hBoxLabel = controller.createHBoxLabel(label, content, jobDataController);
-        hBoxLabel.setOnMouseClicked(event -> doubleClickAndRightClick(event, jobDataController, parentController, rightClickMenuController));
-        return hBoxLabel;
+        Node hBoxLabel = controller.createHBoxLabel(name, jobStructure.getSideContent(), jobStructure.getCurrentController().getAppLevel());
+        hBoxLabel.setOnMouseClicked(event -> doubleClickAndRightClick(event, jobStructure, rightClickMenuController));
+        return controller;
     }
 
-    public static Node getNewSideHBoxLabel(Label label, VBox content, MainJobController jobController) {
-        SideMenuLabelController controller = loadSideMenuLabelController();
+    public static SideMenuLabelController getNewSideHBoxLabelController(String name, VBox content, MainJobController currentController, MainJobController displayController) {
+        SideMenuLabelController controller = getSideMenuLabelController();
         if (controller == null)
             return null;
-        Node hBoxLabel = controller.createHBoxLabel(label, content, jobController);
-        hBoxLabel.setOnMouseClicked(event -> doubleClick(event, jobController));
-        return hBoxLabel;
+        Node hBoxLabel = controller.createHBoxLabel(name, content, currentController.getAppLevel());
+        hBoxLabel.setOnMouseClicked(event -> doubleClick(event, currentController, displayController));
+        return controller;
     }
 
-    private static SideMenuLabelController loadSideMenuLabelController() {
+    private static SideMenuLabelController getSideMenuLabelController() {
         try {
             FXMLLoader sideMenuLabelLoader = new FXMLLoader(SideMenuController.class.getResource("sideMenuLabel.fxml"));
             sideMenuLabelLoader.load();
@@ -128,21 +128,22 @@ public class SideMenuController implements Initializable {
         }
     }
 
-    private static void doubleClick(MouseEvent event, MainJobController jobController) {
+    private static void doubleClick(MouseEvent event, MainJobController jobController, MainJobController displayController) {
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-            jobController.takeToDisplay();
+            jobController.takeToDisplay(displayController);
             highlightLabel((Node) event.getSource());
         }
     }
 
-    private static void doubleClickAndRightClick(MouseEvent event, JobDataController jobDataController,
-                                                 JobDataController parentController, RightClickMenuController rightClickMenuController) {
+    private static void doubleClickAndRightClick(MouseEvent event, JobStructure jobStructure,
+                                                 RightClickMenuController rightClickMenuController) {
+        JobDataController currentController = jobStructure.getCurrentController();
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-            jobDataController.takeToDisplay();
+            currentController.takeToDisplay(jobStructure.getDisplayParentController());
             highlightLabel((Node) event.getSource());
         }
         else if (event.getButton() == MouseButton.SECONDARY) {
-            rightClickMenuController.showRightMenu(event, jobDataController, parentController);
+            rightClickMenuController.showRightMenu(event, currentController, jobStructure.getParentController());
         }
     }
 
@@ -173,7 +174,7 @@ public class SideMenuController implements Initializable {
         ObservableList<Node> runSideHierarchyChildren = runSideHierarchyVBox.getChildren();
         runSideHierarchyChildren.clear();
 
-        Node runHBoxLabel = getNewSideHBoxLabel(new Label(name), content, jobController);
+        Node runHBoxLabel = getNewSideHBoxLabel(name, content, jobController);
         runSideHierarchyChildren.add(runHBoxLabel);
         runSideHierarchyChildren.add(content);
 

@@ -6,6 +6,8 @@ import org.dev.RunJob.JobRunController;
 
 public interface JobDataController extends MainJobController {
 
+    boolean isSet();
+
     JobData getSavedData();
 
     void loadSavedData(JobData jobData);

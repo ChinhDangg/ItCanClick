@@ -19,6 +19,7 @@ import org.dev.Enum.LogLevel;
 import org.dev.JobData.ActionData;
 import org.dev.JobData.JobData;
 import org.dev.JobData.TaskData;
+import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
 import org.dev.RunJob.TaskRunController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
@@ -41,6 +42,9 @@ public class TaskController implements Initializable, JobDataController {
     private StackPane addNewActionButton;
 
     @Getter
+    private JobStructure jobStructure;
+
+    @Getter
     private final List<ActionController> actionList = new ArrayList<>();
     @Getter
     private VBox taskSideContent = new VBox();
@@ -54,7 +58,6 @@ public class TaskController implements Initializable, JobDataController {
         loadMainTaskVBox();
     }
 
-    public boolean isSet() { return (!actionList.isEmpty() && actionList.getFirst().isSet()); }
     public void openTaskPane() { AppScene.displayNewCenterNode(taskScrollPane); }
     private void backToPreviousAction(MouseEvent event) { AppScene.backToOperationScene(); }
     public void changeTaskName(String name) { taskNameLabel.setText(name); }
@@ -105,17 +108,16 @@ public class TaskController implements Initializable, JobDataController {
 
     // ------------------------------------------------------
     @Override
+    public boolean isSet() { return (!actionList.isEmpty() && actionList.getFirst().isSet()); }
+
+    @Override
     public Node getParentNode() { return taskScrollPane; }
 
     @Override
-    public AppLevel getAppLevel() {
-        return null;
-    }
+    public AppLevel getAppLevel() { return AppLevel.Task; }
 
     @Override
-    public void takeToDisplay(MainJobController parentController) {
-        openTaskPane();
-    }
+    public void takeToDisplay(MainJobController parentController) { openTaskPane(); }
 
     @Override
     public TaskData getSavedData() {

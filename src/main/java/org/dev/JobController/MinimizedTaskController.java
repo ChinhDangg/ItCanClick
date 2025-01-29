@@ -17,6 +17,7 @@ import org.dev.Enum.LogLevel;
 import org.dev.JobData.JobData;
 import org.dev.JobData.TaskData;
 import org.dev.Job.Task.Task;
+import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
 
 import java.net.URL;
@@ -35,6 +36,9 @@ public class MinimizedTaskController implements Initializable, JobDataController
     private CheckBox requiredCheckBox, previousPassCheckBox;
     @FXML
     private StackPane repeatMinusButton, repeatPlusButton;
+
+    @Getter
+    private JobStructure jobStructure;
 
     @Getter
     private final Label taskNameLabel = new Label();
@@ -58,7 +62,6 @@ public class MinimizedTaskController implements Initializable, JobDataController
         });
     }
 
-    public boolean isSet() { return (taskController != null && taskController.isSet()); }
     public void disablePreviousOption() {
         previousPassCheckBox.setSelected(false);
         previousPassCheckBox.setVisible(false);
@@ -121,6 +124,9 @@ public class MinimizedTaskController implements Initializable, JobDataController
     }
 
     // ------------------------------------------------------
+    @Override
+    public boolean isSet() { return (taskController != null && taskController.isSet()); }
+
     @Override
     public Node getParentNode() { return parentNode; }
 

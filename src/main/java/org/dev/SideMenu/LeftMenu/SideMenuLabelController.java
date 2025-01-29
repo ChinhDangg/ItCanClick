@@ -19,27 +19,24 @@ public class SideMenuLabelController {
     @FXML
     private Label sideLabel;
 
-    public Node createHBoxLabel(Label label, VBox collapseContent, JobDataController jobDataController) {
-        AppLevel appLevel = jobDataController.getAppLevel();
-        parentHBoxNode.getChildren().remove(sideLabel);
+    public Node createHBoxLabel(String name, VBox collapseContent, AppLevel appLevel) {
         if (appLevel == AppLevel.Action || appLevel == AppLevel.Condition) {
             labelIndicationImageView.setFitWidth(13);
             labelIndicationImageView.setFitHeight(15);
             collapseImageIcon.setImage(null);
         }
         setIndicationIcon(appLevel);
-        parentHBoxNode.getChildren().add(label);
+        sideLabel.setText(name);
         if (collapseContent != null)
             collapseImageIcon.setOnMouseClicked(_ -> collapseContent(collapseContent));
         return parentHBoxNode;
     }
 
-    public Node createHBoxLabel(Label label, VBox collapseContent, MainJobController jobController) {
-        setIndicationIcon(jobController.getAppLevel());
-        parentHBoxNode.getChildren().remove(sideLabel);
-        parentHBoxNode.getChildren().add(label);
-        if (collapseContent != null)
-            collapseImageIcon.setOnMouseClicked(_ -> collapseContent(collapseContent));
+    public void changeLabelName(String name) {
+        sideLabel.setText(name);
+    }
+
+    public Node getHBoxLabel() {
         return parentHBoxNode;
     }
 

@@ -20,6 +20,7 @@ import org.dev.JobData.JobData;
 import org.dev.JobData.OperationData;
 import org.dev.Job.Operation;
 import org.dev.JobData.TaskGroupData;
+import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
 import org.dev.RunJob.OperationRunController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class OperationController implements Initializable, Serializable, JobDataController {
+public class OperationController implements Initializable, JobDataController {
     @FXML
     private ScrollPane operationScrollPane;
     @FXML
@@ -43,19 +44,20 @@ public class OperationController implements Initializable, Serializable, JobData
     private HBox addTaskButton;
 
     @Getter
-    private final List<TaskGroupController> taskList = new ArrayList<>();
+    private JobStructure jobStructure;
+    //private final List<TaskGroupController> taskList = new ArrayList<>();
     private Operation operation = new Operation();
-    @Getter
-    private final Label operationNameLabel = new Label();
-    @Getter
-    private VBox operationSideContent = new VBox();
+    //@Getter
+    //private final Label operationNameLabel = new Label();
+    //@Getter
+    //private VBox operationSideContent = new VBox();
     private double currentScale = 1;
     private final String className = this.getClass().getSimpleName();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         addTaskButton.setOnMouseClicked(this::addTaskGroupAction);
-        operationNameLabel.setText(renameTextField.getText());
+        //operationNameLabel.setText(renameTextField.getText());
         renameTextField.focusedProperty().addListener((_, _, newValue) -> {
             if (!newValue) {
                 //System.out.println("TextField lost focus");
@@ -63,9 +65,9 @@ public class OperationController implements Initializable, Serializable, JobData
             }
         });
         loadMainOperationVBox();
+        jobStructure = new JobStructure(null, null, this, renameTextField.getText());
     }
 
-    public boolean isSet() { return !taskList.isEmpty() && taskList.getFirst().isSet(); }
     public void setVisible(boolean visible) { getParentNode().setVisible(visible); }
 
     private void loadMainOperationVBox() {
@@ -86,7 +88,8 @@ public class OperationController implements Initializable, Serializable, JobData
         updateOperationName(name);
     }
     private void updateOperationName(String name) {
-        operationNameLabel.setText(name);
+        //operationNameLabel.setText(name);
+        jobStructure.changeName(name);
         renameTextField.setText(name);
         AppScene.addLog(LogLevel.DEBUG, className, "Updated operation name: " + name);
     }
@@ -97,7 +100,7 @@ public class OperationController implements Initializable, Serializable, JobData
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
-        if (!taskList.isEmpty() && !taskList.getLast().isSet()) {
+        if (!jobStructure.getSubJobStructures().isEmpty() && jobStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
             AppScene.addLog(LogLevel.INFO, className, "Recent minimized task is not set");
             return;
         }
@@ -142,6 +145,14 @@ public class OperationController implements Initializable, Serializable, JobData
 
     // ------------------------------------------------------
     @Override
+    public boolean isSet() {
+        if (jobStructure == null)
+            return false;
+        return !jobStructure.getSubJobStructures().isEmpty()
+                && jobStructure.getSubJobStructures().getFirst().getCurrentController().isSet();
+    }
+
+    @Override
     public Node getParentNode() { return operationScrollPane; }
 
     @Override
@@ -160,11 +171,11 @@ public class OperationController implements Initializable, Serializable, JobData
     @Override
     public OperationData getSavedData() {
         OperationData operationData = new OperationData();
-        operation.setOperationName(operationNameLabel.getText());
+        operation.setOperationName(renameTextField.getText());
         operationData.setOperation(operation.getDeepCopied());
         List<TaskGroupData> taskDataList = new ArrayList<>();
-        for (TaskGroupController taskGroupController : taskList)
-            taskDataList.add(taskGroupController.getSavedData());
+        for (JobStructure subJobStructure : jobStructure.getSubJobStructures())
+            taskDataList.add(((TaskGroupController) subJobStructure.getCurrentController()).getSavedData());
         operationData.setTaskGroupDataList(taskDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got operation data");
         return operationData;
@@ -194,10 +205,10 @@ public class OperationController implements Initializable, Serializable, JobData
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Task Group Pane");
             if (taskData != null)
                 controller.loadSavedData(taskData);
-            int numberOfTask = taskList.size();
+            int numberOfTask = jobStructure.getSubJobStructures().size();
             controller.setTaskIndex(numberOfTask + 1);
             operationVBox.getChildren().add(taskPane);
-            taskList.add(controller);
+            jobStructure.addSubJobStructure(controller.getJobStructure());
             createTaskSideContent(controller);
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding task group pane: " + e.getMessage());

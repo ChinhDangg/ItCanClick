@@ -18,6 +18,7 @@ import org.dev.Job.Task.TaskGroup;
 import org.dev.JobData.JobData;
 import org.dev.JobData.TaskData;
 import org.dev.JobData.TaskGroupData;
+import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
 import org.dev.RunJob.TaskGroupRunController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
@@ -39,6 +40,9 @@ public class TaskGroupController implements Initializable, JobDataController {
     private CheckBox requiredCheckBox, disabledCheckBox;
 
     @Getter
+    private JobStructure jobStructure;
+
+    @Getter
     private final List<MinimizedTaskController> minimizedTaskList = new ArrayList<>();
     @Getter
     private VBox taskGroupSideContent = new VBox();
@@ -57,7 +61,7 @@ public class TaskGroupController implements Initializable, JobDataController {
             }
         });
     }
-    public boolean isSet() { return !minimizedTaskList.isEmpty() && minimizedTaskList.getFirst().isSet(); }
+
     public void setTaskIndex(int taskIndex) { taskIndexLabel.setText(Integer.toString(taskIndex)); }
 
     private void changeTaskGroupName() {
@@ -76,6 +80,9 @@ public class TaskGroupController implements Initializable, JobDataController {
     }
 
     // ------------------------------------------------------
+    @Override
+    public boolean isSet() { return !minimizedTaskList.isEmpty() && minimizedTaskList.getFirst().isSet(); }
+
     @Override
     public Node getParentNode() { return parentNode; }
 
