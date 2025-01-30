@@ -11,13 +11,10 @@ import java.io.Serializable;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 public class Operation implements MainJob, Serializable {
-
-    private String operationName = "Operation Name";
-
     @Serial
     private static final long serialVersionUID = 1L;
+    private String operationName = "Operation Name";
 
     @Override
     public Operation getDeepCopied() {

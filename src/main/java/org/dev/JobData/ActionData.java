@@ -3,6 +3,7 @@ package org.dev.JobData;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.Job.Action.Action;
+import org.dev.Job.MainJob;
 
 import java.io.Serial;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 public class ActionData implements JobData {
     @Serial
     private static final long serialVersionUID = 1L;
-    private Action action;
-    private List<ConditionData> entryConditionList;
-    private List<ConditionData> exitConditionList;
+    private MainJob action;
+    private List<JobData> entryConditionList;
+    private List<JobData> exitConditionList;
 }

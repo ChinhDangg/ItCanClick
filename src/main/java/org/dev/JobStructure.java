@@ -32,6 +32,10 @@ public class JobStructure {
         labelController = SideMenuController.getNewSideHBoxLabelController(name, this);
     }
 
+    public String getName() {
+        return labelController.getName();
+    }
+
     public void changeName(String name) {
         labelController.changeLabelName(name);
     }
@@ -40,15 +44,24 @@ public class JobStructure {
         return labelController.getHBoxLabel();
     }
 
+    public int getSubStructureSize() {
+        return subJobStructures.size();
+    }
+
+    public int getSubStructureIndex(JobStructure jobStructure) {
+        return subJobStructures.indexOf(jobStructure);
+    }
+
     public void addSubJobStructure(JobStructure structure) {
         subJobStructures.add(structure);
         addToSideContent(structure.getHBoxLabel(), structure.getSideContent());
     }
 
-    public void removeSubJobStructure(JobStructure structure) {
+    public int removeSubJobStructure(JobStructure structure) {
         int removeIndex = subJobStructures.indexOf(structure);
         subJobStructures.remove(structure);
         removeFromSideContent(removeIndex);
+        return removeIndex;
     }
 
     public void updateSubJobStructure(JobStructure structure, int changeIndex) {

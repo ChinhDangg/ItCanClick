@@ -54,7 +54,7 @@ public class ActionController implements Initializable, JobDataController, Activ
     @FXML
     private StackPane entryAddButton, exitAddButton;
 
-    @Getter
+    @Setter
     private JobStructure jobStructure;
 
     @Getter

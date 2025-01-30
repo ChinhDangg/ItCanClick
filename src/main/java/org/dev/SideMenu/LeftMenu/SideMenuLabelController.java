@@ -32,6 +32,10 @@ public class SideMenuLabelController {
         return parentHBoxNode;
     }
 
+    public String getName() {
+        return sideLabel.getText();
+    }
+
     public void changeLabelName(String name) {
         sideLabel.setText(name);
     }

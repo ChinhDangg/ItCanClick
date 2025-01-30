@@ -9,8 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
-import lombok.Getter;
-import lombok.NonNull;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
@@ -37,14 +35,9 @@ public class MinimizedTaskController implements Initializable, JobDataController
     @FXML
     private StackPane repeatMinusButton, repeatPlusButton;
 
-    @Getter
-    private JobStructure jobStructure;
-
-    @Getter
-    private final Label taskNameLabel = new Label();
-    @Getter
+    private JobStructure currentStructure;
     private TaskController taskController;
-    private Task task = new Task();
+
     private final String className = this.getClass().getSimpleName();
 
     @Override
@@ -52,8 +45,7 @@ public class MinimizedTaskController implements Initializable, JobDataController
         taskNameAreaStackPane.setOnMouseClicked(this::openTask);
         repeatMinusButton.setOnMouseClicked(this::decreaseRepeatNumber);
         repeatPlusButton.setOnMouseClicked(this::increaseRepeatNumber);
-        taskNameLabel.setText(renameTextField.getText());
-        loadNewTaskPane();
+        addSavedData(null);
         renameTextField.focusedProperty().addListener((_, _, newValue) -> {
             if (!newValue) {
                 //System.out.println("TextField lost focus");
@@ -61,6 +53,8 @@ public class MinimizedTaskController implements Initializable, JobDataController
             }
         });
     }
+
+    public void setJobStructure(JobStructure structure) { currentStructure = structure; }
 
     public void disablePreviousOption() {
         previousPassCheckBox.setSelected(false);
@@ -75,13 +69,13 @@ public class MinimizedTaskController implements Initializable, JobDataController
         String name = renameTextField.getText();
         name = name.strip();
         if (name.isBlank()) {
-            renameTextField.setText(taskNameLabel.getText());
+            renameTextField.setText(currentStructure.getName());
             return;
         }
         updateTaskName(name);
     }
     private void updateTaskName(String name) {
-        taskNameLabel.setText(name);
+        currentStructure.changeName(name);
         renameTextField.setText(name);
         taskController.changeTaskName(name);
         AppScene.addLog(LogLevel.DEBUG, className, "Updated minimized task name: " + name);
@@ -94,17 +88,6 @@ public class MinimizedTaskController implements Initializable, JobDataController
             return;
         }
         taskController.openTaskPane();
-    }
-    private void loadNewTaskPane() {
-        AppScene.addLog(LogLevel.TRACE, className, "Loading Task Pane");
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("taskPane.fxml"));
-            loader.load();
-            taskController = loader.getController();
-            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Task Pane");
-        } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error loading task pane: " + e.getMessage());
-        }
     }
 
     // ------------------------------------------------------
@@ -128,15 +111,18 @@ public class MinimizedTaskController implements Initializable, JobDataController
     public boolean isSet() { return (taskController != null && taskController.isSet()); }
 
     @Override
+    public String getName() { return renameTextField.getText(); }
+
+    @Override
     public Node getParentNode() { return parentNode; }
 
     @Override
     public AppLevel getAppLevel() { return AppLevel.Task; }
 
     @Override
-    public void takeToDisplay(@NonNull MainJobController parentController) {
-        OperationController parentOperationController = (OperationController) parentController;
-        parentOperationController.takeToDisplay(null);
+    public void takeToDisplay() {
+        OperationController parentOperationController = (OperationController) currentStructure.getParentController();
+        parentOperationController.takeToDisplay();
         parentOperationController.changeOperationScrollPaneView(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
@@ -144,22 +130,17 @@ public class MinimizedTaskController implements Initializable, JobDataController
     @Override
     public TaskData getSavedData() {
         TaskData taskData = taskController.getSavedData();
-        task.setRepeatNumber(repeatNumber);
-        task.setRequired(requiredCheckBox.isSelected());
-        task.setPreviousPass(previousPassCheckBox.isSelected());
-        task.setTaskName(taskNameLabel.getText());
-        Task newCopiedTask = task.getDeepCopied();
-        taskData.setTask(newCopiedTask);
+        Task newTask = new Task(currentStructure.getName(), requiredCheckBox.isSelected(), previousPassCheckBox.isSelected(), repeatNumber);
+        taskData.setTask(newTask);
         AppScene.addLog(LogLevel.TRACE, className, "Get Task Data");
         return taskData;
     }
 
     @Override
     public void loadSavedData(JobData jobData) {
-        loadNewTaskPane();
+        addSavedData(jobData);
         TaskData taskData = (TaskData) jobData;
-        taskController.loadSavedData(taskData);
-        task = taskData.getTask();
+        Task task = (Task) taskData.getTask();
         requiredCheckBox.setSelected(task.isRequired());
         previousPassCheckBox.setSelected(task.isPreviousPass());
         updateRepeatNumberLabel(task.getRepeatNumber());
@@ -168,13 +149,27 @@ public class MinimizedTaskController implements Initializable, JobDataController
     }
 
     @Override
-    public void addSavedData(JobData jobData) { taskController.addSavedData(jobData); }
+    public void addSavedData(JobData jobData) {
+        AppScene.addLog(LogLevel.TRACE, className, "Loading Task Pane");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("taskPane.fxml"));
+            loader.load();
+            taskController = loader.getController();
+            if (jobData != null)
+                taskController.addSavedData(jobData);
+            taskController.setCurrentStructure(currentStructure);
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Task Pane");
+        } catch (Exception e) {
+            AppScene.addLog(LogLevel.ERROR, className, "Error loading task pane: " + e.getMessage());
+        }
+    }
+
     @Override
-    public void removeSavedData(JobDataController jobDataController) { taskController.removeSavedData(jobDataController); }
+    public void removeSavedData(JobStructure jobStructure) { taskController.removeSavedData(jobStructure); }
     @Override
-    public void moveSavedDataUp(JobDataController jobDataController) {}
+    public void moveSavedDataUp(JobStructure jobStructure) {}
     @Override
-    public void moveSavedDataDown(JobDataController jobDataController) {}
+    public void moveSavedDataDown(JobStructure jobStructure) {}
     @Override
     public JobRunController getRunJob() { return taskController.getRunJob(); }
 }

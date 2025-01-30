@@ -9,19 +9,15 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import lombok.Getter;
-import lombok.NonNull;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Task.TaskGroup;
 import org.dev.JobData.JobData;
-import org.dev.JobData.TaskData;
 import org.dev.JobData.TaskGroupData;
 import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
 import org.dev.RunJob.TaskGroupRunController;
-import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,21 +35,12 @@ public class TaskGroupController implements Initializable, JobDataController {
     @FXML
     private CheckBox requiredCheckBox, disabledCheckBox;
 
-    @Getter
-    private JobStructure jobStructure;
+    private JobStructure currentStructure;
 
-    @Getter
-    private final List<MinimizedTaskController> minimizedTaskList = new ArrayList<>();
-    @Getter
-    private VBox taskGroupSideContent = new VBox();
-    @Getter
-    private Label taskGroupNameLabel = new Label();
     private final String className = this.getClass().getSimpleName();
-    private TaskGroup taskGroup = new TaskGroup();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        taskGroupNameLabel.setText(renameTextField.getText());
         renameTextField.focusedProperty().addListener((_, _, newValue) -> {
             if (!newValue) {
                 //System.out.println("TextField lost focus");
@@ -62,26 +49,38 @@ public class TaskGroupController implements Initializable, JobDataController {
         });
     }
 
+    public void setJobStructure(JobStructure structure) {
+        currentStructure = structure;
+    }
+
     public void setTaskIndex(int taskIndex) { taskIndexLabel.setText(Integer.toString(taskIndex)); }
 
     private void changeTaskGroupName() {
         String name = renameTextField.getText();
         name = name.strip();
         if (name.isBlank()) {
-            renameTextField.setText(taskGroupNameLabel.getText());
+            renameTextField.setText(currentStructure.getName());
             return;
         }
         updateTaskGroupName(name);
     }
     private void updateTaskGroupName(String name) {
-        taskGroupNameLabel.setText(name);
+        currentStructure.changeName(name);
         renameTextField.setText(name);
         AppScene.addLog(LogLevel.DEBUG, className, "Updated task group name: " + name);
     }
 
     // ------------------------------------------------------
     @Override
-    public boolean isSet() { return !minimizedTaskList.isEmpty() && minimizedTaskList.getFirst().isSet(); }
+    public boolean isSet() {
+        if (currentStructure == null)
+            return false;
+        return !currentStructure.getSubJobStructures().isEmpty()
+                && currentStructure.getSubJobStructures().getFirst().getCurrentController().isSet();
+    }
+
+    @Override
+    public String getName() { return renameTextField.getText(); }
 
     @Override
     public Node getParentNode() { return parentNode; }
@@ -90,9 +89,9 @@ public class TaskGroupController implements Initializable, JobDataController {
     public AppLevel getAppLevel() { return AppLevel.TaskGroup; }
 
     @Override
-    public void takeToDisplay(@NonNull MainJobController parentController) {
-        OperationController parentOperationController = (OperationController) parentController;
-        parentOperationController.takeToDisplay(null);
+    public void takeToDisplay() {
+        OperationController parentOperationController = (OperationController) currentStructure.getParentController();
+        parentOperationController.takeToDisplay();
         parentOperationController.changeOperationScrollPaneView(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
@@ -100,13 +99,11 @@ public class TaskGroupController implements Initializable, JobDataController {
     @Override
     public TaskGroupData getSavedData() {
         TaskGroupData taskGroupData = new TaskGroupData();
-        taskGroup.setDisabled(disabledCheckBox.isSelected());
-        taskGroup.setRequired(requiredCheckBox.isSelected());
-        taskGroup.setTaskGroupName(taskGroupNameLabel.getText());
-        taskGroupData.setTaskGroup(taskGroup.getDeepCopied());
-        List<TaskData> taskDataList = new ArrayList<>();
-        for (MinimizedTaskController taskController : minimizedTaskList)
-            taskDataList.add(taskController.getSavedData());
+        TaskGroup taskGroup = new TaskGroup(currentStructure.getName(), requiredCheckBox.isSelected(), disabledCheckBox.isSelected());
+        taskGroupData.setTaskGroup(taskGroup);
+        List<JobData> taskDataList = new ArrayList<>();
+        for (JobStructure subJobStructure: currentStructure.getSubJobStructures())
+            taskDataList.add(subJobStructure.getCurrentController().getSavedData());
         taskGroupData.setTaskDataList(taskDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got task group data");
         return taskGroupData;
@@ -119,11 +116,11 @@ public class TaskGroupController implements Initializable, JobDataController {
             return;
         }
         TaskGroupData taskGroupData = (TaskGroupData) jobData;
-        this.taskGroup = taskGroupData.getTaskGroup();
+        TaskGroup taskGroup = (TaskGroup) taskGroupData.getTaskGroup();
         requiredCheckBox.setSelected(taskGroup.isRequired());
         disabledCheckBox.setSelected(taskGroup.isDisabled());
         updateTaskGroupName(taskGroup.getTaskGroupName());
-        for (TaskData taskData : taskGroupData.getTaskDataList())
+        for (JobData taskData : taskGroupData.getTaskDataList())
             addSavedData(taskData);
     }
 
@@ -137,74 +134,67 @@ public class TaskGroupController implements Initializable, JobDataController {
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Minimized Task Pane");
             if (taskData != null)
                 controller.loadSavedData(taskData);
-            int numberOfTask = minimizedTaskList.size();
+            int numberOfTask = currentStructure.getSubStructureSize();
             if (numberOfTask == 0)
                 controller.disablePreviousOption();
             taskGroupVBox.getChildren().add(taskPane);
-            minimizedTaskList.add(controller);
-            createTaskGroupSideContent(controller);
+
+            JobStructure taskStructure = new JobStructure(currentStructure.getDisplayParentController(), this, controller, controller.getName());
+            controller.setJobStructure(taskStructure);
+            currentStructure.addSubJobStructure(taskStructure);
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding minimized task pane: " + e.getMessage());
         }
     }
 
     @Override
-    public void removeSavedData(JobDataController jobDataController) {
-        int changeIndex = minimizedTaskList.indexOf((MinimizedTaskController) jobDataController);
-        removeTask(changeIndex);
-    }
-    private void removeTask(int changeIndex) {
-        minimizedTaskList.remove(changeIndex);
-        if (changeIndex == 0 && !minimizedTaskList.isEmpty())
-            minimizedTaskList.getFirst().disablePreviousOption();
-        taskGroupVBox.getChildren().remove(changeIndex);
-        AppScene.addLog(LogLevel.DEBUG, className, "Removed selected task: " + changeIndex);
-        // update side menu
-        removeTaskGroupSideContent(changeIndex);
+    public void removeSavedData(JobStructure jobStructure) {
+        int removeIndex = currentStructure.removeSubJobStructure(jobStructure);
+        taskGroupVBox.getChildren().remove(removeIndex);
+        if (removeIndex == 0)
+            ((MinimizedTaskController) currentStructure.getSubJobStructures().getFirst().getCurrentController()).disablePreviousOption();
+        AppScene.addLog(LogLevel.DEBUG, className, "Removed selected task: " + removeIndex);
     }
 
     @Override
-    public void moveSavedDataUp(JobDataController jobDataController) {
-        int numberOfTasks = minimizedTaskList.size();
+    public void moveSavedDataUp(JobStructure jobStructure) {
+        int numberOfTasks = jobStructure.getSubStructureSize();
         if (numberOfTasks < 2)
             return;
-        int selectedTaskIndex = minimizedTaskList.indexOf((MinimizedTaskController) jobDataController);
+        int selectedTaskIndex = jobStructure.getSubStructureIndex(jobStructure);
         if (selectedTaskIndex == 0)
             return;
         int changeIndex = selectedTaskIndex -1;
+        AppScene.addLog(LogLevel.DEBUG, className, "Moved-up Task: " + changeIndex);
         updateTaskPaneList(selectedTaskIndex, changeIndex);
-        AppScene.addLog(LogLevel.DEBUG, className, "Moved up task group: " + changeIndex);
-        //update side menu
-        updateTaskGroupSideContent(selectedTaskIndex, changeIndex);
+        currentStructure.updateSubJobStructure(jobStructure, changeIndex);
     }
 
     @Override
-    public void moveSavedDataDown(JobDataController jobDataController) {
-        int numberOfTasks = minimizedTaskList.size();
+    public void moveSavedDataDown(JobStructure jobStructure) {
+        int numberOfTasks = jobStructure.getSubStructureSize();
         if (numberOfTasks < 2)
             return;
-        int selectedTaskIndex = minimizedTaskList.indexOf((MinimizedTaskController) jobDataController);
+        int selectedTaskIndex = jobStructure.getSubStructureIndex(jobStructure);
         int changeIndex = selectedTaskIndex +1;
         if (changeIndex == numberOfTasks)
             return;
-        updateTaskPaneList(selectedTaskIndex, changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved down task group: " + changeIndex);
-        //update side menu
-        updateTaskGroupSideContent(selectedTaskIndex, changeIndex);
+        updateTaskPaneList(selectedTaskIndex, changeIndex);
+        currentStructure.updateSubJobStructure(jobStructure, changeIndex);
     }
 
     private void updateTaskPaneList(int selectedIndex, int changeIndex) {
         ObservableList<Node> children = taskGroupVBox.getChildren();
         Node minimizedTaskNode = children.get(selectedIndex);
-        minimizedTaskList.add(changeIndex, minimizedTaskList.remove(selectedIndex));
         updateTaskPreviousOption(changeIndex);
         children.remove(minimizedTaskNode);
         children.add(changeIndex, minimizedTaskNode);
     }
     private void updateTaskPreviousOption(int index) {
         if (index < 2) {
-            minimizedTaskList.get(0).disablePreviousOption();
-            minimizedTaskList.get(1).enablePreviousOption();
+            ((MinimizedTaskController) currentStructure.getSubJobStructures().get(0).getCurrentController()).disablePreviousOption();
+            ((MinimizedTaskController) currentStructure.getSubJobStructures().get(1).getCurrentController()).enablePreviousOption();
         }
     }
 
@@ -222,20 +212,4 @@ public class TaskGroupController implements Initializable, JobDataController {
         }
     }
 
-    // ------------------------------------------------------
-    private void createTaskGroupSideContent(MinimizedTaskController controller) {
-        VBox taskSideContent = controller.getTaskController().getTaskSideContent();
-        Node taskLabelHBox = SideMenuController.getNewSideHBoxLabel(controller.getTaskNameLabel(), taskSideContent, controller, this);
-        taskGroupSideContent.getChildren().add(new VBox(taskLabelHBox, taskSideContent));
-        AppScene.addLog(LogLevel.TRACE, className, "Created task group side content");
-    }
-    private void removeTaskGroupSideContent(int changeIndex) {
-        taskGroupSideContent.getChildren().remove(changeIndex);
-    }
-    private void updateTaskGroupSideContent(int selectedIndex, int changeIndex) {
-        ObservableList<Node> taskSideContent = taskGroupSideContent.getChildren();
-        Node temp = taskSideContent.get(selectedIndex);
-        taskSideContent.remove(selectedIndex);
-        taskSideContent.add(changeIndex, temp);
-    }
 }

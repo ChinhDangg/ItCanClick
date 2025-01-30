@@ -12,7 +12,6 @@ import java.io.Serializable;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 public class Task implements Serializable, MainJob {
     @Serial
     private static final long serialVersionUID = 1L;

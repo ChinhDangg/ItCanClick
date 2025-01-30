@@ -2,6 +2,7 @@ package org.dev.JobData;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.dev.Job.MainJob;
 import org.dev.Job.Task.Task;
 
 import java.io.Serial;
@@ -11,6 +12,6 @@ import java.util.List;
 public class TaskData implements JobData {
     @Serial
     private static final long serialVersionUID = 1L;
-    private Task task;
-    private List<ActionData> actionDataList;
+    private MainJob task;
+    private List<JobData> actionDataList;
 }

@@ -9,5 +9,5 @@ public interface MainJobController {
 
     AppLevel getAppLevel();
 
-    void takeToDisplay(MainJobController parentController);
+    void takeToDisplay();
 }

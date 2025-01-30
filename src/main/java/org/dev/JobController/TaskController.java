@@ -13,6 +13,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import lombok.Getter;
+import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
@@ -41,14 +42,10 @@ public class TaskController implements Initializable, JobDataController {
     @FXML
     private StackPane addNewActionButton;
 
-    @Getter
-    private JobStructure jobStructure;
-
-    @Getter
-    private final List<ActionController> actionList = new ArrayList<>();
-    @Getter
-    private VBox taskSideContent = new VBox();
+    @Setter
+    private JobStructure currentStructure;
     private double currentGlobalScale = 1;
+
     private final String className = this.getClass().getSimpleName();
 
     @Override
