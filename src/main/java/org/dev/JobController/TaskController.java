@@ -12,18 +12,15 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
-import lombok.Getter;
-import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
-import org.dev.JobData.ActionData;
+import org.dev.Job.Task.Task;
 import org.dev.JobData.JobData;
 import org.dev.JobData.TaskData;
 import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
 import org.dev.RunJob.TaskRunController;
-import org.dev.SideMenu.LeftMenu.SideMenuController;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +39,6 @@ public class TaskController implements Initializable, JobDataController {
     @FXML
     private StackPane addNewActionButton;
 
-    @Setter
     private JobStructure currentStructure;
     private double currentGlobalScale = 1;
 
@@ -55,7 +51,8 @@ public class TaskController implements Initializable, JobDataController {
         loadMainTaskVBox();
     }
 
-    public void openTaskPane() { AppScene.displayNewCenterNode(taskScrollPane); }
+    public void setJobStructure(JobStructure structure) { currentStructure = structure; }
+
     private void backToPreviousAction(MouseEvent event) { AppScene.backToOperationScene(); }
     public void changeTaskName(String name) { taskNameLabel.setText(name); }
 
@@ -68,14 +65,6 @@ public class TaskController implements Initializable, JobDataController {
 
     // ------------------------------------------------------
     private void addNewActionPane(MouseEvent event) {
-        if (AppScene.isJobRunning) {
-            AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
-            return;
-        }
-        if (!actionList.isEmpty() && !actionList.getLast().isSet()) {
-            AppScene.addLog(LogLevel.INFO, className, "Recent action is not set");
-            return;
-        }
         addSavedData(null);
     }
 
@@ -105,7 +94,15 @@ public class TaskController implements Initializable, JobDataController {
 
     // ------------------------------------------------------
     @Override
-    public boolean isSet() { return (!actionList.isEmpty() && actionList.getFirst().isSet()); }
+    public boolean isSet() {
+        if (currentStructure == null)
+            return false;
+        return !currentStructure.getSubJobStructures().isEmpty()
+                && currentStructure.getSubJobStructures().getFirst().getCurrentController().isSet();
+    }
+
+    @Override
+    public String getName() { return taskNameLabel.getText(); }
 
     @Override
     public Node getParentNode() { return taskScrollPane; }
@@ -114,15 +111,15 @@ public class TaskController implements Initializable, JobDataController {
     public AppLevel getAppLevel() { return AppLevel.Task; }
 
     @Override
-    public void takeToDisplay(MainJobController parentController) { openTaskPane(); }
+    public void takeToDisplay() { AppScene.displayNewCenterNode(getParentNode()); }
 
     @Override
     public TaskData getSavedData() {
         TaskData taskData = new TaskData();
-        List<ActionData> actionData = new ArrayList<>();
-        for (ActionController actionController : actionList)
-            actionData.add(actionController.getSavedData());
-        taskData.setActionDataList(actionData);
+        List<JobData> actionDataList = new ArrayList<>();
+        for (JobStructure subJobStructure: currentStructure.getSubJobStructures())
+            actionDataList.add(subJobStructure.getCurrentController().getSavedData());
+        taskData.setActionDataList(actionDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got task data");
         return taskData;
     }
@@ -134,92 +131,93 @@ public class TaskController implements Initializable, JobDataController {
             return;
         }
         TaskData taskData = (TaskData) jobData;
-        taskNameLabel.setText(taskData.getTask().getTaskName());
-        for (ActionData actionData : taskData.getActionDataList())
+        Task task = (Task) taskData.getTask();
+        taskNameLabel.setText(task.getTaskName());
+        for (JobData actionData : taskData.getActionDataList())
             addSavedData(actionData);
     }
 
     @Override
     public void addSavedData(JobData actionData) {
+        if (AppScene.isJobRunning) {
+            AppScene.addLog(LogLevel.INFO, className, "Another job is running - cannot modify");
+            return;
+        }
+        if (!currentStructure.getSubJobStructures().isEmpty() && currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
+            AppScene.addLog(LogLevel.INFO, className, "Recent Action is not set");
+            return;
+        }
         try {
             AppScene.addLog(LogLevel.TRACE, className, "Loading Action Pane");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("actionPane.fxml"));
             Node actionPane = loader.load();
             actionPane.setOnMouseClicked(this::selectTheActionPaneAction);
-            ActionController actionController = loader.getController();
+            ActionController controller = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Action Pane");
             if (actionData != null)
-                actionController.loadSavedData(actionData);
-            int numberOfActions = actionList.size();
+                controller.loadSavedData(actionData);
+            int numberOfActions = currentStructure.getSubStructureSize();
             if (numberOfActions == 0)
-                actionController.disablePreviousOptions();
+                controller.disablePreviousOption();
             taskVBox.getChildren().add(actionPane);
-            actionList.add(actionController);
-            // update side menu
-            createTaskSideContent(actionController);
+
+            JobStructure taskStructure = new JobStructure(this, this, controller, controller.getName());
+            controller.setJobStructure(taskStructure);
+            currentStructure.addSubJobStructure(taskStructure);
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding action pane: " + e.getMessage());
         }
     }
 
     @Override
-    public void removeSavedData(JobDataController jobDataController) {
-        int changeIndex = actionList.indexOf((ActionController) jobDataController);
-        removeAction(changeIndex);
-    }
-    private void removeAction(int changeIndex) {
-        actionList.remove(changeIndex);
-        if (changeIndex == 0 && !actionList.isEmpty())
-            actionList.getFirst().disablePreviousOptions();
-        taskVBox.getChildren().remove(changeIndex);
-        AppScene.addLog(LogLevel.DEBUG, className, "Removed selected action: " + changeIndex);
-        //update side menu
-        removeTaskSideContent(changeIndex);
+    public void removeSavedData(JobStructure jobStructure) {
+        int removeIndex = currentStructure.removeSubJobStructure(jobStructure);
+        taskVBox.getChildren().remove(removeIndex);
+        if (removeIndex == 0)
+            ((ActionController) currentStructure.getSubJobStructures().getFirst().getCurrentController()).disablePreviousOption();
+        AppScene.addLog(LogLevel.DEBUG, className, "Removed selected action: " + removeIndex);
     }
 
     @Override
-    public void moveSavedDataUp(JobDataController jobDataController) {
-        int numberOfActions = actionList.size();
+    public void moveSavedDataUp(JobStructure jobStructure) {
+        int numberOfActions = jobStructure.getSubStructureSize();
         if (numberOfActions < 2)
             return;
-        int selectedActionPaneIndex = actionList.indexOf((ActionController) jobDataController);
+        int selectedActionPaneIndex = jobStructure.getSubStructureIndex(jobStructure);
         if (selectedActionPaneIndex == 0)
             return;
-        int changeIndex = selectedActionPaneIndex-1;
+        int changeIndex = selectedActionPaneIndex -1;
         updateActionPaneList(selectedActionPaneIndex, changeIndex);
-        changeActionPreviousOptions(changeIndex);
+        updateActionPreviousOption(changeIndex);
+        currentStructure.updateSubJobStructure(jobStructure, changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved up action: " + changeIndex);
-        //update side menu
-        updateActionSideContent(selectedActionPaneIndex, changeIndex);
     }
 
     @Override
-    public void moveSavedDataDown(JobDataController jobDataController) {
-        int numberOfActions = actionList.size();
+    public void moveSavedDataDown(JobStructure jobStructure) {
+        int numberOfActions = jobStructure.getSubStructureSize();
         if (numberOfActions < 2)
             return;
-        int selectedActionPaneIndex = actionList.indexOf((ActionController) jobDataController);
+        int selectedActionPaneIndex = jobStructure.getSubStructureIndex(jobStructure);
         int changeIndex = selectedActionPaneIndex +1;
         if (changeIndex == numberOfActions)
             return;
         updateActionPaneList(selectedActionPaneIndex, changeIndex);
-        changeActionPreviousOptions(changeIndex);
+        updateActionPreviousOption(changeIndex);
+        currentStructure.updateSubJobStructure(jobStructure, changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved down action: " + changeIndex);
-        //update side menu
-        updateActionSideContent(selectedActionPaneIndex, changeIndex);
     }
 
     private void updateActionPaneList(int selectedIndex, int changeIndex) {
         ObservableList<Node> children = taskVBox.getChildren();
         Node actionNode = children.get(selectedIndex);
-        actionList.add(changeIndex, actionList.remove(selectedIndex));
         children.remove(actionNode);
         children.add(changeIndex, actionNode);
     }
-    private void changeActionPreviousOptions(int index) {
+    private void updateActionPreviousOption(int index) {
         if (index < 2) {
-            actionList.get(0).disablePreviousOptions();
-            actionList.get(1).enablePreviousOptions();
+            ((ActionController) currentStructure.getSubJobStructures().get(0).getCurrentController()).disablePreviousOption();
+            ((ActionController) currentStructure.getSubJobStructures().get(1).getCurrentController()).enablePreviousOption();
         }
     }
 
@@ -237,20 +235,4 @@ public class TaskController implements Initializable, JobDataController {
         }
     }
 
-    // ------------------------------------------------------
-    private void createTaskSideContent(ActionController actionController) {
-        Node actionHBoxLabel = SideMenuController.getNewSideHBoxLabel(actionController.getActionNameLabel(),
-                null, actionController, this);
-        taskSideContent.getChildren().add(actionHBoxLabel);
-        AppScene.addLog(LogLevel.TRACE, className, "Created task side content");
-    }
-    private void removeTaskSideContent(int changeIndex) {
-        taskSideContent.getChildren().remove(changeIndex);
-    }
-    private void updateActionSideContent(int selectedActionPaneIndex, int changeIndex) {
-        ObservableList<Node> actionSideContent = taskSideContent.getChildren();
-        Node temp = actionSideContent.get(selectedActionPaneIndex);
-        actionSideContent.remove(selectedActionPaneIndex);
-        actionSideContent.add(changeIndex, temp);
-    }
 }

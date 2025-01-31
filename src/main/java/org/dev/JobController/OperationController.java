@@ -83,14 +83,6 @@ public class OperationController implements Initializable, JobDataController {
 
     // ------------------------------------------------------
     private void addTaskGroupAction(MouseEvent event) {
-        if (AppScene.isJobRunning) {
-            AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
-            return;
-        }
-        if (!currentStructure.getSubJobStructures().isEmpty() && currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
-            AppScene.addLog(LogLevel.INFO, className, "Recent minimized task is not set");
-            return;
-        }
         addSavedData(null);
     }
 
@@ -185,6 +177,14 @@ public class OperationController implements Initializable, JobDataController {
 
     @Override
     public void addSavedData(JobData taskData) {
+        if (AppScene.isJobRunning) {
+            AppScene.addLog(LogLevel.INFO, className, "Another job is running - cannot modify");
+            return;
+        }
+        if (!currentStructure.getSubJobStructures().isEmpty() && currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
+            AppScene.addLog(LogLevel.INFO, className, "Recent Task Group is not set");
+            return;
+        }
         try {
             AppScene.addLog(LogLevel.TRACE, className, "Loading Task Group Pane");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("taskGroupPane.fxml"));
@@ -223,10 +223,10 @@ public class OperationController implements Initializable, JobDataController {
         if (selectedTaskPaneIndex == 0)
             return;
         int changeIndex = selectedTaskPaneIndex-1;
-        AppScene.addLog(LogLevel.DEBUG, className, "Moved-down Task Group: " + changeIndex);
         updateTaskPaneList(selectedTaskPaneIndex, changeIndex);
         currentStructure.updateSubJobStructure(jobStructure, changeIndex);
         updateTaskIndex(changeIndex);
+        AppScene.addLog(LogLevel.DEBUG, className, "Moved-down Task Group: " + changeIndex);
     }
 
     @Override
@@ -238,10 +238,10 @@ public class OperationController implements Initializable, JobDataController {
         int changeIndex = selectedTaskPaneIndex+1;
         if (changeIndex == numberOfTasks)
             return;
-        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on move-up selected task: " + changeIndex);
         updateTaskPaneList(selectedTaskPaneIndex, changeIndex);
         currentStructure.updateSubJobStructure(jobStructure, changeIndex);
         updateTaskIndex(changeIndex-1);
+        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on move-up selected task: " + changeIndex);
     }
 
     private void updateTaskPaneList(int selectedIndex, int changeIndex) {

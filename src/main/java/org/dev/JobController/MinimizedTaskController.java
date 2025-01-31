@@ -87,7 +87,7 @@ public class MinimizedTaskController implements Initializable, JobDataController
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot navigate");
             return;
         }
-        taskController.openTaskPane();
+        taskController.takeToDisplay();
     }
 
     // ------------------------------------------------------
@@ -157,7 +157,7 @@ public class MinimizedTaskController implements Initializable, JobDataController
             taskController = loader.getController();
             if (jobData != null)
                 taskController.addSavedData(jobData);
-            taskController.setCurrentStructure(currentStructure);
+            taskController.setJobStructure(currentStructure);
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Task Pane");
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading task pane: " + e.getMessage());

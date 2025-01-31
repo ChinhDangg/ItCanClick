@@ -126,6 +126,14 @@ public class TaskGroupController implements Initializable, JobDataController {
 
     @Override
     public void addSavedData(JobData taskData) {
+        if (AppScene.isJobRunning) {
+            AppScene.addLog(LogLevel.INFO, className, "Another job is running - cannot modify");
+            return;
+        }
+        if (!currentStructure.getSubJobStructures().isEmpty() && currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
+            AppScene.addLog(LogLevel.INFO, className, "Recent Minimized Task is not set");
+            return;
+        }
         try {
             AppScene.addLog(LogLevel.TRACE, className, "Loading Minimized Task Pane");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("minimizedTaskPane.fxml"));
@@ -165,9 +173,10 @@ public class TaskGroupController implements Initializable, JobDataController {
         if (selectedTaskIndex == 0)
             return;
         int changeIndex = selectedTaskIndex -1;
-        AppScene.addLog(LogLevel.DEBUG, className, "Moved-up Task: " + changeIndex);
         updateTaskPaneList(selectedTaskIndex, changeIndex);
+        updateTaskPreviousOption(changeIndex);
         currentStructure.updateSubJobStructure(jobStructure, changeIndex);
+        AppScene.addLog(LogLevel.DEBUG, className, "Moved up Task: " + changeIndex);
     }
 
     @Override
@@ -179,15 +188,15 @@ public class TaskGroupController implements Initializable, JobDataController {
         int changeIndex = selectedTaskIndex +1;
         if (changeIndex == numberOfTasks)
             return;
-        AppScene.addLog(LogLevel.DEBUG, className, "Moved down task group: " + changeIndex);
         updateTaskPaneList(selectedTaskIndex, changeIndex);
+        updateTaskPreviousOption(changeIndex);
         currentStructure.updateSubJobStructure(jobStructure, changeIndex);
+        AppScene.addLog(LogLevel.DEBUG, className, "Moved down task group: " + changeIndex);
     }
 
     private void updateTaskPaneList(int selectedIndex, int changeIndex) {
         ObservableList<Node> children = taskGroupVBox.getChildren();
         Node minimizedTaskNode = children.get(selectedIndex);
-        updateTaskPreviousOption(changeIndex);
         children.remove(minimizedTaskNode);
         children.add(changeIndex, minimizedTaskNode);
     }

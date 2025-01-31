@@ -13,6 +13,5 @@ public class ActionData implements JobData {
     @Serial
     private static final long serialVersionUID = 1L;
     private MainJob action;
-    private List<JobData> entryConditionList;
-    private List<JobData> exitConditionList;
+    private List<JobData> conditionList;
 }

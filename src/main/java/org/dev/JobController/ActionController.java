@@ -23,6 +23,7 @@ import org.dev.Enum.AppLevel;
 import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Action.Action;
+import org.dev.Job.Condition.PixelCondition;
 import org.dev.JobData.ActionData;
 import org.dev.JobData.JobData;
 import org.dev.JobData.ConditionData;
@@ -36,6 +37,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static org.dev.Enum.AppLevel.Condition;
 
 public class ActionController implements Initializable, JobDataController, ActivityController {
 
@@ -54,21 +57,16 @@ public class ActionController implements Initializable, JobDataController, Activ
     @FXML
     private StackPane entryAddButton, exitAddButton;
 
-    @Setter
-    private JobStructure jobStructure;
+    private JobStructure currentStructure;
 
     @Getter
     private boolean isSet;
-    @Getter @Setter
+    @Getter
     private Action action;
     @Getter @Setter
     private ActionTypes chosenActionPerform;
-    @Getter
-    private final Label actionNameLabel = new Label();
 
     private final String className = this.getClass().getSimpleName();
-    private final List<ConditionController> entryConditionList = new ArrayList<>();
-    private final List<ConditionController> exitConditionList = new ArrayList<>();
     private ConditionType currentConditionTypeForPasting;
 
     @Override
@@ -76,7 +74,6 @@ public class ActionController implements Initializable, JobDataController, Activ
         actionPane.setOnMouseClicked(this::openActionMenuPane);
         entryAddButton.setOnMouseClicked(this::addNewEntryCondition);
         exitAddButton.setOnMouseClicked(this::addNewExitCondition);
-        actionNameLabel.setText(renameTextField.getText());
         renameTextField.focusedProperty().addListener((_, _, newValue) -> {
             if (!newValue) {
                 //System.out.println("TextField lost focus");
@@ -85,26 +82,30 @@ public class ActionController implements Initializable, JobDataController, Activ
         });
     }
 
+    public void setJobStructure(JobStructure structure) {
+        currentStructure = structure;
+    }
+
     private void changeActionName() {
         String name = renameTextField.getText();
         name = name.strip();
         if (name.isBlank()) {
-            renameTextField.setText(actionNameLabel.getText());
+            renameTextField.setText(currentStructure.getName());
             return;
         }
         updateActionName(name);
     }
     private void updateActionName(String name) {
+        currentStructure.changeName(name);
         renameTextField.setText(name);
-        actionNameLabel.setText(name);
         AppScene.addLog(LogLevel.DEBUG, className, "Renamed action: " + name);
     }
 
-    public void disablePreviousOptions() {
+    public void disablePreviousOption() {
         previousPassCheckBox.setSelected(false);
         previousPassCheckBox.setVisible(false);
     }
-    public void enablePreviousOptions() { previousPassCheckBox.setVisible(true); }
+    public void enablePreviousOption() { previousPassCheckBox.setVisible(true); }
 
     public void registerActionPerform(Action newAction) {
         if (newAction == null) {
@@ -113,8 +114,6 @@ public class ActionController implements Initializable, JobDataController, Activ
         }
         isSet = true;
         action = newAction;
-        if (action.getActionName() == null || action.getActionName().isBlank())
-            action.setActionName(actionNameLabel.getText());
         displayActionImage(action.getMainDisplayImage());
     }
 
@@ -137,7 +136,7 @@ public class ActionController implements Initializable, JobDataController, Activ
             return;
         }
         if (event.getButton() == MouseButton.PRIMARY) {
-            addCondition(entryConditionList, entryConditionHBox, null);
+            addCondition(entryConditionHBox, null);
         }
         else if (event.getButton() == MouseButton.SECONDARY) {
             currentConditionTypeForPasting = ConditionType.Entry;
@@ -152,7 +151,7 @@ public class ActionController implements Initializable, JobDataController, Activ
             return;
         }
         if (event.getButton() == MouseButton.PRIMARY) {
-            addCondition(exitConditionList, exitConditionHBox, null);
+            addCondition(exitConditionHBox, null);
         }
         else if (event.getButton() == MouseButton.SECONDARY) {
             currentConditionTypeForPasting = ConditionType.Exit;
@@ -160,33 +159,49 @@ public class ActionController implements Initializable, JobDataController, Activ
         }
     }
 
-    private void addCondition(List<ConditionController> whichController, HBox whichPane, JobData condition) {
+    private void addCondition(ConditionType conditionType, JobData condition) {
+        HBox whichPane = (conditionType == ConditionType.Entry) ? entryConditionHBox : exitConditionHBox;
+        int numberOfCondition = whichPane.getChildren().size();
+        JobDataController lastConditionController = getLastConditionController(conditionType);
+        if (numberOfCondition > 0 && (lastConditionController != null && lastConditionController.isSet())) {
+            AppScene.addLog(LogLevel.INFO, className, "Previous Condition is not set");
+            return;
+        }
+        if (numberOfCondition >= 5) {
+            AppScene.addLog(LogLevel.INFO, className, "Max number of condition's reached");
+            return;
+        }
         AppScene.addLog(LogLevel.TRACE, className, "Loading Condition Pane");
         try {
-            int numberOfCondition = whichController.size();
-            if (numberOfCondition > 0 && !whichController.get(numberOfCondition - 1).isSet()) {
-                AppScene.addLog(LogLevel.INFO, className, "Previous Condition is not set");
-                return;
-            }
-            if (numberOfCondition >= 5) {
-                AppScene.addLog(LogLevel.INFO, className, "Max number of condition's reached");
-                return;
-            }
             FXMLLoader loader = new FXMLLoader(getClass().getResource("conditionPane.fxml"));
             Node pane = loader.load();
             ConditionController controller = loader.getController();
-            controller.setParentActionController(this);
+            controller.setConditionType(conditionType);
+            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Condition Pane");
             if (condition != null)
                 controller.loadSavedData(condition);
-            whichController.add(controller);
             whichPane.getChildren().add(pane);
-            AppScene.addLog(LogLevel.DEBUG, className, "Loaded Condition Pane");
+
+            JobStructure conditionStructure = new JobStructure(this, this, controller, null);
+            controller.setJobStructure(conditionStructure);
+            currentStructure.addSubJobStructure(conditionStructure);
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading condition pane: " + e.getMessage());
         }
     }
 
+    private JobDataController getLastConditionController(ConditionType conditionType) {
+        for (JobStructure subJobStructure : currentStructure.getSubJobStructures()) {
+            if (((ConditionController) subJobStructure.getCurrentController()).getConditionType() == conditionType)
+                return subJobStructure.getCurrentController();
+        }
+        return null;
+    }
+
     // ------------------------------------------------------
+    @Override
+    public String getName() { return renameTextField.getText(); }
+
     @Override
     public Node getParentNode() { return mainActionParentNode; }
 
@@ -194,11 +209,11 @@ public class ActionController implements Initializable, JobDataController, Activ
     public AppLevel getAppLevel() { return AppLevel.Action; }
 
     @Override
-    public void takeToDisplay(@NonNull  MainJobController parentController) {
+    public void takeToDisplay() {
         AppScene.closeActionMenuPane();
         AppScene.closeConditionMenuPane();
-        TaskController parentTaskController = (TaskController) parentController;
-        parentTaskController.takeToDisplay(null);
+        TaskController parentTaskController = (TaskController) currentStructure.getParentController();
+        parentTaskController.takeToDisplay();
         parentTaskController.changeTaskScrollPaneView(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
@@ -210,16 +225,12 @@ public class ActionController implements Initializable, JobDataController, Activ
         ActionData actionData = new ActionData();
         action.setRequired(requiredCheckBox.isSelected());
         action.setPreviousPass(previousPassCheckBox.isSelected());
-        action.setActionName(actionNameLabel.getText());
+        action.setActionName(currentStructure.getName());
         actionData.setAction(action.getDeepCopied());
-        List<ConditionData> entryConditions = new ArrayList<>();
-        List<ConditionData> exitConditions = new ArrayList<>();
-        for (ConditionController c : entryConditionList)
-            entryConditions.add(c.getSavedData());
-        for (ConditionController c : exitConditionList)
-            exitConditions.add(c.getSavedData());
-        actionData.setEntryConditionList(entryConditions);
-        actionData.setExitConditionList(exitConditions);
+        List<JobData> conditionDataList = new ArrayList<>();
+        for (JobStructure subJobStructure : currentStructure.getSubJobStructures())
+            conditionDataList.add(subJobStructure.getCurrentController().getSavedData());
+        actionData.setConditionList(conditionDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got action data");
         return actionData;
     }
@@ -231,19 +242,15 @@ public class ActionController implements Initializable, JobDataController, Activ
             return;
         }
         ActionData actionData = (ActionData) jobData;
-        registerActionPerform(actionData.getAction());
+        Action action = (Action) actionData.getAction();
+        registerActionPerform(action);
         updateActionName(action.getActionName());
         requiredCheckBox.setSelected(action.isRequired());
         previousPassCheckBox.setSelected(action.isPreviousPass());
         displayActionImage(action.getDisplayImage());
-        List<ConditionData> entryConditions = actionData.getEntryConditionList();
-        if (entryConditions != null)
-            for (ConditionData entryCondition : entryConditions)
-                addCondition(entryConditionList, entryConditionHBox, entryCondition);
-        List<ConditionData> exitConditions = actionData.getExitConditionList();
-        if (exitConditions != null)
-            for (ConditionData exitCondition : exitConditions)
-                addCondition(exitConditionList, exitConditionHBox, exitCondition);
+        List<JobData> conditionDataList = actionData.getConditionList();
+        for (JobData conditionData : conditionDataList)
+            addCondition(((Condition) conditionData).getConditionType(), conditionData);
     }
 
     @Override

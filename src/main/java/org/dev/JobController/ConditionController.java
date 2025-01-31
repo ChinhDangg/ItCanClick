@@ -14,10 +14,12 @@ import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.ConditionRequirement;
+import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Condition.Condition;
 import org.dev.JobData.JobData;
 import org.dev.JobData.ConditionData;
+import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
 
@@ -35,10 +37,12 @@ public class ConditionController implements Initializable, JobDataController, Ac
     @FXML
     private Node notIndicationNode;
 
-    @Setter
-    private ActionController parentActionController;
+    private JobStructure currentStructure;
+
     @Getter
     private Condition condition;
+    @Getter @Setter
+    private ConditionType conditionType;
     @Getter
     private boolean isSet = false;
     private final String className = this.getClass().getSimpleName();
@@ -49,6 +53,10 @@ public class ConditionController implements Initializable, JobDataController, Ac
         notIndicationNode.setVisible(false);
     }
 
+    public void setJobStructure(JobStructure structure) {
+        currentStructure = structure;
+    }
+
     public void registerReadingCondition(Condition newCondition) {
         if (newCondition == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Condition is null - registerReadingCondition");
@@ -56,6 +64,7 @@ public class ConditionController implements Initializable, JobDataController, Ac
         }
         isSet = true;
         condition = newCondition;
+        condition.setConditionType(conditionType);
         notIndicationNode.setVisible(condition.isNot());
         readingConditionLabel.setText(condition.getChosenReadingCondition().name());
         conditionImageView.setImage(SwingFXUtils.toFXImage(condition.getMainDisplayImage(), null));

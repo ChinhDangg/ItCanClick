@@ -3,6 +3,7 @@ package org.dev.Job.Condition;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.dev.Enum.ConditionType;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Job.MainJob;
 
@@ -12,6 +13,7 @@ import java.io.*;
 
 @Getter @Setter
 public abstract class Condition implements MainJob, Serializable {
+    protected ConditionType conditionType;
     protected ReadingCondition chosenReadingCondition;
     protected transient BufferedImage displayImage;
     protected Rectangle mainImageBoundingBox;

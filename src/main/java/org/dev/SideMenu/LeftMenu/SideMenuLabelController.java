@@ -26,7 +26,8 @@ public class SideMenuLabelController {
             collapseImageIcon.setImage(null);
         }
         setIndicationIcon(appLevel);
-        sideLabel.setText(name);
+        if (name != null)
+            sideLabel.setText(name);
         if (collapseContent != null)
             collapseImageIcon.setOnMouseClicked(_ -> collapseContent(collapseContent));
         return parentHBoxNode;
