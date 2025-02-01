@@ -13,13 +13,12 @@ import java.util.List;
 
 @Getter
 public class JobStructure {
-
     private final JobDataController displayParentController;
     private final JobDataController parentController;
     private final JobDataController currentController;
 
     @Getter(AccessLevel.NONE)
-    private final SideMenuLabelController labelController;
+    private SideMenuLabelController labelController;
     private final VBox sideContent = new VBox();
     private final List<JobStructure> subJobStructures;
 
@@ -29,7 +28,8 @@ public class JobStructure {
         this.displayParentController = displayParentController;
         this.parentController = parentController;
         this.currentController = currentController;
-        labelController = SideMenuController.getNewSideHBoxLabelController(name, this);
+        if (name != null)
+            labelController = SideMenuController.getNewSideHBoxLabelController(name, this);
     }
 
     public String getName() {
@@ -41,6 +41,8 @@ public class JobStructure {
     }
 
     public Node getHBoxLabel() {
+        if (labelController == null)
+            return null;
         return labelController.getHBoxLabel();
     }
 
@@ -48,8 +50,14 @@ public class JobStructure {
         return subJobStructures.size();
     }
 
-    public int getSubStructureIndex(JobStructure jobStructure) {
-        return subJobStructures.indexOf(jobStructure);
+    public int getSubStructureIndex(JobDataController jobDataController) {
+        int count = 0;
+        for (JobStructure subJobStructure : subJobStructures) {
+            if (subJobStructure.getCurrentController() == jobDataController)
+                return count;
+            count++;
+        }
+        return -1;
     }
 
     public void addSubJobStructure(JobStructure structure) {
@@ -57,21 +65,27 @@ public class JobStructure {
         addToSideContent(structure.getHBoxLabel(), structure.getSideContent());
     }
 
-    public int removeSubJobStructure(JobStructure structure) {
-        int removeIndex = subJobStructures.indexOf(structure);
-        subJobStructures.remove(structure);
+    public void addSubJobStructure(int index, JobStructure structure) {
+        subJobStructures.add(index, structure);
+        addToSideContent(structure.getHBoxLabel(), structure.getSideContent());
+    }
+
+    public int removeSubJobStructure(JobDataController jobDataController) {
+        int removeIndex = getSubStructureIndex(jobDataController);
+        subJobStructures.remove(removeIndex);
         removeFromSideContent(removeIndex);
         return removeIndex;
     }
 
-    public void updateSubJobStructure(JobStructure structure, int changeIndex) {
-        int selectedIndex = subJobStructures.indexOf(structure);
-        subJobStructures.remove(structure);
-        subJobStructures.add(changeIndex, structure);
+    public void updateSubJobStructure(JobDataController jobDataController, int changeIndex) {
+        int selectedIndex = getSubStructureIndex(jobDataController);
+        subJobStructures.add(changeIndex, subJobStructures.remove(selectedIndex));
         updateSideContent(selectedIndex, changeIndex);
     }
 
     private void addToSideContent(Node sideHBoxLabel, VBox sideContent) {
+        if (sideHBoxLabel == null)
+            return;
         sideContent.getChildren().add(new VBox(sideHBoxLabel, sideContent));
     }
 

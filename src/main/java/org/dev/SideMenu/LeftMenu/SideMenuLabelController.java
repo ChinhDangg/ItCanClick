@@ -8,8 +8,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.dev.Enum.AppLevel;
-import org.dev.JobController.JobDataController;
-import org.dev.JobController.MainJobController;
 
 public class SideMenuLabelController {
     @FXML
@@ -26,8 +24,7 @@ public class SideMenuLabelController {
             collapseImageIcon.setImage(null);
         }
         setIndicationIcon(appLevel);
-        if (name != null)
-            sideLabel.setText(name);
+        sideLabel.setText(name);
         if (collapseContent != null)
             collapseImageIcon.setOnMouseClicked(_ -> collapseContent(collapseContent));
         return parentHBoxNode;

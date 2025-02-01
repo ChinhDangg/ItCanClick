@@ -6,18 +6,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import lombok.Getter;
-import lombok.NonNull;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Task.Task;
 import org.dev.Job.Task.TaskGroup;
-import org.dev.JobController.MainJobController;
-import org.dev.JobData.JobData;
-import org.dev.JobData.TaskData;
-import org.dev.JobData.TaskGroupData;
-import org.dev.SideMenu.LeftMenu.SideMenuController;
+import org.dev.Job.JobData;
+import org.dev.JobRunStructure;
 
 import java.util.List;
 
@@ -29,8 +24,7 @@ public class TaskGroupRunController implements JobRunController {
     @FXML
     private VBox mainTaskGroupRunVBox;
 
-    @Getter
-    private VBox taskGroupRunSideContent = new VBox();
+    private JobRunStructure currentRunStructure;
     private final String className = this.getClass().getSimpleName();
 
     @Override
@@ -42,10 +36,15 @@ public class TaskGroupRunController implements JobRunController {
     }
 
     @Override
-    public void takeToDisplay(@NonNull MainJobController parentController) {
-        OperationRunController parentOperationRunController = (OperationRunController) parentController;
+    public void takeToDisplay() {
+        OperationRunController parentOperationRunController = (OperationRunController) currentRunStructure.getDisplayParentController();
         parentOperationRunController.changeScrollPaneVValueView(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
+    }
+
+    @Override
+    public void setJobRunStructure(JobRunStructure runStructure) {
+        currentRunStructure = runStructure;
     }
 
     @Override
@@ -54,8 +53,7 @@ public class TaskGroupRunController implements JobRunController {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task group data is null - cannot start");
             return false;
         }
-        TaskGroupData taskGroupData = (TaskGroupData) jobData;
-        TaskGroup taskGroup  = taskGroupData.getTaskGroup();
+        TaskGroup taskGroup  = (TaskGroup) jobData.getMainJob();
         if (taskGroup == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task group is null - cannot start");
             return false;
@@ -63,15 +61,15 @@ public class TaskGroupRunController implements JobRunController {
         taskGroupRunNameLabel.setText(taskGroup.getTaskGroupName());
         if (taskGroup.isDisabled())
             return true;
-        return runTaskGroup(taskGroupData);
+        return runTaskGroup(jobData);
     }
 
-    private boolean runTaskGroup(TaskGroupData taskGroupData) {
-        AppScene.addLog(LogLevel.INFO, className, "Start running task group " + taskGroupData.getTaskGroup().getTaskGroupName());
+    private boolean runTaskGroup(JobData jobData) {
+        AppScene.addLog(LogLevel.INFO, className, "Start running task group " + ((TaskGroup) jobData.getMainJob()).getTaskGroupName());
         boolean pass = false;
-        List<TaskData> taskDataList = taskGroupData.getTaskDataList();
-        for (TaskData taskData : taskDataList) {
-            Task currentTask = taskData.getTask();
+        List<JobData> taskDataList = jobData.getJobDataList();
+        for (JobData taskData : taskDataList) {
+            Task currentTask = (Task) taskData.getMainJob();
             if (currentTask == null)
                 continue;
             String taskName = currentTask.getTaskName();
@@ -79,8 +77,7 @@ public class TaskGroupRunController implements JobRunController {
                 AppScene.addLog(LogLevel.INFO, className, "Previous is passed, Skipping task " + taskName);
                 continue;
             }
-            loadAndAddNewTaskRunPane(currentTask.getTaskName());
-            pass = currentTaskRunController.startJob(taskData);
+            pass = getNewTaskRunPane(taskName).startJob(taskData);
             if (!currentTask.isRequired())
                 pass = true;
             else if (!pass) { // task is required but failed
@@ -91,20 +88,20 @@ public class TaskGroupRunController implements JobRunController {
         return true;
     }
 
-    private TaskRunController currentTaskRunController;
-    private void loadAndAddNewTaskRunPane(String taskName) {
+    private JobRunController getNewTaskRunPane(String taskName) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("taskRunPane.fxml"));
             Node taskRunGroup = fxmlLoader.load();
-            currentTaskRunController = fxmlLoader.getController();
-            VBox taskRunSideContent = currentTaskRunController.getTaskRunSideContent();
-            Node taskRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(
-                    new Label(taskName), taskRunSideContent, currentTaskRunController);
-            // update side hierarchy
-            Platform.runLater(() -> taskGroupRunSideContent.getChildren().addAll(taskRunHBoxLabel, taskRunSideContent));
+            JobRunController controller = fxmlLoader.getController();
             Platform.runLater(() -> mainTaskGroupRunVBox.getChildren().add(taskRunGroup));
+
+            JobRunStructure jobRunStructure = new JobRunStructure(currentRunStructure.getDisplayParentController(), this, controller, taskName);
+            controller.setJobRunStructure(jobRunStructure);
+            Platform.runLater(() -> currentRunStructure.addToSideContent(jobRunStructure.getSideHBoxLabel(), jobRunStructure.getSideContent()));
+            return controller;
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading task run pane: " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 }

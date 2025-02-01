@@ -12,22 +12,18 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import lombok.Getter;
-import lombok.NonNull;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Action.Action;
 import org.dev.Job.Condition.Condition;
-import org.dev.JobController.MainJobController;
-import org.dev.JobData.ActionData;
-import org.dev.JobData.ConditionData;
-import org.dev.JobData.JobData;
-import org.dev.SideMenu.LeftMenu.SideMenuController;
+import org.dev.Job.JobData;
+import org.dev.JobRunStructure;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -50,8 +46,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
     @FXML
     private VBox actionRunVBox, conditionRunEntryVBoxContainer, conditionRunExitVBoxContainer;
 
-    @Getter
-    private VBox actionRunSideContent = new VBox();
+    private JobRunStructure currentRunStructure;
     private final String className = this.getClass().getSimpleName();
 
     @Override
@@ -79,8 +74,8 @@ public class ActionRunController extends RunActivity implements Initializable, J
     }
 
     @Override
-    public void takeToDisplay(@NonNull MainJobController parentController) {
-        OperationRunController parentOperationRunController = (OperationRunController) parentController;
+    public void takeToDisplay() {
+        OperationRunController parentOperationRunController = (OperationRunController) currentRunStructure.getDisplayParentController();
         parentOperationRunController.changeScrollPaneVValueView(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
@@ -106,13 +101,17 @@ public class ActionRunController extends RunActivity implements Initializable, J
 
     // ------------------------------------------------------
     @Override
+    public void setJobRunStructure(JobRunStructure runStructure) {
+        currentRunStructure = runStructure;
+    }
+
+    @Override
     public boolean startJob(JobData jobData) {
         if (jobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Action data is null - cannot start");
             return false;
         }
-        ActionData actionData = (ActionData) jobData;
-        Action action = actionData.getAction();
+        Action action = (Action) jobData.getMainJob();
         if (action == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Action is null - cannot start");
             return false;
@@ -121,16 +120,16 @@ public class ActionRunController extends RunActivity implements Initializable, J
         changeActionRunStatus(RunningStatus.Running);
         AppScene.addLog(LogLevel.INFO, className, "Start running action: " + action.getActionName());
         try {
-            return runAction(actionData);
+            return runAction(jobData);
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail to start running action: " + action.getActionName());
             return false;
         }
     }
 
-    private boolean runAction(ActionData actionData) throws InterruptedException {
+    private boolean runAction(JobData actionData) throws InterruptedException {
         boolean passed;
-        if (actionData.getAction().isProgressiveSearch())
+        if (((Action) actionData.getMainJob()).isProgressiveSearch())
             passed = performActionWithProgressiveSearch(actionData);
         else
             passed = performActionWithAttempt(actionData);
@@ -139,8 +138,8 @@ public class ActionRunController extends RunActivity implements Initializable, J
     }
 
     // ------------------------------------------------------
-    private boolean performActionWithAttempt(ActionData actionData) throws InterruptedException {
-        Action action = actionData.getAction();
+    private boolean performActionWithAttempt(JobData actionData) throws InterruptedException {
+        Action action = (Action) actionData.getMainJob();
         String actionName = action.getActionName();
         int totalAttempt = action.getAttempt();
         int count = totalAttempt;
@@ -149,7 +148,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
             count--;
             AppScene.addLog(LogLevel.INFO, className, "Waiting " + action.getWaitBeforeTime()/1000 + " seconds");
             Thread.sleep(action.getWaitBeforeTime());
-            entryPassed = checkAllConditions(actionData.getEntryConditionList(), ConditionType.Entry);
+            entryPassed = checkAllConditions(actionData.getJobDataList(), ConditionType.Entry);
             if (!entryPassed) {
                 AppScene.addLog(LogLevel.INFO, className, "Not found entry at action: " + actionName + " : " + count + "/" + totalAttempt);
                 if (!actionPerformed)
@@ -163,7 +162,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
             }
             AppScene.addLog(LogLevel.INFO, className, "Waiting " + action.getWaitAfterTime()/1000 + " seconds");
             Thread.sleep(action.getWaitAfterTime());
-            if (checkAllConditions(actionData.getExitConditionList(), ConditionType.Exit)) {
+            if (checkAllConditions(actionData.getJobDataList(), ConditionType.Exit)) {
                 AppScene.addLog(LogLevel.INFO, className, "Found exit at action: " + actionName + " : " + count + "/" + totalAttempt);
                 return true;
             }
@@ -173,15 +172,15 @@ public class ActionRunController extends RunActivity implements Initializable, J
         return false;
     }
 
-    private boolean performActionWithProgressiveSearch(ActionData actionData) {
-        Action action = actionData.getAction();
+    private boolean performActionWithProgressiveSearch(JobData actionData) {
+        Action action = (Action) actionData.getMainJob();
         String actionName = action.getActionName();
         long startTime = System.currentTimeMillis();
         int duration = action.getProgressiveSearchTime();
         boolean entryPassed, actionPerformed = false;
         AppScene.addLog(LogLevel.INFO, className, "Start progressive search at action: " + actionName + " for: " + duration);
         while (System.currentTimeMillis() - startTime < duration) {
-            entryPassed = checkAllConditions(actionData.getEntryConditionList(), ConditionType.Entry);
+            entryPassed = checkAllConditions(actionData.getJobDataList(), ConditionType.Entry);
             if (!entryPassed) {
                 if (!actionPerformed)
                     continue;
@@ -192,7 +191,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
                 actionPerformed = true;
             }
             conditionRunExitVBoxContainer.setVisible(true);
-            if (checkAllConditions(actionData.getExitConditionList(), ConditionType.Exit))
+            if (checkAllConditions(actionData.getJobDataList(), ConditionType.Exit))
                 return true;
         }
         AppScene.addLog(LogLevel.INFO, className, "Exceeded progressive search time at action: " + actionName);
@@ -211,37 +210,44 @@ public class ActionRunController extends RunActivity implements Initializable, J
         AppScene.addLog(LogLevel.INFO, className, "Performed action: " + action.getActionName());
     }
 
-    private boolean checkAllConditions(List<ConditionData> conditionData, ConditionType conditionType) {
+    private boolean checkAllConditions(List<JobData> fullConditionList, ConditionType conditionType) {
         AppScene.addLog(LogLevel.INFO, className, "Start checking condition: " + conditionType);
-        if (conditionData == null || conditionData.isEmpty())
+        if (fullConditionList == null)
             return true;
+        List<JobData> conditionDataList = getConditionList(fullConditionList, conditionType);
         Platform.runLater(() -> clearConditionHBox(conditionType));
         // all conditions are optional therefore only need one condition to pass
-        if (checkAllConditionsIsNotRequired(conditionData)) {
-            for (ConditionData c : conditionData) {
+        if (checkAllConditionsIsNotRequired(conditionDataList)) {
+            for (JobData c : conditionDataList) {
                 loadConditionRunPane(conditionType);
-                if (currentConditionRunController.checkCondition(c.getCondition()))
+                if (currentConditionRunController.startJob(c))
                     return true;
             }
             return false;
         }
         else { // only check required condition and they must pass
-            for (ConditionData c : conditionData) {
+            for (JobData c : conditionDataList) {
                 loadConditionRunPane(conditionType);
-                Condition condition = c.getCondition();
-                if (condition.isRequired() && !currentConditionRunController.checkCondition(condition))
+                if (((Condition) c.getMainJob()).isRequired() && !currentConditionRunController.startJob(c))
                     return false;
             }
             return true;
         }
     }
-    private boolean checkAllConditionsIsNotRequired(List<ConditionData> conditionData) {
+    private boolean checkAllConditionsIsNotRequired(List<JobData> conditionData) {
         if (conditionData == null || conditionData.isEmpty())
             return true;
-        for (ConditionData c : conditionData)
-            if (c.getCondition().isRequired())
+        for (JobData c : conditionData)
+            if (((Condition) c.getMainJob()).isRequired())
                 return false;
         return true;
+    }
+    private List<JobData> getConditionList(List<JobData> fullCondition, ConditionType conditionType) {
+        List<JobData> conditionList = new ArrayList<>();
+        for (JobData c : fullCondition)
+            if (((Condition) c.getMainJob()).getConditionType() == conditionType)
+                conditionList.add(c);
+        return conditionList;
     }
 
     // ------------------------------------------------------
@@ -259,14 +265,14 @@ public class ActionRunController extends RunActivity implements Initializable, J
             AppScene.addLog(LogLevel.ERROR, className, "Fail - cannot load condition run pane - Could not load entry condition run pane");
             return;
         }
-        conditionRunEntryVBoxContainer.setVisible(true);
-        Platform.runLater(() -> actionRunSideContent.getChildren().clear());
         currentConditionRunController.setParentScrollPane(entryConditionScrollPane);
-        Node conditionEntryRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(
-                new Label(ConditionType.Entry.name()), null, currentConditionRunController);
-        // update side hierarchy
-        Platform.runLater(() -> actionRunSideContent.getChildren().add(conditionEntryRunHBoxLabel));
+        conditionRunEntryVBoxContainer.setVisible(true);
         Platform.runLater(() -> entryConditionHBox.getChildren().add(conditionRunPane));
+        Platform.runLater(() -> currentRunStructure.getSideContent().getChildren().clear());
+
+        JobRunStructure jobRunStructure = new JobRunStructure(currentRunStructure.getDisplayParentController(), this, currentConditionRunController, ConditionType.Entry.name());
+        currentConditionRunController.setJobRunStructure(jobRunStructure);
+        Platform.runLater(() -> currentRunStructure.addToSideContent(jobRunStructure.getSideHBoxLabel(), jobRunStructure.getSideContent()));
     }
 
     private void loadExitConditionRunPane() {
@@ -275,13 +281,13 @@ public class ActionRunController extends RunActivity implements Initializable, J
             AppScene.addLog(LogLevel.ERROR, className, "Fail - condition run pane is null - Could not load exit condition run pane");
             return;
         }
-        conditionRunExitVBoxContainer.setVisible(true);
         currentConditionRunController.setParentScrollPane(exitConditionScrollPane);
-        Node conditionExitRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(
-                new Label(ConditionType.Exit.name()), null, currentConditionRunController);
-        // update side hierarchy
-        Platform.runLater(() -> actionRunSideContent.getChildren().add(conditionExitRunHBoxLabel));
+        conditionRunExitVBoxContainer.setVisible(true);
         Platform.runLater(() -> exitConditionHBox.getChildren().add(conditionRunPane));
+
+        JobRunStructure jobRunStructure = new JobRunStructure(currentRunStructure.getDisplayParentController(), this, currentConditionRunController, ConditionType.Exit.name());
+        currentConditionRunController.setJobRunStructure(jobRunStructure);
+        Platform.runLater(() -> currentRunStructure.addToSideContent(jobRunStructure.getSideHBoxLabel(), jobRunStructure.getSideContent()));
     }
 
     private Node loadConditionRunPane() {

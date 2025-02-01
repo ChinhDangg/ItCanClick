@@ -12,8 +12,7 @@ import javafx.scene.layout.StackPane;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
-import org.dev.JobData.JobData;
-import org.dev.JobData.TaskData;
+import org.dev.Job.JobData;
 import org.dev.Job.Task.Task;
 import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
@@ -128,10 +127,10 @@ public class MinimizedTaskController implements Initializable, JobDataController
     }
 
     @Override
-    public TaskData getSavedData() {
-        TaskData taskData = taskController.getSavedData();
+    public JobData getSavedData() {
+        JobData tempData = taskController.getSavedData();
         Task newTask = new Task(currentStructure.getName(), requiredCheckBox.isSelected(), previousPassCheckBox.isSelected(), repeatNumber);
-        taskData.setTask(newTask);
+        JobData taskData = new JobData(newTask, tempData.getJobDataList());
         AppScene.addLog(LogLevel.TRACE, className, "Get Task Data");
         return taskData;
     }
@@ -139,8 +138,7 @@ public class MinimizedTaskController implements Initializable, JobDataController
     @Override
     public void loadSavedData(JobData jobData) {
         addSavedData(jobData);
-        TaskData taskData = (TaskData) jobData;
-        Task task = (Task) taskData.getTask();
+        Task task = (Task) jobData.getMainJob();
         requiredCheckBox.setSelected(task.isRequired());
         previousPassCheckBox.setSelected(task.isPreviousPass());
         updateRepeatNumberLabel(task.getRepeatNumber());
@@ -165,11 +163,11 @@ public class MinimizedTaskController implements Initializable, JobDataController
     }
 
     @Override
-    public void removeSavedData(JobStructure jobStructure) { taskController.removeSavedData(jobStructure); }
+    public void removeSavedData(JobDataController jobDataController) { taskController.removeSavedData(jobDataController); }
     @Override
-    public void moveSavedDataUp(JobStructure jobStructure) {}
+    public void moveSavedDataUp(JobDataController jobDataController) {}
     @Override
-    public void moveSavedDataDown(JobStructure jobStructure) {}
+    public void moveSavedDataDown(JobDataController jobDataController) {}
     @Override
     public JobRunController getRunJob() { return taskController.getRunJob(); }
 }

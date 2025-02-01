@@ -22,8 +22,6 @@ module org.dev {
     opens org.dev.Job.Condition;
     exports org.dev.JobController;
     opens org.dev.JobController;
-    exports org.dev.JobData;
-    opens org.dev.JobData;
     exports org.dev.Menu;
     opens org.dev.Menu;
     exports org.dev.RunJob;

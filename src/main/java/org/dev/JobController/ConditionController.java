@@ -17,8 +17,7 @@ import org.dev.Enum.ConditionRequirement;
 import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Condition.Condition;
-import org.dev.JobData.JobData;
-import org.dev.JobData.ConditionData;
+import org.dev.Job.JobData;
 import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
@@ -80,26 +79,27 @@ public class ConditionController implements Initializable, JobDataController, Ac
         if (event.getButton() == MouseButton.PRIMARY)
             AppScene.openConditionMenuPane(this);
         else if (event.getButton() == MouseButton.SECONDARY) {
-            SideMenuController.rightClickMenuController.showRightMenu(event, this, parentActionController);
+            SideMenuController.rightClickMenuController.showRightMenu(event, currentStructure);
         }
     }
 
     public void removeThisConditionFromParent() {
-        parentActionController.removeSavedData(this);
+        currentStructure.getParentController().removeSavedData(this);
         AppScene.addLog(LogLevel.DEBUG, className, "Condition removed");
     }
 
     // ------------------------------------------------------
     @Override
+    public String getName() { return null; }
+
+    @Override
     public Node getParentNode() { return conditionStackPane; }
 
     @Override
-    public ConditionData getSavedData() {
+    public JobData getSavedData() {
         if (condition == null)
             return null;
-        ConditionData conditionData = new ConditionData();
-        conditionData.setCondition(condition.getDeepCopied());
-        return conditionData;
+        return new JobData(condition.getDeepCopied(), null);
     }
 
     @Override
@@ -108,8 +108,8 @@ public class ConditionController implements Initializable, JobDataController, Ac
             AppScene.addLog(LogLevel.ERROR, className, "Fail - cannot load null saved condition");
             return;
         }
-        ConditionData conditionData = (ConditionData) jobData;
-        registerReadingCondition(conditionData.getCondition());
+        Condition condition = (Condition) jobData.getMainJob();
+        registerReadingCondition(condition);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class ConditionController implements Initializable, JobDataController, Ac
     public void removeSavedData(JobDataController jobDataController) {}
 
     @Override
-    public void takeToDisplay(MainJobController parentController) {}
+    public void takeToDisplay() {}
 
     @Override
     public AppLevel getAppLevel() {

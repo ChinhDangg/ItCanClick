@@ -13,8 +13,7 @@ import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Task.TaskGroup;
-import org.dev.JobData.JobData;
-import org.dev.JobData.TaskGroupData;
+import org.dev.Job.JobData;
 import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
 import org.dev.RunJob.TaskGroupRunController;
@@ -97,14 +96,12 @@ public class TaskGroupController implements Initializable, JobDataController {
     }
 
     @Override
-    public TaskGroupData getSavedData() {
-        TaskGroupData taskGroupData = new TaskGroupData();
+    public JobData getSavedData() {
         TaskGroup taskGroup = new TaskGroup(currentStructure.getName(), requiredCheckBox.isSelected(), disabledCheckBox.isSelected());
-        taskGroupData.setTaskGroup(taskGroup);
         List<JobData> taskDataList = new ArrayList<>();
         for (JobStructure subJobStructure: currentStructure.getSubJobStructures())
             taskDataList.add(subJobStructure.getCurrentController().getSavedData());
-        taskGroupData.setTaskDataList(taskDataList);
+        JobData taskGroupData = new JobData(taskGroup, taskDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got task group data");
         return taskGroupData;
     }
@@ -115,12 +112,11 @@ public class TaskGroupController implements Initializable, JobDataController {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation data is null - cannot load from save");
             return;
         }
-        TaskGroupData taskGroupData = (TaskGroupData) jobData;
-        TaskGroup taskGroup = (TaskGroup) taskGroupData.getTaskGroup();
+        TaskGroup taskGroup = (TaskGroup) jobData.getMainJob();
         requiredCheckBox.setSelected(taskGroup.isRequired());
         disabledCheckBox.setSelected(taskGroup.isDisabled());
         updateTaskGroupName(taskGroup.getTaskGroupName());
-        for (JobData taskData : taskGroupData.getTaskDataList())
+        for (JobData taskData : jobData.getJobDataList())
             addSavedData(taskData);
     }
 
@@ -156,8 +152,8 @@ public class TaskGroupController implements Initializable, JobDataController {
     }
 
     @Override
-    public void removeSavedData(JobStructure jobStructure) {
-        int removeIndex = currentStructure.removeSubJobStructure(jobStructure);
+    public void removeSavedData(JobDataController jobDataController) {
+        int removeIndex = currentStructure.removeSubJobStructure(jobDataController);
         taskGroupVBox.getChildren().remove(removeIndex);
         if (removeIndex == 0)
             ((MinimizedTaskController) currentStructure.getSubJobStructures().getFirst().getCurrentController()).disablePreviousOption();
@@ -165,32 +161,32 @@ public class TaskGroupController implements Initializable, JobDataController {
     }
 
     @Override
-    public void moveSavedDataUp(JobStructure jobStructure) {
-        int numberOfTasks = jobStructure.getSubStructureSize();
+    public void moveSavedDataUp(JobDataController jobDataController) {
+        int numberOfTasks = currentStructure.getSubStructureSize();
         if (numberOfTasks < 2)
             return;
-        int selectedTaskIndex = jobStructure.getSubStructureIndex(jobStructure);
+        int selectedTaskIndex = currentStructure.getSubStructureIndex(jobDataController);
         if (selectedTaskIndex == 0)
             return;
         int changeIndex = selectedTaskIndex -1;
         updateTaskPaneList(selectedTaskIndex, changeIndex);
         updateTaskPreviousOption(changeIndex);
-        currentStructure.updateSubJobStructure(jobStructure, changeIndex);
+        currentStructure.updateSubJobStructure(jobDataController, changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved up Task: " + changeIndex);
     }
 
     @Override
-    public void moveSavedDataDown(JobStructure jobStructure) {
-        int numberOfTasks = jobStructure.getSubStructureSize();
+    public void moveSavedDataDown(JobDataController jobDataController) {
+        int numberOfTasks = currentStructure.getSubStructureSize();
         if (numberOfTasks < 2)
             return;
-        int selectedTaskIndex = jobStructure.getSubStructureIndex(jobStructure);
+        int selectedTaskIndex = currentStructure.getSubStructureIndex(jobDataController);
         int changeIndex = selectedTaskIndex +1;
         if (changeIndex == numberOfTasks)
             return;
         updateTaskPaneList(selectedTaskIndex, changeIndex);
         updateTaskPreviousOption(changeIndex);
-        currentStructure.updateSubJobStructure(jobStructure, changeIndex);
+        currentStructure.updateSubJobStructure(jobDataController, changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved down task group: " + changeIndex);
     }
 

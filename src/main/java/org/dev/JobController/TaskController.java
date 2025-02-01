@@ -16,8 +16,7 @@ import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Task.Task;
-import org.dev.JobData.JobData;
-import org.dev.JobData.TaskData;
+import org.dev.Job.JobData;
 import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
 import org.dev.RunJob.TaskRunController;
@@ -114,12 +113,11 @@ public class TaskController implements Initializable, JobDataController {
     public void takeToDisplay() { AppScene.displayNewCenterNode(getParentNode()); }
 
     @Override
-    public TaskData getSavedData() {
-        TaskData taskData = new TaskData();
+    public JobData getSavedData() {
         List<JobData> actionDataList = new ArrayList<>();
         for (JobStructure subJobStructure: currentStructure.getSubJobStructures())
             actionDataList.add(subJobStructure.getCurrentController().getSavedData());
-        taskData.setActionDataList(actionDataList);
+        JobData taskData = new JobData(null, actionDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got task data");
         return taskData;
     }
@@ -130,10 +128,9 @@ public class TaskController implements Initializable, JobDataController {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task data is null - cannot load from save");
             return;
         }
-        TaskData taskData = (TaskData) jobData;
-        Task task = (Task) taskData.getTask();
+        Task task = (Task) jobData.getMainJob();
         taskNameLabel.setText(task.getTaskName());
-        for (JobData actionData : taskData.getActionDataList())
+        for (JobData actionData : jobData.getJobDataList())
             addSavedData(actionData);
     }
 
@@ -170,8 +167,8 @@ public class TaskController implements Initializable, JobDataController {
     }
 
     @Override
-    public void removeSavedData(JobStructure jobStructure) {
-        int removeIndex = currentStructure.removeSubJobStructure(jobStructure);
+    public void removeSavedData(JobDataController jobDataController) {
+        int removeIndex = currentStructure.removeSubJobStructure(jobDataController);
         taskVBox.getChildren().remove(removeIndex);
         if (removeIndex == 0)
             ((ActionController) currentStructure.getSubJobStructures().getFirst().getCurrentController()).disablePreviousOption();
@@ -179,32 +176,32 @@ public class TaskController implements Initializable, JobDataController {
     }
 
     @Override
-    public void moveSavedDataUp(JobStructure jobStructure) {
-        int numberOfActions = jobStructure.getSubStructureSize();
+    public void moveSavedDataUp(JobDataController jobDataController) {
+        int numberOfActions = currentStructure.getSubStructureSize();
         if (numberOfActions < 2)
             return;
-        int selectedActionPaneIndex = jobStructure.getSubStructureIndex(jobStructure);
+        int selectedActionPaneIndex = currentStructure.getSubStructureIndex(jobDataController);
         if (selectedActionPaneIndex == 0)
             return;
         int changeIndex = selectedActionPaneIndex -1;
         updateActionPaneList(selectedActionPaneIndex, changeIndex);
         updateActionPreviousOption(changeIndex);
-        currentStructure.updateSubJobStructure(jobStructure, changeIndex);
+        currentStructure.updateSubJobStructure(jobDataController, changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved up action: " + changeIndex);
     }
 
     @Override
-    public void moveSavedDataDown(JobStructure jobStructure) {
-        int numberOfActions = jobStructure.getSubStructureSize();
+    public void moveSavedDataDown(JobDataController jobDataController) {
+        int numberOfActions = currentStructure.getSubStructureSize();
         if (numberOfActions < 2)
             return;
-        int selectedActionPaneIndex = jobStructure.getSubStructureIndex(jobStructure);
+        int selectedActionPaneIndex = currentStructure.getSubStructureIndex(jobDataController);
         int changeIndex = selectedActionPaneIndex +1;
         if (changeIndex == numberOfActions)
             return;
         updateActionPaneList(selectedActionPaneIndex, changeIndex);
         updateActionPreviousOption(changeIndex);
-        currentStructure.updateSubJobStructure(jobStructure, changeIndex);
+        currentStructure.updateSubJobStructure(jobDataController, changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved down action: " + changeIndex);
     }
 

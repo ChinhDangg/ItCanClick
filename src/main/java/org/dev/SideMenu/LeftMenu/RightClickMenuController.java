@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 import org.dev.Enum.AppLevel;
 import org.dev.JobController.JobDataController;
+import org.dev.JobStructure;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -26,8 +27,7 @@ public class RightClickMenuController implements Initializable {
     private HBox moveUpSection, moveDownSection;
 
     private Popup rightMenuPopup;
-    private JobDataController currentParentJobDataController;
-    private JobDataController currentJobDataController;
+    private JobStructure currentJobStructure;
     private JobDataController copiedJobDataController;
 
     @Override
@@ -46,13 +46,12 @@ public class RightClickMenuController implements Initializable {
         moveDownSection.setOnMouseClicked(this::moveDown);
     }
 
-    public void showRightMenu(MouseEvent event, JobDataController jobDataController, JobDataController parentJobDataController) {
+    public void showRightMenu(MouseEvent event, JobStructure jobStructure) {
         disableAllSelectOption();
-        enableNewLevelOption(jobDataController.getAppLevel());
-        enableSelectOption(jobDataController.getAppLevel());
+        currentJobStructure = jobStructure;
+        enableNewLevelOption(currentJobStructure.getCurrentController().getAppLevel());
+        enableSelectOption(currentJobStructure.getCurrentController().getAppLevel());
         rightMenuPopup.show((Node) event.getSource(), event.getScreenX(), event.getScreenY());
-        currentJobDataController = jobDataController;
-        currentParentJobDataController = parentJobDataController;
     }
 
     private void enableNewLevelOption(AppLevel appLevel) {
@@ -98,26 +97,26 @@ public class RightClickMenuController implements Initializable {
     }
 
     private void addNewTaskGroup(MouseEvent event) {
-        if (currentJobDataController.getAppLevel() == AppLevel.TaskGroup)
-            currentParentJobDataController.addSavedData(null);
+        if (currentJobStructure.getCurrentController().getAppLevel() == AppLevel.TaskGroup)
+            currentJobStructure.getParentController().addSavedData(null);
         else
-            currentJobDataController.addSavedData(null);
+            currentJobStructure.getCurrentController().addSavedData(null);
         hideRightMenu();
     }
 
     private void addNewTask(MouseEvent event) {
-        if (currentJobDataController.getAppLevel() == AppLevel.Task)
-            currentParentJobDataController.addSavedData(null);
+        if (currentJobStructure.getCurrentController().getAppLevel() == AppLevel.Task)
+            currentJobStructure.getParentController().addSavedData(null);
         else
-            currentJobDataController.addSavedData(null);
+            currentJobStructure.getCurrentController().addSavedData(null);
         hideRightMenu();
     }
 
     private void addNewAction(MouseEvent event) {
-        if (currentJobDataController.getAppLevel() == AppLevel.Action)
-            currentParentJobDataController.addSavedData(null);
+        if (currentJobStructure.getCurrentController().getAppLevel() == AppLevel.Action)
+            currentJobStructure.getParentController().addSavedData(null);
         else
-            currentJobDataController.addSavedData(null);
+            currentJobStructure.getCurrentController().addSavedData(null);
         hideRightMenu();
     }
 
@@ -126,31 +125,31 @@ public class RightClickMenuController implements Initializable {
     }
 
     private void copyData(MouseEvent event) {
-        copiedJobDataController = currentJobDataController;
+        copiedJobDataController = currentJobStructure.getCurrentController();
         hideRightMenu();
     }
 
     private void pasteData(MouseEvent event) {
-        if (copiedJobDataController.getAppLevel().getOrder() - currentJobDataController.getAppLevel().getOrder() == 0)
-            currentParentJobDataController.addSavedData(copiedJobDataController.getSavedData());
+        if (copiedJobDataController.getAppLevel().getOrder() - currentJobStructure.getCurrentController().getAppLevel().getOrder() == 0)
+            currentJobStructure.getParentController().addSavedData(copiedJobDataController.getSavedData());
         else
-            currentJobDataController.addSavedData(copiedJobDataController.getSavedData());
+            currentJobStructure.getCurrentController().addSavedData(copiedJobDataController.getSavedData());
         hideRightMenu();
     }
 
     private void deleteData(MouseEvent event) {
-        currentParentJobDataController.removeSavedData(currentJobDataController);
-        if (currentJobDataController.getAppLevel() == AppLevel.Task)
-            currentParentJobDataController.takeToDisplay(null);
+        currentJobStructure.getParentController().removeSavedData(currentJobStructure.getCurrentController());
+        if (currentJobStructure.getCurrentController().getAppLevel() == AppLevel.Task)
+            currentJobStructure.getParentController().takeToDisplay();
         hideRightMenu();
     }
 
     private void moveUp(MouseEvent event) {
-        currentParentJobDataController.moveSavedDataUp(currentJobDataController);
+        currentJobStructure.getParentController().moveSavedDataUp(currentJobStructure.getCurrentController());
     }
 
     private void moveDown(MouseEvent event) {
-        currentParentJobDataController.moveSavedDataDown(currentJobDataController);
+        currentJobStructure.getParentController().moveSavedDataDown(currentJobStructure.getCurrentController());
     }
 
     private void hideRightMenu() {

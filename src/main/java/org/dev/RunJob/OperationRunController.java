@@ -13,12 +13,11 @@ import lombok.Getter;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
+import org.dev.Job.Operation;
 import org.dev.Job.Task.TaskGroup;
-import org.dev.JobController.MainJobController;
-import org.dev.JobData.JobData;
-import org.dev.JobData.OperationData;
-import org.dev.JobData.TaskGroupData;
-import org.dev.SideMenu.LeftMenu.SideMenuController;
+import org.dev.Job.JobData;
+import org.dev.JobRunStructure;
+
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -33,8 +32,9 @@ public class OperationRunController implements Initializable, JobRunController {
     @FXML
     private VBox runVBox;
 
-    @Getter
-    private VBox operationRunSideContent = new VBox();
+    private JobRunStructure currentRunStructure;
+
+    private double currentGlobalScale = 1.0;
     private final String className = this.getClass().getSimpleName();
 
     @Override
@@ -42,34 +42,11 @@ public class OperationRunController implements Initializable, JobRunController {
         loadMainOperationRunVBox();
     }
 
-    private double currentGlobalScale = 1.0;
     private void loadMainOperationRunVBox() {
         if (currentGlobalScale != AppScene.currentGlobalScale) {
             currentGlobalScale = AppScene.currentGlobalScale;
             mainOperationRunVBox.getTransforms().add(new Scale(currentGlobalScale, currentGlobalScale, 0, 0));
         }
-    }
-
-    @Override
-    public Node getParentNode() {
-        return operationRunScrollPane;
-    }
-
-    @Override
-    public AppLevel getAppLevel() {
-        return AppLevel.Operation;
-    }
-
-    @Override
-    public void takeToDisplay(MainJobController parentController) {
-        if (mainOperationRunVBox.getScene() == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation run scene is null - but take to display is called");
-            return;
-        }
-        AppScene.closeActionMenuPane();
-        AppScene.closeConditionMenuPane();
-        operationRunScrollPane.setVvalue(0.0);
-        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
     public void changeScrollPaneVValueView(Node node) {
@@ -93,25 +70,51 @@ public class OperationRunController implements Initializable, JobRunController {
 
     // ------------------------------------------------------
     @Override
+    public Node getParentNode() {
+        return operationRunScrollPane;
+    }
+
+    @Override
+    public AppLevel getAppLevel() {
+        return AppLevel.Operation;
+    }
+
+    @Override
+    public void takeToDisplay() {
+        if (mainOperationRunVBox.getScene() == null) {
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation run scene is null - but take to display is called");
+            return;
+        }
+        AppScene.closeActionMenuPane();
+        AppScene.closeConditionMenuPane();
+        operationRunScrollPane.setVvalue(0.0);
+        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
+    }
+
+    @Override
+    public void setJobRunStructure(JobRunStructure runStructure) {
+        currentRunStructure = runStructure;
+    }
+
+    @Override
     public boolean startJob(JobData jobData) {
         if (jobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation data is null - cannot start");
             return false;
         }
-        OperationData operationData = (OperationData) jobData;
-        String operationName = operationData.getOperation().getOperationName();
+        Operation operation = (Operation) jobData.getMainJob();
+        String operationName = operation.getOperationName();
         changeOperationRunName(operationName);
-        return runOperation(operationData);
+        return runOperation(jobData);
     }
 
-    private boolean runOperation(OperationData operationData) {
-        AppScene.addLog(LogLevel.INFO, className, "Start running operation: " + operationData.getOperation().getOperationName());
-        List<TaskGroupData> taskGroupDataList = operationData.getTaskGroupDataList();
-        for (TaskGroupData taskData : taskGroupDataList) {
-            TaskGroup currentTaskGroup = taskData.getTaskGroup();
+    private boolean runOperation(JobData operationData) {
+        AppScene.addLog(LogLevel.INFO, className, "Start running operation: " + ((Operation) operationData.getMainJob()).getOperationName());
+        List<JobData> taskGroupDataList = operationData.getJobDataList();
+        for (JobData taskData : taskGroupDataList) {
+            TaskGroup currentTaskGroup = (TaskGroup) taskData.getMainJob();
             String taskName = currentTaskGroup.getTaskGroupName();
-            loadAndAddNewTaskRunPane(taskName);
-            boolean pass = currentTaskGroupRunController.startJob(taskData);
+            boolean pass = getNewTaskGroupRunController(taskName).startJob(taskData);
             if (currentTaskGroup.isRequired() && !pass) { // task is required but failed
                 AppScene.addLog(LogLevel.INFO, className, "Fail performing task group: " + taskName);
                 return false;
@@ -120,20 +123,20 @@ public class OperationRunController implements Initializable, JobRunController {
         return true;
     }
 
-    private TaskGroupRunController currentTaskGroupRunController;
-    private void loadAndAddNewTaskRunPane(String taskName) {
+    private JobRunController getNewTaskGroupRunController(String taskName) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("taskGroupRunPane.fxml"));
             Node taskRunGroup = fxmlLoader.load();
-            currentTaskGroupRunController = fxmlLoader.getController();
-            VBox taskRunSideContent = currentTaskGroupRunController.getTaskGroupRunSideContent();
-            Node taskRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(
-                    new Label(taskName), taskRunSideContent, currentTaskGroupRunController);
-            // update side hierarchy
-            Platform.runLater(() -> operationRunSideContent.getChildren().addAll(taskRunHBoxLabel, taskRunSideContent));
+            JobRunController controller = fxmlLoader.getController();
             Platform.runLater(() -> runVBox.getChildren().add(taskRunGroup));
+
+            JobRunStructure jobRunStructure = new JobRunStructure(this, this, controller, taskName);
+            controller.setJobRunStructure(jobRunStructure);
+            Platform.runLater(() -> currentRunStructure.addToSideContent(jobRunStructure.getSideHBoxLabel(), jobRunStructure.getSideContent()));
+            return controller;
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading task run pane: " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 }

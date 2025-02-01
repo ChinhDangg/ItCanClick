@@ -11,17 +11,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
-import lombok.Getter;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
-import org.dev.JobData.JobData;
-import org.dev.JobData.OperationData;
+import org.dev.Job.JobData;
 import org.dev.Job.Operation;
 import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
 import org.dev.RunJob.OperationRunController;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +36,6 @@ public class OperationController implements Initializable, JobDataController {
     @FXML
     private HBox addTaskButton;
 
-    @Getter
     private JobStructure currentStructure;
     private double currentScale = 1;
 
@@ -55,7 +51,10 @@ public class OperationController implements Initializable, JobDataController {
             }
         });
         loadMainOperationVBox();
-        currentStructure = new JobStructure(null, null, this, renameTextField.getText());
+    }
+
+    public void setJobStructure(JobStructure structure) {
+        currentStructure = structure;
     }
 
     private void loadMainOperationVBox() {
@@ -151,13 +150,12 @@ public class OperationController implements Initializable, JobDataController {
     }
 
     @Override
-    public OperationData getSavedData() {
-        OperationData operationData = new OperationData();
-        operationData.setOperation(new Operation(currentStructure.getName()));
+    public JobData getSavedData() {
+        Operation operation = new Operation(currentStructure.getName());
         List<JobData> taskDataList = new ArrayList<>();
         for (JobStructure subJobStructure : currentStructure.getSubJobStructures())
             taskDataList.add(subJobStructure.getCurrentController().getSavedData());
-        operationData.setTaskGroupDataList(taskDataList);
+        JobData operationData = new JobData(operation, taskDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got operation data");
         return operationData;
     }
@@ -168,10 +166,9 @@ public class OperationController implements Initializable, JobDataController {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation data is null - cannot load from save");
             return;
         }
-        OperationData operationData = (OperationData) jobData;
-        Operation operation = (Operation) operationData.getOperation();
+        Operation operation = (Operation) jobData.getMainJob();
         updateOperationName(operation.getOperationName());
-        for (JobData taskGroupData : operationData.getTaskGroupDataList())
+        for (JobData taskGroupData : jobData.getJobDataList())
             addSavedData(taskGroupData);
     }
 
@@ -207,39 +204,39 @@ public class OperationController implements Initializable, JobDataController {
     }
 
     @Override
-    public void removeSavedData(JobStructure jobStructure) {
-        int removeIndex = currentStructure.removeSubJobStructure(jobStructure);
+    public void removeSavedData(JobDataController jobDataController) {
+        int removeIndex = currentStructure.removeSubJobStructure(jobDataController);
         operationVBox.getChildren().remove(removeIndex);
         updateTaskIndex(removeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Removed selected task: " + removeIndex);
     }
 
     @Override
-    public void moveSavedDataUp(JobStructure jobStructure) {
-        int numberOfTasks = jobStructure.getSubStructureSize();
+    public void moveSavedDataUp(JobDataController jobDataController) {
+        int numberOfTasks = currentStructure.getSubStructureSize();
         if (numberOfTasks < 2)
             return;
-        int selectedTaskPaneIndex = jobStructure.getSubStructureIndex(jobStructure);
+        int selectedTaskPaneIndex = currentStructure.getSubStructureIndex(jobDataController);
         if (selectedTaskPaneIndex == 0)
             return;
         int changeIndex = selectedTaskPaneIndex-1;
         updateTaskPaneList(selectedTaskPaneIndex, changeIndex);
-        currentStructure.updateSubJobStructure(jobStructure, changeIndex);
+        currentStructure.updateSubJobStructure(jobDataController, changeIndex);
         updateTaskIndex(changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved-down Task Group: " + changeIndex);
     }
 
     @Override
-    public void moveSavedDataDown(JobStructure jobStructure) {
-        int numberOfTasks = jobStructure.getSubStructureSize();
+    public void moveSavedDataDown(JobDataController jobDataController) {
+        int numberOfTasks = currentStructure.getSubStructureSize();
         if (numberOfTasks < 2)
             return;
-        int selectedTaskPaneIndex = jobStructure.getSubStructureIndex(jobStructure);
+        int selectedTaskPaneIndex = currentStructure.getSubStructureIndex(jobDataController);
         int changeIndex = selectedTaskPaneIndex+1;
         if (changeIndex == numberOfTasks)
             return;
         updateTaskPaneList(selectedTaskPaneIndex, changeIndex);
-        currentStructure.updateSubJobStructure(jobStructure, changeIndex);
+        currentStructure.updateSubJobStructure(jobDataController, changeIndex);
         updateTaskIndex(changeIndex-1);
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on move-up selected task: " + changeIndex);
     }

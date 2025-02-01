@@ -9,18 +9,18 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import lombok.NonNull;
 import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Condition.Condition;
 import org.dev.Job.Condition.ImageCheckResult;
-import org.dev.JobController.MainJobController;
+import org.dev.Job.JobData;
+import org.dev.JobRunStructure;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ConditionRunController extends RunActivity implements Initializable, MainJobController {
+public class ConditionRunController extends RunActivity implements Initializable, JobRunController {
 
     @FXML
     private HBox mainConditionRunHBox;
@@ -32,6 +32,8 @@ public class ConditionRunController extends RunActivity implements Initializable
     private ImageView conditionExpectedImageView, conditionReadImageView;
     @FXML
     private StackPane stackPaneImageViewContainer;
+
+    private JobRunStructure currentRunStructure;
 
     @Setter
     private ScrollPane parentScrollPane;
@@ -56,13 +58,20 @@ public class ConditionRunController extends RunActivity implements Initializable
     }
 
     @Override
-    public void takeToDisplay(@NonNull MainJobController parentController) {
-        OperationRunController parentOperationRunController = (OperationRunController) parentController;
+    public void takeToDisplay() {
+        OperationRunController parentOperationRunController = (OperationRunController) currentRunStructure.getDisplayParentController();
         parentOperationRunController.changeScrollPaneVValueView(parentScrollPane);
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
-    public boolean checkCondition(Condition condition) {
+    @Override
+    public void setJobRunStructure(JobRunStructure runStructure) {
+        currentRunStructure = runStructure;
+    }
+
+    @Override
+    public boolean startJob(JobData jobData) {
+        Condition condition = (Condition) jobData.getMainJob();
         updateImageView(conditionExpectedImageView, condition.getMainDisplayImage());
         changeLabelText(expectedResultLabel, condition.getExpectedResult());
 
@@ -76,4 +85,5 @@ public class ConditionRunController extends RunActivity implements Initializable
             updatePaneStatusColor(conditionExpectedPane, passed);
         return passed;
     }
+
 }

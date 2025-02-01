@@ -9,14 +9,13 @@ import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import org.dev.Enum.LogLevel;
 import org.dev.JobController.JobDataController;
-import org.dev.JobData.JobData;
+import org.dev.Job.JobData;
 import org.dev.RunJob.JobRunController;
 import org.dev.SideMenu.*;
 import org.dev.Menu.ActionMenuController;
 import org.dev.Menu.ConditionMenuController;
 import org.dev.JobController.ActionController;
 import org.dev.JobController.ConditionController;
-import org.dev.JobData.OperationData;
 import org.dev.JobController.OperationController;
 import org.dev.Enum.CurrentTab;
 import org.dev.SideMenu.LeftMenu.SideBarController;
@@ -48,8 +47,9 @@ public class AppScene {
     public static TopNotificationController topNotificationController;
     public static ActionMenuController actionMenuController;
     public static ConditionMenuController conditionMenuController;
-    public static OperationController currentLoadedOperationController;
-    public static JobRunController currentJobRunController;
+
+    public static JobStructure currentJobStructure;
+    public static JobRunStructure currentJobRunStructure;
 
     public static double currentGlobalScale = 1.3;
     public static boolean isJobRunning = false;
@@ -146,7 +146,18 @@ public class AppScene {
         menuBarController.setOperationRunning(isJobRunning);
     }
 
-    public static void startJobRun(JobDataController jobDataController) {
+    public static boolean startOperationRun() {
+        if (currentJobStructure == null)
+            return false;
+        startJobRun(currentJobStructure.getCurrentController());
+        return true;
+    }
+
+    public static void stopOperationRun() {
+        stopRunJob();
+    }
+
+    private static void startJobRun(JobDataController jobDataController) {
         if (jobDataController == null)
             return;
         if (isJobRunning) {
@@ -162,13 +173,14 @@ public class AppScene {
     }
 
     private static Task<Void> getRunJobTask(JobDataController jobDataController) {
-        currentJobRunController = jobDataController.getRunJob();
+        JobRunController jobRunController = jobDataController.getRunJob();
+        currentJobRunStructure = new JobRunStructure(jobRunController, jobRunController, jobRunController, jobDataController.getName());
         JobData jobData = jobDataController.getSavedData();
         return new Task<>() {
             @Override
             protected Void call() {
                 try {
-                    currentJobRunController.startJob(jobData);
+                    currentJobRunStructure.getCurrentController().startJob(jobData);
                     AppScene.addLog(LogLevel.INFO, className, "Finished running job");
                     Platform.runLater(() -> setIsJobRunning(false));
                 } catch (Exception e) {
@@ -185,25 +197,14 @@ public class AppScene {
         setIsJobRunning(false);
     }
 
-    public static void startOperationRun() {
-        startJobRun(currentLoadedOperationController);
-    }
-
-    public static void stopOperationRun() {
-        stopRunJob();
-    }
-
     // ------------------------------------------------------
-    public static void updateOperationSideMenuHierarchy() {
-        if (currentLoadedOperationController != null)
-            sideBarController.loadSideHierarchy(currentLoadedOperationController);
+    public static void loadSideMenuHierarchy() {
+        if (currentJobStructure != null)
+            sideBarController.loadSideHierarchy(currentJobStructure);
     }
-    public static void updateOperationRunSideMenuHierarchy() {
-        if (currentLoadedOperationController == null)
-            return;
-        String name = currentLoadedOperationController.getOperationNameLabel().getText();
-        sideBarController.loadRunSideHierarchy(name, currentLoadedOperationController.getOperationSideContent(),
-                currentLoadedOperationController);
+    public static void loadRunSideMenuHierarchy() {
+        if (currentJobRunStructure != null)
+            sideBarController.loadRunSideHierarchy(currentJobRunStructure);
     }
 
     // ------------------------------------------------------
@@ -214,16 +215,16 @@ public class AppScene {
     }
 
     public static void backToOperationScene() {
-        if (currentLoadedOperationController == null)
+        if (currentJobStructure == null)
             return;
-        displayNewCenterNode(currentLoadedOperationController.getParentNode());
+        displayNewCenterNode(currentJobStructure.getCurrentController().getParentNode());
         AppScene.addLog(LogLevel.TRACE, className, "Backed to Operation Scene");
     }
 
     public static boolean displayCurrentRunJobNode() {
-        if (currentJobRunController == null)
+        if (currentJobRunStructure == null)
             return false;
-        displayNewCenterNode(currentJobRunController.getParentNode());
+        displayNewCenterNode(currentJobRunStructure.getCurrentController().getParentNode());
         return true;
     }
 
@@ -249,7 +250,7 @@ public class AppScene {
 
     // ------------------------------------------------------
     public static void loadEmptyOperation() {
-        if (currentLoadedOperationController != null && !currentLoadedOperationController.isSet()) {
+        if (currentJobStructure != null && !currentJobStructure.getCurrentController().isSet()) {
             AppScene.addLog(LogLevel.INFO, className, "Empty operation already loaded");
             return;
         }
@@ -257,7 +258,9 @@ public class AppScene {
             FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("JobController/operationPane.fxml"));
             Node operationPane = loader.load();
             displayNewCenterNode(operationPane);
-            currentLoadedOperationController = loader.getController();
+            OperationController controller = loader.getController();
+            currentJobStructure = new JobStructure(controller, controller, controller, controller.getName());
+            controller.setJobStructure(currentJobStructure);
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded empty operation pane");
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading empty operation pane: " + e.getMessage());
@@ -268,17 +271,21 @@ public class AppScene {
         AppScene.addLog(LogLevel.DEBUG, className, "Loading saved operation");
         try (FileInputStream fileIn = new FileInputStream(path);
              ObjectInputStream in = new ObjectInputStream(fileIn)) {
-            OperationData operationData = (OperationData) in.readObject();
+            JobData operationData = (JobData) in.readObject();
             AppScene.addLog(LogLevel.TRACE, className, "Passed getting data");
 
             FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("JobController/operationPane.fxml"));
             Node operationPane = loader.load();
             AppScene.addLog(LogLevel.TRACE, className, "Passed loading operation pane");
 
-            currentLoadedOperationController = loader.getController();
+            OperationController controller = loader.getController();
             AppScene.addLog(LogLevel.TRACE, className, "Passed getting controller");
 
-            currentLoadedOperationController.loadSavedData(operationData);
+            currentJobStructure = new JobStructure(controller, controller, controller, controller.getName());
+            controller.setJobStructure(currentJobStructure);
+            AppScene.addLog(LogLevel.TRACE, className, "Passed assigning structure");
+
+            controller.loadSavedData(operationData);
             AppScene.addLog(LogLevel.TRACE, className, "Passed loading saved data");
 
             displayNewCenterNode(operationPane);

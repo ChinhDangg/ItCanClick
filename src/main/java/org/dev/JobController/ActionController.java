@@ -7,7 +7,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -15,7 +14,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.ActionTypes;
@@ -23,22 +21,17 @@ import org.dev.Enum.AppLevel;
 import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Action.Action;
-import org.dev.Job.Condition.PixelCondition;
-import org.dev.JobData.ActionData;
-import org.dev.JobData.JobData;
-import org.dev.JobData.ConditionData;
+import org.dev.Job.Condition.Condition;
+import org.dev.Job.JobData;
 import org.dev.JobStructure;
 import org.dev.RunJob.ActionRunController;
 import org.dev.RunJob.JobRunController;
-import org.dev.SideMenu.LeftMenu.SideMenuController;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import static org.dev.Enum.AppLevel.Condition;
 
 public class ActionController implements Initializable, JobDataController, ActivityController {
 
@@ -67,7 +60,6 @@ public class ActionController implements Initializable, JobDataController, Activ
     private ActionTypes chosenActionPerform;
 
     private final String className = this.getClass().getSimpleName();
-    private ConditionType currentConditionTypeForPasting;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -136,11 +128,7 @@ public class ActionController implements Initializable, JobDataController, Activ
             return;
         }
         if (event.getButton() == MouseButton.PRIMARY) {
-            addCondition(entryConditionHBox, null);
-        }
-        else if (event.getButton() == MouseButton.SECONDARY) {
-            currentConditionTypeForPasting = ConditionType.Entry;
-            SideMenuController.rightClickMenuController.showRightMenu(event, this, this);
+            addCondition(ConditionType.Entry, null);
         }
     }
 
@@ -151,19 +139,15 @@ public class ActionController implements Initializable, JobDataController, Activ
             return;
         }
         if (event.getButton() == MouseButton.PRIMARY) {
-            addCondition(exitConditionHBox, null);
-        }
-        else if (event.getButton() == MouseButton.SECONDARY) {
-            currentConditionTypeForPasting = ConditionType.Exit;
-            SideMenuController.rightClickMenuController.showRightMenu(event, this, this);
+            addCondition(ConditionType.Exit, null);
         }
     }
 
-    private void addCondition(ConditionType conditionType, JobData condition) {
-        HBox whichPane = (conditionType == ConditionType.Entry) ? entryConditionHBox : exitConditionHBox;
+    private void addCondition(ConditionType conditionType, JobData conditionData) {
+        HBox whichPane = findWhichConditionHBox(conditionType);
         int numberOfCondition = whichPane.getChildren().size();
-        JobDataController lastConditionController = getLastConditionController(conditionType);
-        if (numberOfCondition > 0 && (lastConditionController != null && lastConditionController.isSet())) {
+        int lastIndex = getLastConditionControllerIndex(conditionType);
+        if (numberOfCondition > 0 && (lastIndex != -1 && currentStructure.getSubJobStructures().get(lastIndex).getCurrentController().isSet())) {
             AppScene.addLog(LogLevel.INFO, className, "Previous Condition is not set");
             return;
         }
@@ -178,24 +162,31 @@ public class ActionController implements Initializable, JobDataController, Activ
             ConditionController controller = loader.getController();
             controller.setConditionType(conditionType);
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Condition Pane");
-            if (condition != null)
-                controller.loadSavedData(condition);
+            if (conditionData != null)
+                controller.loadSavedData(conditionData);
             whichPane.getChildren().add(pane);
 
+            lastIndex = (lastIndex == -1) ? currentStructure.getSubStructureSize() : lastIndex;
             JobStructure conditionStructure = new JobStructure(this, this, controller, null);
             controller.setJobStructure(conditionStructure);
-            currentStructure.addSubJobStructure(conditionStructure);
+            currentStructure.addSubJobStructure(lastIndex, conditionStructure);
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading condition pane: " + e.getMessage());
         }
     }
 
-    private JobDataController getLastConditionController(ConditionType conditionType) {
+    private int getLastConditionControllerIndex(ConditionType conditionType) {
+        int count = 0;
         for (JobStructure subJobStructure : currentStructure.getSubJobStructures()) {
             if (((ConditionController) subJobStructure.getCurrentController()).getConditionType() == conditionType)
-                return subJobStructure.getCurrentController();
+                return count;
+            count++;
         }
-        return null;
+        return -1;
+    }
+
+    private HBox findWhichConditionHBox(ConditionType conditionType) {
+        return (conditionType == ConditionType.Entry) ? entryConditionHBox : exitConditionHBox;
     }
 
     // ------------------------------------------------------
@@ -219,18 +210,16 @@ public class ActionController implements Initializable, JobDataController, Activ
     }
 
     @Override
-    public ActionData getSavedData() {
+    public JobData getSavedData() {
         if (action == null)
             return null;
-        ActionData actionData = new ActionData();
         action.setRequired(requiredCheckBox.isSelected());
         action.setPreviousPass(previousPassCheckBox.isSelected());
         action.setActionName(currentStructure.getName());
-        actionData.setAction(action.getDeepCopied());
         List<JobData> conditionDataList = new ArrayList<>();
         for (JobStructure subJobStructure : currentStructure.getSubJobStructures())
             conditionDataList.add(subJobStructure.getCurrentController().getSavedData());
-        actionData.setConditionList(conditionDataList);
+        JobData actionData = new JobData(action.getDeepCopied(), conditionDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got action data");
         return actionData;
     }
@@ -241,85 +230,71 @@ public class ActionController implements Initializable, JobDataController, Activ
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Action data is null - cannot load from save");
             return;
         }
-        ActionData actionData = (ActionData) jobData;
-        Action action = (Action) actionData.getAction();
+        Action action = (Action) jobData.getMainJob();
         registerActionPerform(action);
         updateActionName(action.getActionName());
         requiredCheckBox.setSelected(action.isRequired());
         previousPassCheckBox.setSelected(action.isPreviousPass());
         displayActionImage(action.getDisplayImage());
-        List<JobData> conditionDataList = actionData.getConditionList();
+        List<JobData> conditionDataList = jobData.getJobDataList();
         for (JobData conditionData : conditionDataList)
-            addCondition(((Condition) conditionData).getConditionType(), conditionData);
+            addSavedData(conditionData);
     }
 
     @Override
-    public void addSavedData(JobData jobData) {
-        if (currentConditionTypeForPasting == ConditionType.Entry)
-            addCondition(entryConditionList, entryConditionHBox, jobData);
-        else if (currentConditionTypeForPasting == ConditionType.Exit)
-            addCondition(exitConditionList, exitConditionHBox, jobData);
+    public void addSavedData(JobData conditionData) {
+        Condition condition = (Condition) conditionData.getMainJob();
+        addCondition(condition.getConditionType(), conditionData);
     }
 
     @Override
     public void removeSavedData(JobDataController jobDataController) {
         ConditionController conditionController = (ConditionController) jobDataController;
-        if (entryConditionList.remove(conditionController)) {
-            entryConditionHBox.getChildren().remove(conditionController.getParentNode());
-        }
-        else {
-            exitConditionList.remove(conditionController);
-            exitConditionHBox.getChildren().remove(conditionController.getParentNode());
-        }
+        Node conditionNode = conditionController.getParentNode();
+        if (conditionController.getConditionType() == ConditionType.Entry)
+            entryConditionHBox.getChildren().remove(conditionNode);
+        else if (conditionController.getConditionType() == ConditionType.Exit)
+            exitConditionHBox.getChildren().remove(conditionNode);
+        currentStructure.removeSubJobStructure(jobDataController);
     }
 
     @Override
     public void moveSavedDataUp(JobDataController jobDataController) {
         ConditionController conditionController = (ConditionController) jobDataController;
-        WhichCondition whichCondition = getWhichConditionController(conditionController);
-        if (whichCondition == null)
-            return;
-        List<ConditionController> whichController = whichCondition.controllers;
-        int numberOfConditions = whichController.size();
+        HBox whichHBox = findWhichConditionHBox(conditionController.getConditionType());
+        int numberOfConditions = whichHBox.getChildren().size();
         if (numberOfConditions < 2)
             return;
-        int selectedIndex = whichController.indexOf(conditionController);
+        int selectedIndex = whichHBox.getChildren().indexOf(conditionController.getParentNode());
         if (selectedIndex == 0)
             return;
         int changeIndex = selectedIndex -1;
-        updateActionPaneList(whichController, whichCondition.whichHBox, selectedIndex, changeIndex);
+        updateActionPaneList(whichHBox, selectedIndex, changeIndex);
+        int newIndex = currentStructure.getSubStructureIndex(jobDataController) -1;
+        currentStructure.updateSubJobStructure(jobDataController, newIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved down condition: " + changeIndex);
     }
 
     @Override
     public void moveSavedDataDown(JobDataController jobDataController) {
         ConditionController conditionController = (ConditionController) jobDataController;
-        WhichCondition whichCondition = getWhichConditionController(conditionController);
-        if (whichCondition == null)
-            return;
-        List<ConditionController> whichController = whichCondition.controllers;
-        int numberOfConditions = whichController.size();
+        HBox whichHBox = findWhichConditionHBox(conditionController.getConditionType());
+        int numberOfConditions = whichHBox.getChildren().size();
         if (numberOfConditions < 2)
             return;
-        int selectedIndex = whichController.indexOf(conditionController);
+        int selectedIndex = whichHBox.getChildren().indexOf(conditionController.getParentNode());
         int changeIndex = selectedIndex +1;
         if (changeIndex == numberOfConditions)
             return;
-        updateActionPaneList(whichController, whichCondition.whichHBox, selectedIndex, changeIndex);
+        updateActionPaneList(whichHBox, selectedIndex, changeIndex);
+        int newIndex = currentStructure.getSubStructureIndex(jobDataController) +1;
+        currentStructure.updateSubJobStructure(jobDataController, newIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved down condition: " + changeIndex);
     }
-    private record WhichCondition(List<ConditionController> controllers, HBox whichHBox) {}
-    private WhichCondition getWhichConditionController(ConditionController controller) {
-        if (entryConditionList.contains(controller))
-            return new WhichCondition(entryConditionList, entryConditionHBox);
-        else if (exitConditionList.contains(controller))
-            return new WhichCondition(exitConditionList, exitConditionHBox);
-        return null;
-    }
-    private void updateActionPaneList(List<ConditionController> controllers, HBox whichHBox, int selectedIndex, int changeIndex) {
+
+    private void updateActionPaneList(HBox whichHBox, int selectedIndex, int changeIndex) {
         ObservableList<Node> children = whichHBox.getChildren();
         Node conditionNode = children.get(selectedIndex);
-        controllers.add(changeIndex, controllers.remove((selectedIndex)));
         children.remove(conditionNode);
         children.add(changeIndex, conditionNode);
     }

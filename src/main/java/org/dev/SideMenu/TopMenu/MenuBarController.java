@@ -11,7 +11,8 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
-import org.dev.JobData.OperationData;
+import org.dev.Job.JobData;
+import org.dev.Job.Operation;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -52,10 +53,10 @@ public class MenuBarController implements Initializable {
     public void save(ActionEvent event) {
         try {
             AppScene.addLog(LogLevel.DEBUG, className, "Clicked on save all");
-            if (AppScene.currentLoadedOperationController == null)
+            if (AppScene.currentJobStructure == null)
                 return;
-            OperationData operationData = AppScene.currentLoadedOperationController.getSavedData();
-            String fileName = operationData.getOperation().getOperationName() + ".ser";
+            JobData operationData = AppScene.currentJobStructure.getCurrentController().getSavedData();
+            String fileName = ((Operation) operationData.getMainJob()).getOperationName() + ".ser";
             Path savedPath = getSavePath(fileName);
             AppScene.addLog(LogLevel.DEBUG, className, "Saving path: " + savedPath);
             if (savedPath == null)
@@ -96,7 +97,7 @@ public class MenuBarController implements Initializable {
 
     private void createNewOperationEvent(ActionEvent event) {
         AppScene.loadEmptyOperation();
-        AppScene.updateOperationSideMenuHierarchy();
+        AppScene.loadSideMenuHierarchy();
     }
 
     private void openSavedOperationEvent(ActionEvent event) {
@@ -113,13 +114,16 @@ public class MenuBarController implements Initializable {
         boolean saveLoaded = AppScene.loadSavedOperation(selectedFile.getAbsolutePath());
         if (saveLoaded)
             savedDirectory = Paths.get(selectedFile.getAbsolutePath()).getParent();
-        AppScene.updateOperationSideMenuHierarchy();
+        AppScene.loadSideMenuHierarchy();
     }
 
     private void startOperationRunEvent(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start operation");
-        AppScene.startOperationRun();
+        boolean running = AppScene.startOperationRun();
+        if (!running)
+            return;
         AppScene.displayCurrentRunJobNode();
+        AppScene.loadRunSideMenuHierarchy();
         setOperationRunning(true);
     }
 

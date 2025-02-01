@@ -8,17 +8,13 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
-import lombok.NonNull;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Action.Action;
-import org.dev.JobData.ActionData;
-import org.dev.JobData.JobData;
-import org.dev.JobData.TaskData;
-import org.dev.JobController.MainJobController;
+import org.dev.Job.JobData;
 import org.dev.Job.Task.Task;
-import org.dev.SideMenu.LeftMenu.SideMenuController;
+import org.dev.JobRunStructure;
 import java.io.IOException;
 import java.util.List;
 
@@ -30,6 +26,8 @@ public class TaskRunController implements JobRunController {
     private Label taskRunNameLabel;
     @FXML
     private VBox mainTaskRunVBox;
+
+    private JobRunStructure currentRunStructure;
 
     @Getter
     private VBox taskRunSideContent = new VBox();
@@ -44,8 +42,8 @@ public class TaskRunController implements JobRunController {
     }
 
     @Override
-    public void takeToDisplay(@NonNull MainJobController parentController) {
-        OperationRunController parentOperationRunController = (OperationRunController) parentController;
+    public void takeToDisplay() {
+        OperationRunController parentOperationRunController = (OperationRunController) currentRunStructure.getDisplayParentController();
         parentOperationRunController.changeScrollPaneVValueView(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
@@ -56,13 +54,17 @@ public class TaskRunController implements JobRunController {
 
     // ------------------------------------------------------
     @Override
+    public void setJobRunStructure(JobRunStructure runStructure) {
+        currentRunStructure = runStructure;
+    }
+
+    @Override
     public boolean startJob(JobData jobData) {
         if (jobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task data is null - cannot start");
             return false;
         }
-        TaskData taskData = (TaskData) jobData;
-        Task currentTask = taskData.getTask();
+        Task currentTask = (Task) jobData.getMainJob();
         if (currentTask == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task is null - cannot start");
             return false;
@@ -74,22 +76,22 @@ public class TaskRunController implements JobRunController {
         if (repeatNumber == -1) {
             AppScene.addLog(LogLevel.INFO, className, "Task is set to run Infinitely");
             for (int j = 0; j < Integer.MAX_VALUE; j++)
-                if (!runTask(taskData))
+                if (!runTask(jobData))
                     return false;
             return true;
         }
         for (int j = -1; j < repeatNumber; j++)
-            if (!runTask(taskData))
+            if (!runTask(jobData))
                 return false;
         return true;
     }
 
-    private boolean runTask(TaskData taskData) {
-        AppScene.addLog(LogLevel.INFO, className, "Start running task: " + taskData.getTask().getTaskName());
+    private boolean runTask(JobData jobData) {
+        AppScene.addLog(LogLevel.INFO, className, "Start running task: " + ((Task) jobData.getMainJob()).getTaskName());
         boolean pass = false;
-        List<ActionData> actionDataList = taskData.getActionDataList();
-        for (ActionData actionData : actionDataList) {
-            Action currentAction = actionData.getAction();
+        List<JobData> actionDataList = jobData.getJobDataList();
+        for (JobData actionData : actionDataList) {
+            Action currentAction = (Action) actionData.getMainJob();
             if (currentAction == null)
                 continue;
             String actionName = currentAction.getActionName();
@@ -97,8 +99,7 @@ public class TaskRunController implements JobRunController {
                 AppScene.addLog(LogLevel.INFO, className, "Skipping action as previous is passed: " + actionName);
                 continue;
             }
-            loadAndAddNewActionRunPane(currentAction.getActionName());
-            pass = currentActionRunController.startJob(actionData);
+            pass = getNewActionRunPane(actionName).startJob(actionData);
             if (!currentAction.isRequired())
                 pass = true;
             else if (!pass) { // action is required but failed
@@ -109,20 +110,20 @@ public class TaskRunController implements JobRunController {
         return true;
     }
 
-    private ActionRunController currentActionRunController;
-    private void loadAndAddNewActionRunPane(String actionName) {
+    private JobRunController getNewActionRunPane(String actionName) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("actionRunPane.fxml"));
             Node actionRunPaneGroup = fxmlLoader.load();
-            currentActionRunController = fxmlLoader.getController();
-            VBox actionRunSideContent = currentActionRunController.getActionRunSideContent();
-            Node actionRunHBoxLabel = SideMenuController.getNewSideHBoxLabel(
-                    new Label(actionName), actionRunSideContent, currentActionRunController);
-            // update side hierarchy
-            Platform.runLater(() -> taskRunSideContent.getChildren().addAll(actionRunHBoxLabel, actionRunSideContent));
+            JobRunController controller = fxmlLoader.getController();
             Platform.runLater(() -> mainTaskRunVBox.getChildren().add(actionRunPaneGroup));
+
+            JobRunStructure jobRunStructure = new JobRunStructure(currentRunStructure.getDisplayParentController(), this, controller, actionName);
+            controller.setJobRunStructure(jobRunStructure);
+            Platform.runLater(() -> currentRunStructure.addToSideContent(jobRunStructure.getSideHBoxLabel(), jobRunStructure.getSideContent()));
+            return controller;
         } catch (IOException e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading action run pane: " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 }

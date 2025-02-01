@@ -7,7 +7,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -19,7 +18,7 @@ import org.dev.Enum.CurrentTab;
 import org.dev.Enum.LogLevel;
 import org.dev.JobController.JobDataController;
 import org.dev.JobController.MainJobController;
-import org.dev.JobController.OperationController;
+import org.dev.JobRunStructure;
 import org.dev.JobStructure;
 
 import java.net.URL;
@@ -76,7 +75,7 @@ public class SideMenuController implements Initializable {
     private void getNewOperationPane(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on new operation button");
         AppScene.loadEmptyOperation();
-        AppScene.updateOperationSideMenuHierarchy();
+        AppScene.loadSideMenuHierarchy();
     }
 
     public void showSideMenuContent(CurrentTab whatTab) {
@@ -108,13 +107,14 @@ public class SideMenuController implements Initializable {
         return controller;
     }
 
-    public static SideMenuLabelController getNewSideHBoxLabelController(String name, VBox content, MainJobController currentController, MainJobController displayController) {
+    public static Node getNewSideHBoxLabel(String name, JobRunStructure jobRunStructure) {
         SideMenuLabelController controller = getSideMenuLabelController();
         if (controller == null)
             return null;
-        Node hBoxLabel = controller.createHBoxLabel(name, content, currentController.getAppLevel());
-        hBoxLabel.setOnMouseClicked(event -> doubleClick(event, currentController, displayController));
-        return controller;
+        Node hBoxLabel = controller.createHBoxLabel(name, jobRunStructure.getSideContent(),
+                jobRunStructure.getCurrentController().getAppLevel());
+        hBoxLabel.setOnMouseClicked(event -> doubleClick(event, jobRunStructure.getCurrentController()));
+        return hBoxLabel;
     }
 
     private static SideMenuLabelController getSideMenuLabelController() {
@@ -128,9 +128,9 @@ public class SideMenuController implements Initializable {
         }
     }
 
-    private static void doubleClick(MouseEvent event, MainJobController jobController, MainJobController displayController) {
+    private static void doubleClick(MouseEvent event, MainJobController jobController) {
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-            jobController.takeToDisplay(displayController);
+            jobController.takeToDisplay();
             highlightLabel((Node) event.getSource());
         }
     }
@@ -139,11 +139,11 @@ public class SideMenuController implements Initializable {
                                                  RightClickMenuController rightClickMenuController) {
         JobDataController currentController = jobStructure.getCurrentController();
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-            currentController.takeToDisplay(jobStructure.getDisplayParentController());
+            currentController.takeToDisplay();
             highlightLabel((Node) event.getSource());
         }
         else if (event.getButton() == MouseButton.SECONDARY) {
-            rightClickMenuController.showRightMenu(event, currentController, jobStructure.getParentController());
+            rightClickMenuController.showRightMenu(event, jobStructure);
         }
     }
 
@@ -155,29 +155,20 @@ public class SideMenuController implements Initializable {
     }
 
     // ------------------------------------------------------
-    public void loadOperationSideHierarchy(OperationController operationController) {
+    public void loadSideHierarchy(JobStructure jobStructure) {
         newOperationGroupButton.setVisible(false);
-
         ObservableList<Node> sideHierarchyChildren = sideHierarchyVBox.getChildren();
         sideHierarchyChildren.clear();
-
-        VBox operationSideContent = operationController.getOperationSideContent();
-        Node operationSideHBoxLabel = getNewSideHBoxLabel(operationController.getOperationNameLabel(),
-                operationSideContent, operationController, null);
-        sideHierarchyChildren.add(operationSideHBoxLabel);
-        sideHierarchyChildren.add(operationSideContent);
-
+        sideHierarchyChildren.add(jobStructure.getHBoxLabel());
+        sideHierarchyChildren.add(jobStructure.getSideContent());
         AppScene.addLog(LogLevel.DEBUG, className, "Loaded Operation side hierarchy");
     }
 
-    public void loadRunSideHierarchy(String name, VBox content, MainJobController jobController) {
+    public void loadRunSideHierarchy(JobRunStructure jobRunStructure) {
         ObservableList<Node> runSideHierarchyChildren = runSideHierarchyVBox.getChildren();
         runSideHierarchyChildren.clear();
-
-        Node runHBoxLabel = getNewSideHBoxLabel(name, content, jobController);
-        runSideHierarchyChildren.add(runHBoxLabel);
-        runSideHierarchyChildren.add(content);
-
+        runSideHierarchyChildren.add(jobRunStructure.getSideHBoxLabel());
+        runSideHierarchyChildren.add(jobRunStructure.getSideContent());
         AppScene.addLog(LogLevel.DEBUG, className, "Loaded run side hierarchy");
     }
 

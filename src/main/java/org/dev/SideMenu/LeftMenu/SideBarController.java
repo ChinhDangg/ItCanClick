@@ -7,13 +7,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import lombok.Getter;
 import org.dev.AppScene;
 import org.dev.Enum.CurrentTab;
 import org.dev.Enum.LogLevel;
-import org.dev.JobController.MainJobController;
-import org.dev.JobController.OperationController;
+import org.dev.JobRunStructure;
+import org.dev.JobStructure;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -89,14 +88,14 @@ public class SideBarController implements Initializable {
         return true;
     }
 
-    public void loadSideHierarchy(OperationController operationController) {
+    public void loadSideHierarchy(JobStructure jobStructure) {
         switchTab(CurrentTab.Operation);
-        sideMenuController.loadOperationSideHierarchy(operationController);
+        sideMenuController.loadSideHierarchy(jobStructure);
     }
 
-    public void loadRunSideHierarchy(String name, VBox content, MainJobController mainJobController) {
+    public void loadRunSideHierarchy(JobRunStructure jobRunStructure) {
         switchTab(CurrentTab.OperationRun);
-        sideMenuController.loadRunSideHierarchy(name, content, mainJobController);
+        sideMenuController.loadRunSideHierarchy(jobRunStructure);
     }
 
     private void loadLeftSideMenu() {
