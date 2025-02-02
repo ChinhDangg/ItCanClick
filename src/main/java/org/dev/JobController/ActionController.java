@@ -167,7 +167,7 @@ public class ActionController implements Initializable, JobDataController, Activ
             whichPane.getChildren().add(pane);
 
             lastIndex = (lastIndex == -1) ? currentStructure.getSubStructureSize() : lastIndex;
-            JobStructure conditionStructure = new JobStructure(this, this, controller, null);
+            JobStructure conditionStructure = new JobStructure(this,this, controller, null);
             controller.setJobStructure(conditionStructure);
             currentStructure.addSubJobStructure(lastIndex, conditionStructure);
         } catch (Exception e) {
@@ -205,7 +205,7 @@ public class ActionController implements Initializable, JobDataController, Activ
         AppScene.closeConditionMenuPane();
         TaskController parentTaskController = (TaskController) currentStructure.getParentController();
         parentTaskController.takeToDisplay();
-        parentTaskController.changeTaskScrollPaneView(getParentNode());
+        AppScene.updateMainDisplayScrollValue(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 

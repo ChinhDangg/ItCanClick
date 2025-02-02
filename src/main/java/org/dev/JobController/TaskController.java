@@ -7,7 +7,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -28,7 +27,7 @@ import java.util.ResourceBundle;
 public class TaskController implements Initializable, JobDataController {
 
     @FXML
-    private ScrollPane taskScrollPane;
+    private Node parentNode;
     @FXML
     private Label taskNameLabel;
     @FXML
@@ -67,16 +66,6 @@ public class TaskController implements Initializable, JobDataController {
         addSavedData(null);
     }
 
-    public void changeTaskScrollPaneView(Node mainActionPane) {
-        selectTheActionPane(mainActionPane);
-        double targetPaneY = mainActionPane.getBoundsInParent().getMinY() * currentGlobalScale;
-        double contentHeight = taskScrollPane.getContent().getBoundsInLocal().getHeight();
-        double scrollPaneHeight = taskScrollPane.getViewportBounds().getHeight();
-        double vValue = Math.min(targetPaneY / (contentHeight - scrollPaneHeight), 1.00);
-        taskScrollPane.setVvalue(vValue);
-        AppScene.addLog(LogLevel.TRACE, className, "Task scroll pane v value changed: " + vValue);
-    }
-
     // ------------------------------------------------------
     private Node currentSelectedActionPane = null;
     private void selectTheActionPaneAction(MouseEvent event) {
@@ -104,7 +93,7 @@ public class TaskController implements Initializable, JobDataController {
     public String getName() { return taskNameLabel.getText(); }
 
     @Override
-    public Node getParentNode() { return taskScrollPane; }
+    public Node getParentNode() { return parentNode; }
 
     @Override
     public AppLevel getAppLevel() { return AppLevel.Task; }

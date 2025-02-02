@@ -26,18 +26,11 @@ import org.dev.SideMenu.TopMenu.WindowSizeMode;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.Objects;
 
 public class AppScene {
-
     private static final String className = AppScene.class.getSimpleName();
 
-    public static BorderPane primaryBorderPane = new BorderPane();
-    public static StackPane primaryCenterStackPane = new StackPane();
-    public static VBox mainCenterVBox = new VBox(); // will contain the main HBox and bottom pane
-    public static HBox mainCenterHBox = new HBox(); // will contain side menu and main display
-    public static StackPane mainDisplayStackPane = new StackPane();
-    public static StackPane mainNotificationStackPane = new StackPane();
+    public static MainDisplay mainDisplay;
 
     public static MenuBarController menuBarController;
     public static SettingMenuController settingMenuController;
@@ -53,80 +46,37 @@ public class AppScene {
 
     public static double currentGlobalScale = 1.3;
     public static boolean isJobRunning = false;
-    public static boolean isMaximized = false;
-
-    /*
-    Layout:
-    primaryBorderPane
-    Top: top menu bar
-    Left: Left Side bar
-    Center: primaryCenterStackPane
-        mainCenterVBox
-            mainCenterHBox
-                sideMenu (for sidebar)
-                mainDisplayStackPane (operation, task, action, menu (action, condition), and run operation (task, action, condition)
-            bottomPane
-        mainNotificationStackPane
-            topNotificationBanner
-            CenterBanner
-     */
+    public static WindowSizeMode windowSizeMode;
 
     public static Scene getAppMainScene() {
-        VBox.setVgrow(mainCenterHBox, Priority.ALWAYS);
-        mainCenterVBox.getChildren().add(mainCenterHBox);
-        mainCenterVBox.getChildren().add(loadBottomPane());
-        primaryCenterStackPane.getChildren().add(mainCenterVBox);
-        primaryCenterStackPane.getChildren().add(mainNotificationStackPane);
+        Node bottomPane = loadBottomPane();
+        Node notificationPane = loadTopNotificationBannerPane();
+        Node topPane = loadTopMenuBar();
+        Node leftBarPane = loadLeftSideBar();
+        Node leftMenuPane = sideBarController.getSideMenuParentOuterNode();
+
+        centerBannerController = loadCenterBannerPane();
+
+        mainDisplay = new MainDisplay(bottomPane, notificationPane, topPane, leftBarPane, leftMenuPane);
 
         loadSettingPane();
         bottomPaneController.setDebug(settingMenuController.isDebug());
         bottomPaneController.setTrace(settingMenuController.isTrace());
         currentGlobalScale = settingMenuController.getGlobalScaleValue();
-
-        mainNotificationStackPane.getChildren().add(loadTopNotificationBannerPane());
-        mainNotificationStackPane.getChildren().add(loadCenterBannerPane());
-        mainNotificationStackPane.setMouseTransparent(true);
-
-        setPrimaryBorderPaneSize(settingMenuController.getWindowSizeMode());
-        primaryBorderPane.getStylesheets().add(Objects.requireNonNull(AppScene.class.getResource("/styles/root.css")).toExternalForm());
-        primaryBorderPane.setTop(loadTopMenuBar());
-        primaryBorderPane.setCenter(primaryCenterStackPane);
-        primaryBorderPane.setLeft(loadLeftSideBar());
-        primaryBorderPane.setOnMouseClicked(_ -> primaryBorderPane.requestFocus());
-
-        HBox.setHgrow(mainDisplayStackPane, Priority.ALWAYS);
-        mainCenterHBox.getChildren().add(sideBarController.getSideMenuParentOuterNode());
-        mainCenterHBox.getChildren().add(mainDisplayStackPane);
+        windowSizeMode = settingMenuController.getWindowSizeMode();
 
         loadConditionMenuPane();
         loadActionMenuPane();
 
         sideBarController.switchTab(CurrentTab.Operation);
-        return new Scene(primaryBorderPane);
-    }
-
-    // ------------------------------------------------------
-    private static void setPrimaryBorderPaneSize(WindowSizeMode mode) {
-        if (mode == WindowSizeMode.Maximized)
-            isMaximized = true;
-        else if (mode == WindowSizeMode.Compact) {
-            primaryBorderPane.setPrefHeight(400);
-            primaryBorderPane.setPrefWidth(750);
-            return;
-        }
-        primaryBorderPane.setPrefHeight(700);
-        primaryBorderPane.setPrefWidth(1200);
+        return new Scene(mainDisplay.getParentNode());
     }
 
     // ------------------------------------------------------
     public static void openCenterBanner(String title, String content) {
         if (centerBannerController == null)
             return;
-        centerBannerController.openCenterBanner(title, content);
-        mainNotificationStackPane.setMouseTransparent(false);
-    }
-    public static void closeCenterBanner() {
-        mainNotificationStackPane.setMouseTransparent(true);
+        centerBannerController.openCenterBanner(mainDisplay.getParentNode(), title, content);
     }
 
     public static void showNotification(String content) {
@@ -209,9 +159,12 @@ public class AppScene {
 
     // ------------------------------------------------------
     public static void displayNewCenterNode(Node node) {
-        mainDisplayStackPane.getChildren().clear();
-        mainDisplayStackPane.getChildren().add(node);
+        mainDisplay.displayNewMainNode(node);
         AppScene.addLog(LogLevel.TRACE, className, "Displayed new center node");
+    }
+
+    public static void updateMainDisplayScrollValue(Node node) {
+        mainDisplay.changeScrollPaneView(node);
     }
 
     public static void backToOperationScene() {
@@ -231,20 +184,20 @@ public class AppScene {
     // ------------------------------------------------------
     public static void openConditionMenuPane(ConditionController conditionController) {
         conditionMenuController.loadMenu(conditionController);
-        mainDisplayStackPane.getChildren().add(conditionMenuController.getMainMenuStackPane());
+        mainDisplay.displayInMainDisplayStackPane(conditionMenuController.getMainMenuStackPane());
         AppScene.addLog(LogLevel.DEBUG, className, "Opened condition menu");
     }
     public static void closeConditionMenuPane() {
-        mainDisplayStackPane.getChildren().remove(conditionMenuController.getMainMenuStackPane());
+        mainDisplay.clearDisplayInMainDisplayStackPane(conditionMenuController.getMainMenuStackPane());
         AppScene.addLog(LogLevel.DEBUG, className, "Closed condition menu");
     }
     public static void openActionMenuPane(ActionController actionController) {
         actionMenuController.loadMenu(actionController);
-        mainDisplayStackPane.getChildren().add(actionMenuController.getMainMenuStackPane());
+        mainDisplay.displayInMainDisplayStackPane(actionMenuController.getMainMenuStackPane());
         AppScene.addLog(LogLevel.DEBUG, className, "Opened action menu");
     }
     public static void closeActionMenuPane() {
-        mainDisplayStackPane.getChildren().remove(actionMenuController.getMainMenuStackPane());
+        mainDisplay.clearDisplayInMainDisplayStackPane(actionMenuController.getMainMenuStackPane());
         AppScene.addLog(LogLevel.DEBUG, className, "Closed action menu");
     }
 
@@ -259,7 +212,7 @@ public class AppScene {
             Node operationPane = loader.load();
             displayNewCenterNode(operationPane);
             OperationController controller = loader.getController();
-            currentJobStructure = new JobStructure(controller, controller, controller, controller.getName());
+            currentJobStructure = new JobStructure(null, controller, controller, controller.getName());
             controller.setJobStructure(currentJobStructure);
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded empty operation pane");
         } catch (Exception e) {
@@ -281,7 +234,7 @@ public class AppScene {
             OperationController controller = loader.getController();
             AppScene.addLog(LogLevel.TRACE, className, "Passed getting controller");
 
-            currentJobStructure = new JobStructure(controller, controller, controller, controller.getName());
+            currentJobStructure = new JobStructure(null, controller, controller, controller.getName());
             controller.setJobStructure(currentJobStructure);
             AppScene.addLog(LogLevel.TRACE, className, "Passed assigning structure");
 
@@ -348,14 +301,14 @@ public class AppScene {
             return null;
         }
     }
-    private static Node loadCenterBannerPane() {
+    private static CenterBannerController loadCenterBannerPane() {
         AppScene.addLog(LogLevel.TRACE, className, "Loading center banner pane");
         try {
             FXMLLoader centerBannerLoader = new FXMLLoader(AppScene.class.getResource("SideMenu/centerBannerPane.fxml"));
-            Node centerBannerNode = centerBannerLoader.load();
-            centerBannerController = centerBannerLoader.getController();
+            centerBannerLoader.load();
+            CenterBannerController controller =  centerBannerLoader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded center banner pane");
-            return centerBannerNode;
+            return controller;
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading center banner pane: " + e.getMessage());
             return null;

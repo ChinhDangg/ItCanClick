@@ -91,7 +91,8 @@ public class TaskGroupController implements Initializable, JobDataController {
     public void takeToDisplay() {
         OperationController parentOperationController = (OperationController) currentStructure.getParentController();
         parentOperationController.takeToDisplay();
-        parentOperationController.changeOperationScrollPaneView(getParentNode());
+        parentOperationController.selectTheTaskPane(getParentNode());
+        AppScene.updateMainDisplayScrollValue(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 

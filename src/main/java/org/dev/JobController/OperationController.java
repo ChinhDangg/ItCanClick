@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -26,7 +25,7 @@ import java.util.ResourceBundle;
 
 public class OperationController implements Initializable, JobDataController {
     @FXML
-    private ScrollPane operationScrollPane;
+    private Node parentNode;
     @FXML
     private VBox mainOperationVBox;
     @FXML
@@ -86,33 +85,11 @@ public class OperationController implements Initializable, JobDataController {
     }
 
     // ------------------------------------------------------
-    public void changeOperationScrollPaneView(Node minimizedTaskPane) {
-        selectTheTaskPane(minimizedTaskPane);
-        changeScrollPaneView(minimizedTaskPane);
-    }
-    private void changeScrollPaneView(Node taskPane) {
-        double targetPaneY = taskPane.getBoundsInParent().getMinY();
-        Node parentChecking = taskPane.getParent();
-        while (parentChecking != mainOperationVBox) {
-            targetPaneY += parentChecking.getBoundsInParent().getMinY();
-            parentChecking = parentChecking.getParent();
-        }
-        targetPaneY += parentChecking.getBoundsInParent().getMinY();
-        targetPaneY *= currentScale;
-        double contentHeight = operationScrollPane.getContent().getBoundsInLocal().getHeight();
-        double scrollPaneHeight = operationScrollPane.getViewportBounds().getHeight();
-        targetPaneY -= scrollPaneHeight / 3;
-        double vValue = Math.min(targetPaneY / (contentHeight - scrollPaneHeight), 1.00);
-        operationScrollPane.setVvalue(vValue);
-        AppScene.addLog(LogLevel.TRACE, className, "Operation Scroll Pane v value changed: " + vValue);
-    }
-
-    // ------------------------------------------------------
     private Node currentSelectedTaskPane = null;
     private void selectTheTaskPaneAction(MouseEvent event) {
         selectTheTaskPane((Node) event.getSource());
     }
-    private void selectTheTaskPane(Node taskPane) {
+    public void selectTheTaskPane(Node taskPane) {
         if (currentSelectedTaskPane != null)
             setUnselected(currentSelectedTaskPane);
         currentSelectedTaskPane = taskPane;
@@ -134,7 +111,7 @@ public class OperationController implements Initializable, JobDataController {
     public String getName() { return renameTextField.getText(); }
 
     @Override
-    public Node getParentNode() { return operationScrollPane; }
+    public Node getParentNode() { return parentNode; }
 
     @Override
     public AppLevel getAppLevel() {
@@ -195,7 +172,7 @@ public class OperationController implements Initializable, JobDataController {
             controller.setTaskIndex(numberOfTask + 1);
             operationVBox.getChildren().add(taskPane);
 
-            JobStructure taskGroupStructure = new JobStructure(this, this, controller, controller.getName());
+            JobStructure taskGroupStructure = new JobStructure(this,this, controller, controller.getName());
             controller.setJobStructure(taskGroupStructure);
             currentStructure.addSubJobStructure(taskGroupStructure);
         } catch (Exception e) {

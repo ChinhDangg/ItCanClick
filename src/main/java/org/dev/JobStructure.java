@@ -22,8 +22,7 @@ public class JobStructure {
     private final VBox sideContent = new VBox();
     private final List<JobStructure> subJobStructures;
 
-    public JobStructure(JobDataController displayParentController, JobDataController parentController,
-                        JobDataController currentController, String name) {
+    public JobStructure(JobDataController displayParentController, JobDataController parentController, JobDataController currentController, String name) {
         subJobStructures = new ArrayList<>();
         this.displayParentController = displayParentController;
         this.parentController = parentController;
