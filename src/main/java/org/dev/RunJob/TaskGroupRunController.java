@@ -37,8 +37,7 @@ public class TaskGroupRunController implements JobRunController {
 
     @Override
     public void takeToDisplay() {
-        OperationRunController parentOperationRunController = (OperationRunController) currentRunStructure.getDisplayParentController();
-        parentOperationRunController.changeScrollPaneVValueView(getParentNode());
+        AppScene.updateMainDisplayScrollValue(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
@@ -65,7 +64,7 @@ public class TaskGroupRunController implements JobRunController {
     }
 
     private boolean runTaskGroup(JobData jobData) {
-        AppScene.addLog(LogLevel.INFO, className, "Start running task group " + ((TaskGroup) jobData.getMainJob()).getTaskGroupName());
+        AppScene.addLog(LogLevel.INFO, className, "Start running task group: " + ((TaskGroup) jobData.getMainJob()).getTaskGroupName());
         boolean pass = false;
         List<JobData> taskDataList = jobData.getJobDataList();
         for (JobData taskData : taskDataList) {
@@ -81,18 +80,21 @@ public class TaskGroupRunController implements JobRunController {
             if (!currentTask.isRequired())
                 pass = true;
             else if (!pass) { // task is required but failed
-                AppScene.addLog(LogLevel.INFO, className, "Fail performing task: " + taskName);
-                return false;
+                AppScene.addLog(LogLevel.WARN, className, "Fail performing task: " + taskName);
+                break;
             }
         }
+        AppScene.addLog(LogLevel.INFO, className, "Finish running task group: " + ((TaskGroup) jobData.getMainJob()).getTaskGroupName());
         return true;
     }
 
     private JobRunController getNewTaskRunPane(String taskName) {
+        AppScene.addLog(LogLevel.TRACE, className, "Loading Task Run Pane");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("taskRunPane.fxml"));
             Node taskRunGroup = fxmlLoader.load();
             JobRunController controller = fxmlLoader.getController();
+            AppScene.addLog(LogLevel.TRACE, className, "Loaded Task Run Pane");
             Platform.runLater(() -> mainTaskGroupRunVBox.getChildren().add(taskRunGroup));
 
             JobRunStructure jobRunStructure = new JobRunStructure(currentRunStructure.getDisplayParentController(), this, controller, taskName);

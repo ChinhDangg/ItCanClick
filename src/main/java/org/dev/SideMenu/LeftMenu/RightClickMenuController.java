@@ -7,6 +7,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
+import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.JobController.JobDataController;
 import org.dev.JobStructure;
@@ -76,6 +77,8 @@ public class RightClickMenuController implements Initializable {
             moveUpSection.setDisable(false);
             moveDownSection.setDisable(false);
         }
+        if (appLevel != AppLevel.Condition)
+            runSection.setDisable(false);
         if (copiedJobDataController != null) {
             int order = copiedJobDataController.getAppLevel().getOrder() - appLevel.getOrder();
             if (order == 0 || order == 1)
@@ -121,6 +124,7 @@ public class RightClickMenuController implements Initializable {
     }
 
     private void runJob(MouseEvent event) {
+        AppScene.startJobRun(currentJobStructure.getCurrentController());
         hideRightMenu();
     }
 

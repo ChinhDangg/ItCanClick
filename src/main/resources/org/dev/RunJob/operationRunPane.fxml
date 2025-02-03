@@ -2,40 +2,34 @@
 
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-
-<ScrollPane fx:id="operationRunScrollPane" fitToWidth="true" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.RunJob.OperationRunController">
-   <content>
-      <StackPane>
+<StackPane fx:id="parentNode" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.RunJob.OperationRunController">
+   <children>
+      <Group fx:id="operationRunMainGroup">
          <children>
-            <Group fx:id="operationRunMainGroup">
+            <VBox fx:id="mainOperationRunVBox" spacing="10.0">
                <children>
-                  <VBox fx:id="mainOperationRunVBox" spacing="10.0">
+                  <StackPane>
                      <children>
-                        <StackPane>
+                        <Group>
                            <children>
-                              <Group>
+                              <StackPane>
                                  <children>
-                                    <StackPane>
-                                       <children>
-                                          <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="36.0" stroke="BLACK" strokeType="INSIDE" width="227.0" />
-                                          <Label fx:id="operationNameRunLabel" text="Operation Name" />
-                                       </children>
-                                    </StackPane>
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="36.0" stroke="BLACK" strokeType="INSIDE" width="227.0" />
+                                    <Label fx:id="operationNameRunLabel" text="Operation Name" />
                                  </children>
-                              </Group>
+                              </StackPane>
                            </children>
-                        </StackPane>
-                        <VBox fx:id="runVBox" />
+                        </Group>
                      </children>
-                  </VBox>
+                  </StackPane>
+                  <VBox fx:id="runVBox" />
                </children>
-            </Group>
+            </VBox>
          </children>
-      </StackPane>
-   </content>
-</ScrollPane>
+      </Group>
+   </children>
+</StackPane>

@@ -93,7 +93,7 @@ public class AppScene {
 
     private static void setIsJobRunning(boolean isJobRunning) {
         AppScene.isJobRunning = isJobRunning;
-        menuBarController.setOperationRunning(isJobRunning);
+        Platform.runLater(() -> menuBarController.setOperationRunning(isJobRunning));
     }
 
     public static boolean startOperationRun() {
@@ -107,7 +107,7 @@ public class AppScene {
         stopRunJob();
     }
 
-    private static void startJobRun(JobDataController jobDataController) {
+    public static void startJobRun(JobDataController jobDataController) {
         if (jobDataController == null)
             return;
         if (isJobRunning) {
@@ -125,6 +125,7 @@ public class AppScene {
     private static Task<Void> getRunJobTask(JobDataController jobDataController) {
         JobRunController jobRunController = jobDataController.getRunJob();
         currentJobRunStructure = new JobRunStructure(jobRunController, jobRunController, jobRunController, jobDataController.getName());
+        jobRunController.setJobRunStructure(currentJobRunStructure);
         JobData jobData = jobDataController.getSavedData();
         return new Task<>() {
             @Override

@@ -127,7 +127,7 @@ public class TaskGroupController implements Initializable, JobDataController {
             AppScene.addLog(LogLevel.INFO, className, "Another job is running - cannot modify");
             return;
         }
-        if (!currentStructure.getSubJobStructures().isEmpty() && currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
+        if (currentStructure != null && !currentStructure.getSubJobStructures().isEmpty() && currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
             AppScene.addLog(LogLevel.INFO, className, "Recent Minimized Task is not set");
             return;
         }

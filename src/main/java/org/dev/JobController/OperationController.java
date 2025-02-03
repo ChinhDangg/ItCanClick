@@ -166,8 +166,6 @@ public class OperationController implements Initializable, JobDataController {
             taskPane.setOnMouseClicked(this::selectTheTaskPaneAction);
             TaskGroupController controller = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Task Group Pane");
-            if (taskData != null)
-                controller.loadSavedData(taskData);
             int numberOfTask = currentStructure.getSubStructureSize();
             controller.setTaskIndex(numberOfTask + 1);
             operationVBox.getChildren().add(taskPane);
@@ -175,6 +173,11 @@ public class OperationController implements Initializable, JobDataController {
             JobStructure taskGroupStructure = new JobStructure(this,this, controller, controller.getName());
             controller.setJobStructure(taskGroupStructure);
             currentStructure.addSubJobStructure(taskGroupStructure);
+
+            if (taskData != null)
+                controller.loadSavedData(taskData);
+            else
+                controller.addSavedData(null);
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding task group pane: " + e.getMessage());
         }

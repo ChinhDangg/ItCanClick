@@ -15,6 +15,8 @@ import org.dev.Job.Action.Action;
 import org.dev.Job.JobData;
 import org.dev.Job.Task.Task;
 import org.dev.JobRunStructure;
+import org.slf4j.helpers.CheckReturnValue;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -43,8 +45,7 @@ public class TaskRunController implements JobRunController {
 
     @Override
     public void takeToDisplay() {
-        OperationRunController parentOperationRunController = (OperationRunController) currentRunStructure.getDisplayParentController();
-        parentOperationRunController.changeScrollPaneVValueView(getParentNode());
+        AppScene.updateMainDisplayScrollValue(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
@@ -91,6 +92,8 @@ public class TaskRunController implements JobRunController {
         boolean pass = false;
         List<JobData> actionDataList = jobData.getJobDataList();
         for (JobData actionData : actionDataList) {
+            if (actionData == null)
+                continue;
             Action currentAction = (Action) actionData.getMainJob();
             if (currentAction == null)
                 continue;
@@ -103,18 +106,21 @@ public class TaskRunController implements JobRunController {
             if (!currentAction.isRequired())
                 pass = true;
             else if (!pass) { // action is required but failed
-                AppScene.addLog(LogLevel.DEBUG, className, "Fail performing action: " + actionName);
-                return false;
+                AppScene.addLog(LogLevel.WARN, className, "Fail performing action: " + actionName);
+                break;
             }
         }
+        AppScene.addLog(LogLevel.INFO, className, "Finished running task: " + ((Task) jobData.getMainJob()).getTaskName());
         return true;
     }
 
     private JobRunController getNewActionRunPane(String actionName) {
+        AppScene.addLog(LogLevel.TRACE, className, "Loading Action Run Pane");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("actionRunPane.fxml"));
             Node actionRunPaneGroup = fxmlLoader.load();
             JobRunController controller = fxmlLoader.getController();
+            AppScene.addLog(LogLevel.TRACE, className, "Loaded Action Pane");
             Platform.runLater(() -> mainTaskRunVBox.getChildren().add(actionRunPaneGroup));
 
             JobRunStructure jobRunStructure = new JobRunStructure(currentRunStructure.getDisplayParentController(), this, controller, actionName);

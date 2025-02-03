@@ -15,12 +15,12 @@ public class SmartClick extends Application {
         if (mode == WindowSizeMode.Maximized)
             stage.setMaximized(true);
         else if (mode == WindowSizeMode.Compact) {
-            stage.setWidth(400);
-            stage.setHeight(750);
+            stage.setWidth(750);
+            stage.setHeight(400);
         }
         else if (mode == WindowSizeMode.Default) {
-            stage.setWidth(700);
-            stage.setHeight(1200);
+            stage.setWidth(1200);
+            stage.setHeight(700);
         }
 
         stage.setOnCloseRequest(_ -> System.exit(0));

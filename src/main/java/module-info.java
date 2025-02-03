@@ -7,6 +7,7 @@ module org.dev {
     requires com.github.kwhat.jnativehook;
     requires jdk.compiler;
     requires com.google.gson;
+    requires org.slf4j;
 
     exports org.dev;
     opens org.dev;

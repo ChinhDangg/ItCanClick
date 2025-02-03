@@ -1,5 +1,6 @@
 package org.dev;
 
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ScrollPane;
@@ -10,19 +11,18 @@ import java.util.Objects;
 /*
     Layout:
     primaryBorderPane
-    Top: top menu bar
-    Left: Left Side bar
-    Center: primaryCenterStackPane
-        mainCenterVBox
-            mainCenterHBox
-                sideMenu (for sidebar)
-                mainDisplayStackPane
-                    mainDisplayScrollPane
-                        mainDisplayVBox (operation, task, action, menu (action, condition), and run operation (task, action, condition)
-            bottomPane
-        mainNotificationStackPane
-            topNotificationBanner
-            CenterBanner
+        Top: top menu bar
+        Left: Left Side bar
+        Center: primaryCenterStackPane
+            mainCenterVBox
+                mainCenterHBox
+                    sideMenu (for sidebar)
+                    mainDisplayStackPane
+                        mainDisplayScrollPane
+                            mainDisplayVBox (operation, task, action, menu (action, condition), and run operation (task, action, condition)
+                bottomPane
+            mainNotificationStackPane
+                topNotificationBanner
      */
 public class MainDisplay {
     private BorderPane primaryBorderPane = new BorderPane();
@@ -55,6 +55,8 @@ public class MainDisplay {
         mainCenterHBox.getChildren().add(mainDisplayStackPane);
         mainDisplayStackPane.getChildren().add(mainDisplayScrollPane);
         mainDisplayScrollPane.setContent(mainDisplayVBox);
+        mainDisplayScrollPane.setFitToWidth(true);
+        mainDisplayScrollPane.setFitToHeight(true);
     }
 
     public void displayInMainDisplayStackPane(Node displayNode) {
@@ -66,6 +68,8 @@ public class MainDisplay {
     }
 
     public void displayNewMainNode(Node centerNode) {
+        if (mainDisplayVBox.getChildren().contains(centerNode))
+            return;
         mainDisplayVBox.getChildren().clear();
         mainDisplayVBox.getChildren().add(centerNode);
     }

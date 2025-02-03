@@ -65,21 +65,6 @@ public class ActionRunController extends RunActivity implements Initializable, J
         actionPerformedImageView.setFitHeight(height);
     }
 
-    @Override
-    public Node getParentNode() { return mainActionRunGroup; }
-
-    @Override
-    public AppLevel getAppLevel() {
-        return AppLevel.Action;
-    }
-
-    @Override
-    public void takeToDisplay() {
-        OperationRunController parentOperationRunController = (OperationRunController) currentRunStructure.getDisplayParentController();
-        parentOperationRunController.changeScrollPaneVValueView(getParentNode());
-        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
-    }
-
     private void showActionRunPane(boolean visible) {
         actionRunVBox.setVisible(visible);
         actionRunVBox.setManaged(visible);
@@ -99,7 +84,36 @@ public class ActionRunController extends RunActivity implements Initializable, J
         }
     }
 
+    public void showCondition(Node node) {
+        if (entryConditionHBox.getChildren().contains(node))
+            changeConditionScrollPaneValue(entryConditionScrollPane, node);
+        else if (exitConditionHBox.getChildren().contains(node))
+            changeConditionScrollPaneValue(exitConditionScrollPane, node);
+    }
+
+    private void changeConditionScrollPaneValue(ScrollPane conditionScrollPane, Node node) {
+        double targetPaneX = node.getBoundsInParent().getMinX() * AppScene.currentGlobalScale;
+        double contentWidth = conditionScrollPane.getContent().getBoundsInLocal().getWidth();
+        double scrollPaneHeight = conditionScrollPane.getViewportBounds().getWidth();
+        double vValue = Math.min(targetPaneX / (contentWidth - scrollPaneHeight), 1.00);
+        conditionScrollPane.setVvalue(vValue);
+    }
+
     // ------------------------------------------------------
+    @Override
+    public Node getParentNode() { return mainActionRunGroup; }
+
+    @Override
+    public AppLevel getAppLevel() {
+        return AppLevel.Action;
+    }
+
+    @Override
+    public void takeToDisplay() {
+        AppScene.updateMainDisplayScrollValue(getParentNode());
+        AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
+    }
+
     @Override
     public void setJobRunStructure(JobRunStructure runStructure) {
         currentRunStructure = runStructure;

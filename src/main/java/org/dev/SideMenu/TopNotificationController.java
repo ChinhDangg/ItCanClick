@@ -15,7 +15,6 @@ import javafx.scene.text.Font;
 import javafx.util.Duration;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
-import java.io.IOException;
 
 public class TopNotificationController {
 

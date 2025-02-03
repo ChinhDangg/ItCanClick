@@ -82,10 +82,10 @@ public class JobStructure {
         updateSideContent(selectedIndex, changeIndex);
     }
 
-    private void addToSideContent(Node sideHBoxLabel, VBox sideContent) {
+    private void addToSideContent(Node sideHBoxLabel, VBox newSideContent) {
         if (sideHBoxLabel == null)
             return;
-        sideContent.getChildren().add(new VBox(sideHBoxLabel, sideContent));
+        sideContent.getChildren().add(new VBox(sideHBoxLabel, newSideContent));
     }
 
     private void removeFromSideContent(int index) {

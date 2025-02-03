@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import lombok.Getter;
@@ -24,7 +23,7 @@ import java.util.ResourceBundle;
 
 public class OperationRunController implements Initializable, JobRunController {
     @FXML
-    private ScrollPane operationRunScrollPane;
+    private Node parentNode;
     @FXML
     private VBox mainOperationRunVBox;
     @FXML @Getter
@@ -49,29 +48,12 @@ public class OperationRunController implements Initializable, JobRunController {
         }
     }
 
-    public void changeScrollPaneVValueView(Node node) {
-        double targetPaneY = node.getBoundsInParent().getMinY();
-        Node parentChecking = node.getParent();
-        while (parentChecking != mainOperationRunVBox) {
-            targetPaneY += parentChecking.getBoundsInParent().getMinY();
-            parentChecking = parentChecking.getParent();
-        }
-        targetPaneY += parentChecking.getBoundsInParent().getMinY();
-        targetPaneY *= currentGlobalScale;
-        double contentHeight = operationRunScrollPane.getContent().getBoundsInLocal().getHeight();
-        double scrollPaneHeight = operationRunScrollPane.getViewportBounds().getHeight();
-        targetPaneY -= scrollPaneHeight / 3;
-        double vValue = Math.min(targetPaneY / (contentHeight - scrollPaneHeight), 1.00);
-        operationRunScrollPane.setVvalue(vValue);
-        AppScene.addLog(LogLevel.TRACE, RunActivity.class.getSimpleName(), "Updated scroll pane v value: " + vValue);
-    }
-
     private void changeOperationRunName(String newName) { operationNameRunLabel.setText(newName); }
 
     // ------------------------------------------------------
     @Override
     public Node getParentNode() {
-        return operationRunScrollPane;
+        return parentNode;
     }
 
     @Override
@@ -87,7 +69,7 @@ public class OperationRunController implements Initializable, JobRunController {
         }
         AppScene.closeActionMenuPane();
         AppScene.closeConditionMenuPane();
-        operationRunScrollPane.setVvalue(0.0);
+        AppScene.updateMainDisplayScrollValue(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
@@ -116,18 +98,21 @@ public class OperationRunController implements Initializable, JobRunController {
             String taskName = currentTaskGroup.getTaskGroupName();
             boolean pass = getNewTaskGroupRunController(taskName).startJob(taskData);
             if (currentTaskGroup.isRequired() && !pass) { // task is required but failed
-                AppScene.addLog(LogLevel.INFO, className, "Fail performing task group: " + taskName);
-                return false;
+                AppScene.addLog(LogLevel.WARN, className, "Fail performing task group: " + taskName);
+                break;
             }
         }
+        AppScene.addLog(LogLevel.INFO, className, "Finished running operation: " + ((Operation) operationData.getMainJob()).getOperationName());
         return true;
     }
 
     private JobRunController getNewTaskGroupRunController(String taskName) {
+        AppScene.addLog(LogLevel.TRACE, className, "Loading Task Group Run Pane");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("taskGroupRunPane.fxml"));
             Node taskRunGroup = fxmlLoader.load();
             JobRunController controller = fxmlLoader.getController();
+            AppScene.addLog(LogLevel.TRACE, className, "Loaded Task Group Run Pane");
             Platform.runLater(() -> runVBox.getChildren().add(taskRunGroup));
 
             JobRunStructure jobRunStructure = new JobRunStructure(this, this, controller, taskName);

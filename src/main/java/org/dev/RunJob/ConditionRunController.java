@@ -59,8 +59,9 @@ public class ConditionRunController extends RunActivity implements Initializable
 
     @Override
     public void takeToDisplay() {
-        OperationRunController parentOperationRunController = (OperationRunController) currentRunStructure.getDisplayParentController();
-        parentOperationRunController.changeScrollPaneVValueView(parentScrollPane);
+        AppScene.updateMainDisplayScrollValue(getParentNode());
+        ActionRunController parentActionRunController = (ActionRunController) currentRunStructure.getDisplayParentController();
+        parentActionRunController.showCondition(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
 
