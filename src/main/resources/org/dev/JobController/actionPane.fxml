@@ -105,7 +105,7 @@
                                  <content>
                                     <HBox alignment="CENTER_LEFT" spacing="10.0">
                                        <children>
-                                          <HBox fx:id="entryConditionHBox" alignment="CENTER_LEFT" />
+                                          <HBox fx:id="entryConditionHBox" alignment="CENTER_LEFT" spacing="10.0" />
                                           <Group>
                                              <children>
                                                 <StackPane fx:id="entryAddButton">
@@ -162,7 +162,7 @@
                                  <content>
                                     <HBox alignment="CENTER_LEFT" spacing="10.0">
                                        <children>
-                                          <HBox fx:id="exitConditionHBox" />
+                                          <HBox fx:id="exitConditionHBox" spacing="10.0" />
                                           <StackPane>
                                              <children>
                                                 <Group>

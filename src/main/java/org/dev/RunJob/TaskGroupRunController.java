@@ -68,6 +68,8 @@ public class TaskGroupRunController implements JobRunController {
         boolean pass = false;
         List<JobData> taskDataList = jobData.getJobDataList();
         for (JobData taskData : taskDataList) {
+            if (taskData == null)
+                continue;
             Task currentTask = (Task) taskData.getMainJob();
             if (currentTask == null)
                 continue;

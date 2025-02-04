@@ -110,7 +110,7 @@ public class TaskGroupController implements Initializable, JobDataController {
     @Override
     public void loadSavedData(JobData jobData) {
         if (jobData == null) {
-            AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation data is null - cannot load from save");
+            AppScene.addLog(LogLevel.ERROR, className, "Fail -task group data is null - cannot load from save");
             return;
         }
         TaskGroup taskGroup = (TaskGroup) jobData.getMainJob();
@@ -137,8 +137,6 @@ public class TaskGroupController implements Initializable, JobDataController {
             Node taskPane = loader.load();
             MinimizedTaskController controller = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Minimized Task Pane");
-            if (taskData != null)
-                controller.loadSavedData(taskData);
             int numberOfTask = currentStructure.getSubStructureSize();
             if (numberOfTask == 0)
                 controller.disablePreviousOption();
@@ -147,6 +145,11 @@ public class TaskGroupController implements Initializable, JobDataController {
             JobStructure taskStructure = new JobStructure(currentStructure.getDisplayParentController(), this, controller, controller.getName());
             controller.setJobStructure(taskStructure);
             currentStructure.addSubJobStructure(taskStructure);
+
+            if (taskData != null)
+                controller.loadSavedData(taskData);
+            else
+                controller.addSavedData(null);
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding minimized task pane: " + e.getMessage());
         }
@@ -156,7 +159,7 @@ public class TaskGroupController implements Initializable, JobDataController {
     public void removeSavedData(JobDataController jobDataController) {
         int removeIndex = currentStructure.removeSubJobStructure(jobDataController);
         taskGroupVBox.getChildren().remove(removeIndex);
-        if (removeIndex == 0)
+        if (removeIndex == 0 && currentStructure.getSubStructureSize() != 0)
             ((MinimizedTaskController) currentStructure.getSubJobStructures().getFirst().getCurrentController()).disablePreviousOption();
         AppScene.addLog(LogLevel.DEBUG, className, "Removed selected task: " + removeIndex);
     }

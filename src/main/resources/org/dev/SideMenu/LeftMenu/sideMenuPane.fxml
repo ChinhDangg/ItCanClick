@@ -8,38 +8,44 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<ScrollPane fx:id="sideMenuMainScrollPane" prefHeight="100.0" styleClass="left-border-only" stylesheets="@../../../../styles/SideMenu/sideBarStyle.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.LeftMenu.SideMenuController">
-   <content>
-      <VBox>
-         <children>
-            <Group>
+<StackPane fx:id="parentNode" prefHeight="100.0" prefWidth="214.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.LeftMenu.SideMenuController">
+   <children>
+      <ScrollPane fx:id="sideMenuMainScrollPane" hbarPolicy="ALWAYS" styleClass="left-border-only" stylesheets="@../../../../styles/SideMenu/sideBarStyle.css">
+         <content>
+            <VBox>
                <children>
-                  <StackPane fx:id="mainSideHierarchyStackPane" alignment="TOP_CENTER" prefWidth="200.0">
+                  <Group>
                      <children>
-                        <VBox fx:id="runSideHierarchyVBox">
-                           <padding>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </padding>
-                        </VBox>
-                        <VBox fx:id="sideHierarchyVBox">
-                           <padding>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </padding>
-                        </VBox>
-                        <Group fx:id="newOperationGroupButton">
+                        <VBox fx:id="mainSideHierarchyVBox" minWidth="200.0">
                            <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="24.0" stroke="BLACK" strokeType="INSIDE" width="91.0" />
-                              <Label layoutX="5.3333282470703125" layoutY="3.3333332538604736" text="New Operation" />
+                              <StackPane alignment="TOP_CENTER">
+                                 <children>
+                                    <VBox fx:id="runSideHierarchyVBox" />
+                                    <VBox fx:id="sideHierarchyVBox" />
+                                 </children>
+                              </StackPane>
                            </children>
-                           <StackPane.margin>
-                              <Insets top="20.0" />
-                           </StackPane.margin>
-                        </Group>
+                        </VBox>
                      </children>
-                  </StackPane>
+                  </Group>
                </children>
-            </Group>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </VBox>
+         </content>
+         <StackPane.margin>
+            <Insets />
+         </StackPane.margin>
+      </ScrollPane>
+      <Group fx:id="newOperationGroupButton" StackPane.alignment="TOP_CENTER">
+         <children>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="24.0" stroke="BLACK" strokeType="INSIDE" width="91.0" />
+            <Label layoutX="5.3333282470703125" layoutY="3.3333332538604736" text="New Operation" />
          </children>
-      </VBox>
-   </content>
-</ScrollPane>
+         <StackPane.margin>
+            <Insets top="20.0" />
+         </StackPane.margin>
+      </Group>
+   </children>
+</StackPane>

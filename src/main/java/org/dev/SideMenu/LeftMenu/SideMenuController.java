@@ -41,11 +41,12 @@ import java.util.ResourceBundle;
  */
 
 public class SideMenuController implements Initializable {
-
+    @FXML
+    private StackPane parentNode;
     @FXML
     private ScrollPane sideMenuMainScrollPane;
     @FXML
-    private StackPane mainSideHierarchyStackPane;
+    private VBox mainSideHierarchyVBox;
     @FXML
     private VBox runSideHierarchyVBox, sideHierarchyVBox;
     @FXML
@@ -67,7 +68,8 @@ public class SideMenuController implements Initializable {
     private void setScaleHierarchyVBox() {
         if (currentScale != AppScene.currentGlobalScale) {
             currentScale = AppScene.currentGlobalScale;
-            mainSideHierarchyStackPane.getTransforms().add(new Scale(currentScale, currentScale, 0, 0));
+            mainSideHierarchyVBox.getTransforms().add(new Scale(currentScale, currentScale, 0, 0));
+            parentNode.setPrefWidth(parentNode.getPrefWidth() * currentScale);
         }
         AppScene.addLog(LogLevel.TRACE, className, "Scaled side menu: " + currentScale);
     }

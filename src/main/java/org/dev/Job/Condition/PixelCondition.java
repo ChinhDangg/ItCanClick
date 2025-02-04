@@ -3,6 +3,7 @@ package org.dev.Job.Condition;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.AppScene;
+import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Menu.ConditionPixelMenuController;

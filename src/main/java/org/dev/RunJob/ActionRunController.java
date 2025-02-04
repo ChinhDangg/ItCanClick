@@ -229,6 +229,8 @@ public class ActionRunController extends RunActivity implements Initializable, J
         if (fullConditionList == null)
             return true;
         List<JobData> conditionDataList = getConditionList(fullConditionList, conditionType);
+        if (conditionDataList.isEmpty())
+            return true;
         Platform.runLater(() -> clearConditionHBox(conditionType));
         // all conditions are optional therefore only need one condition to pass
         if (checkAllConditionsIsNotRequired(conditionDataList)) {

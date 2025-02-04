@@ -94,6 +94,8 @@ public class OperationRunController implements Initializable, JobRunController {
         AppScene.addLog(LogLevel.INFO, className, "Start running operation: " + ((Operation) operationData.getMainJob()).getOperationName());
         List<JobData> taskGroupDataList = operationData.getJobDataList();
         for (JobData taskData : taskGroupDataList) {
+            if (taskData == null)
+                continue;
             TaskGroup currentTaskGroup = (TaskGroup) taskData.getMainJob();
             String taskName = currentTaskGroup.getTaskGroupName();
             boolean pass = getNewTaskGroupRunController(taskName).startJob(taskData);

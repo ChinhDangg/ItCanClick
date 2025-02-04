@@ -153,7 +153,7 @@ public class MinimizedTaskController implements Initializable, JobDataController
 
     @Override
     public void loadSavedData(JobData jobData) {
-        addSavedData(jobData);
+        taskController.loadSavedData(jobData);
         Task task = (Task) jobData.getMainJob();
         requiredCheckBox.setSelected(task.isRequired());
         previousPassCheckBox.setSelected(task.isPreviousPass());

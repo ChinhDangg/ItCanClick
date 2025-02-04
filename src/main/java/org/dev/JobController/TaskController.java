@@ -140,8 +140,6 @@ public class TaskController implements Initializable, JobDataController {
             actionPane.setOnMouseClicked(this::selectTheActionPaneAction);
             ActionController controller = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Action Pane");
-            if (actionData != null)
-                controller.loadSavedData(actionData);
             int numberOfActions = currentStructure.getSubStructureSize();
             if (numberOfActions == 0)
                 controller.disablePreviousOption();
@@ -150,6 +148,9 @@ public class TaskController implements Initializable, JobDataController {
             JobStructure taskStructure = new JobStructure(this, this, controller, controller.getName());
             controller.setJobStructure(taskStructure);
             currentStructure.addSubJobStructure(taskStructure);
+
+            if (actionData != null)
+                controller.loadSavedData(actionData);
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding action pane: " + e.getMessage());
         }
@@ -159,7 +160,7 @@ public class TaskController implements Initializable, JobDataController {
     public void removeSavedData(JobDataController jobDataController) {
         int removeIndex = currentStructure.removeSubJobStructure(jobDataController);
         taskVBox.getChildren().remove(removeIndex);
-        if (removeIndex == 0)
+        if (removeIndex == 0 && currentStructure.getSubStructureSize() != 0)
             ((ActionController) currentStructure.getSubJobStructures().getFirst().getCurrentController()).disablePreviousOption();
         AppScene.addLog(LogLevel.DEBUG, className, "Removed selected action: " + removeIndex);
     }

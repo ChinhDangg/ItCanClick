@@ -96,11 +96,10 @@ public class AppScene {
         Platform.runLater(() -> menuBarController.setOperationRunning(isJobRunning));
     }
 
-    public static boolean startOperationRun() {
+    public static void startOperationRun() {
         if (currentJobStructure == null)
-            return false;
+            return;
         startJobRun(currentJobStructure.getCurrentController());
-        return true;
     }
 
     public static void stopOperationRun() {
@@ -118,6 +117,8 @@ public class AppScene {
         AppScene.addLog(LogLevel.INFO, className, "Starting to run job");
         Task<Void> runJobTask = getRunJobTask(jobDataController);
         runJobThread = new Thread(runJobTask);
+        displayCurrentRunJobNode();
+        loadRunSideMenuHierarchy();
         runJobThread.start();
         setIsJobRunning(false);
     }
@@ -215,6 +216,7 @@ public class AppScene {
             OperationController controller = loader.getController();
             currentJobStructure = new JobStructure(null, controller, controller, controller.getName());
             controller.setJobStructure(currentJobStructure);
+            controller.addSavedData(null);
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded empty operation pane");
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading empty operation pane: " + e.getMessage());

@@ -162,14 +162,15 @@ public class ActionController implements Initializable, JobDataController, Activ
             ConditionController controller = loader.getController();
             controller.setConditionType(conditionType);
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Condition Pane");
-            if (conditionData != null)
-                controller.loadSavedData(conditionData);
             whichPane.getChildren().add(pane);
 
             lastIndex = (lastIndex == -1) ? currentStructure.getSubStructureSize() : lastIndex;
             JobStructure conditionStructure = new JobStructure(this,this, controller, null);
             controller.setJobStructure(conditionStructure);
             currentStructure.addSubJobStructure(lastIndex, conditionStructure);
+
+            if (conditionData != null)
+                controller.loadSavedData(conditionData);
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading condition pane: " + e.getMessage());
         }
@@ -243,7 +244,10 @@ public class ActionController implements Initializable, JobDataController, Activ
 
     @Override
     public void addSavedData(JobData conditionData) {
+        System.out.println(conditionData);
         Condition condition = (Condition) conditionData.getMainJob();
+        System.out.println(condition);
+        System.out.println(condition.getConditionType());
         addCondition(condition.getConditionType(), conditionData);
     }
 
