@@ -89,6 +89,8 @@ public class JobStructure {
     }
 
     private void removeFromSideContent(int index) {
+        if (index < 0 || index >= sideContent.getChildren().size())
+            return;
         sideContent.getChildren().remove(index);
     }
 

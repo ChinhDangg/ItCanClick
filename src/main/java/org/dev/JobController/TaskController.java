@@ -129,10 +129,11 @@ public class TaskController implements Initializable, JobDataController {
             AppScene.addLog(LogLevel.INFO, className, "Another job is running - cannot modify");
             return;
         }
-        if (!currentStructure.getSubJobStructures().isEmpty() && currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
-            AppScene.addLog(LogLevel.INFO, className, "Recent Action is not set");
-            return;
-        }
+        if (actionData == null)
+            if (!currentStructure.getSubJobStructures().isEmpty() && !currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
+                AppScene.addLog(LogLevel.INFO, className, "Recent Action is not set");
+                return;
+            }
         try {
             AppScene.addLog(LogLevel.TRACE, className, "Loading Action Pane");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("actionPane.fxml"));

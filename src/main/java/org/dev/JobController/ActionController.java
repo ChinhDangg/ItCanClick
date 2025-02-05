@@ -147,14 +147,17 @@ public class ActionController implements Initializable, JobDataController, Activ
         HBox whichPane = findWhichConditionHBox(conditionType);
         int numberOfCondition = whichPane.getChildren().size();
         int lastIndex = getLastConditionControllerIndex(conditionType);
-        if (numberOfCondition > 0 && (lastIndex != -1 && currentStructure.getSubJobStructures().get(lastIndex).getCurrentController().isSet())) {
-            AppScene.addLog(LogLevel.INFO, className, "Previous Condition is not set");
-            return;
+        if (conditionData == null) {
+            if (numberOfCondition > 0 && (lastIndex != -1 && !currentStructure.getSubJobStructures().get(lastIndex).getCurrentController().isSet())) {
+                AppScene.addLog(LogLevel.INFO, className, "Previous Condition is not set");
+                return;
+            }
+            if (numberOfCondition >= 5) {
+                AppScene.addLog(LogLevel.INFO, className, "Max number of condition's reached");
+                return;
+            }
         }
-        if (numberOfCondition >= 5) {
-            AppScene.addLog(LogLevel.INFO, className, "Max number of condition's reached");
-            return;
-        }
+
         AppScene.addLog(LogLevel.TRACE, className, "Loading Condition Pane");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("conditionPane.fxml"));
@@ -244,10 +247,7 @@ public class ActionController implements Initializable, JobDataController, Activ
 
     @Override
     public void addSavedData(JobData conditionData) {
-        System.out.println(conditionData);
         Condition condition = (Condition) conditionData.getMainJob();
-        System.out.println(condition);
-        System.out.println(condition.getConditionType());
         addCondition(condition.getConditionType(), conditionData);
     }
 

@@ -48,7 +48,9 @@ public class OperationRunController implements Initializable, JobRunController {
         }
     }
 
-    private void changeOperationRunName(String newName) { operationNameRunLabel.setText(newName); }
+    private void changeOperationRunName(String newName) {
+        Platform.runLater(() -> operationNameRunLabel.setText(newName));
+    }
 
     // ------------------------------------------------------
     @Override

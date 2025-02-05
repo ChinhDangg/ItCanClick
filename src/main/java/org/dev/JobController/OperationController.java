@@ -155,10 +155,11 @@ public class OperationController implements Initializable, JobDataController {
             AppScene.addLog(LogLevel.INFO, className, "Another job is running - cannot modify");
             return;
         }
-        if (!currentStructure.getSubJobStructures().isEmpty() && currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
-            AppScene.addLog(LogLevel.INFO, className, "Recent Task Group is not set");
-            return;
-        }
+        if (taskData == null)
+            if (!currentStructure.getSubJobStructures().isEmpty() && currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
+                AppScene.addLog(LogLevel.INFO, className, "Recent Task Group is not set");
+                return;
+            }
         try {
             AppScene.addLog(LogLevel.TRACE, className, "Loading Task Group Pane");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("taskGroupPane.fxml"));

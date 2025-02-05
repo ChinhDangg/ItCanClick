@@ -50,7 +50,7 @@ public class TaskRunController implements JobRunController {
     }
 
     public void changeTaskRunName(String newName) {
-        taskRunNameLabel.setText(newName);
+        Platform.runLater(() -> taskRunNameLabel.setText(newName));
     }
 
     // ------------------------------------------------------

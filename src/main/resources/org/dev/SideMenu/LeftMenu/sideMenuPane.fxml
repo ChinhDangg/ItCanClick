@@ -10,7 +10,7 @@
 
 <StackPane fx:id="parentNode" prefHeight="100.0" prefWidth="214.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.SideMenu.LeftMenu.SideMenuController">
    <children>
-      <ScrollPane fx:id="sideMenuMainScrollPane" hbarPolicy="ALWAYS" styleClass="left-border-only" stylesheets="@../../../../styles/SideMenu/sideBarStyle.css">
+      <ScrollPane fx:id="sideMenuMainScrollPane" styleClass="left-border-only" stylesheets="@../../../../styles/SideMenu/sideBarStyle.css">
          <content>
             <VBox>
                <children>
