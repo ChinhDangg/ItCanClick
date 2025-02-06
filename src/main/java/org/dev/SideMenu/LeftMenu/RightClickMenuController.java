@@ -9,6 +9,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
+import org.dev.Job.Condition.Condition;
+import org.dev.Job.JobData;
 import org.dev.JobController.JobDataController;
 import org.dev.JobStructure;
 
@@ -134,8 +136,19 @@ public class RightClickMenuController implements Initializable {
     }
 
     private void pasteData(MouseEvent event) {
-        if (copiedJobDataController.getAppLevel().getOrder() - currentJobStructure.getCurrentController().getAppLevel().getOrder() == 0)
+        AppLevel currentAppLevel = currentJobStructure.getCurrentController().getAppLevel();
+        if (copiedJobDataController.getAppLevel().getOrder() - currentAppLevel.getOrder() == 0) {
+            if (currentAppLevel == AppLevel.Condition) {
+                JobData copiedJobData = copiedJobDataController.getSavedData();
+                Condition copiedCondition = (Condition) copiedJobData.getMainJob();
+                Condition currentCondition = (Condition) currentJobStructure.getCurrentController().getSavedData().getMainJob();
+                copiedCondition.setConditionType(currentCondition.getConditionType());
+                currentJobStructure.getParentController().addSavedData(copiedJobData);
+                hideRightMenu();
+                return;
+            }
             currentJobStructure.getParentController().addSavedData(copiedJobDataController.getSavedData());
+        }
         else
             currentJobStructure.getCurrentController().addSavedData(copiedJobDataController.getSavedData());
         hideRightMenu();

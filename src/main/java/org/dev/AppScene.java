@@ -125,7 +125,7 @@ public class AppScene {
 
     private static Task<Void> getRunJobTask(JobDataController jobDataController) {
         JobRunController jobRunController = jobDataController.getRunJob();
-        currentJobRunStructure = new JobRunStructure(jobRunController, jobRunController, jobRunController, jobDataController.getName());
+        currentJobRunStructure = new JobRunStructure(null, null, jobRunController, jobDataController.getName());
         jobRunController.setJobRunStructure(currentJobRunStructure);
         JobData jobData = jobDataController.getSavedData();
         return new Task<>() {
@@ -214,7 +214,7 @@ public class AppScene {
             Node operationPane = loader.load();
             displayNewCenterNode(operationPane);
             OperationController controller = loader.getController();
-            currentJobStructure = new JobStructure(null, controller, controller, controller.getName());
+            currentJobStructure = new JobStructure(null, null, controller, controller.getName());
             controller.setJobStructure(currentJobStructure);
             controller.addSavedData(null);
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded empty operation pane");
@@ -237,7 +237,7 @@ public class AppScene {
             OperationController controller = loader.getController();
             AppScene.addLog(LogLevel.TRACE, className, "Passed getting controller");
 
-            currentJobStructure = new JobStructure(null, controller, controller, controller.getName());
+            currentJobStructure = new JobStructure(null, null, controller, controller.getName());
             controller.setJobStructure(currentJobStructure);
             AppScene.addLog(LogLevel.TRACE, className, "Passed assigning structure");
 

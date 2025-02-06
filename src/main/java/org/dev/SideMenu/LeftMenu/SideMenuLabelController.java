@@ -21,12 +21,13 @@ public class SideMenuLabelController {
         if (appLevel == AppLevel.Action || appLevel == AppLevel.Condition) {
             labelIndicationImageView.setFitWidth(13);
             labelIndicationImageView.setFitHeight(15);
-            collapseImageIcon.setImage(null);
         }
         setIndicationIcon(appLevel);
         sideLabel.setText(name);
         if (collapseContent != null)
             collapseImageIcon.setOnMouseClicked(_ -> collapseContent(collapseContent));
+        if (appLevel == AppLevel.Condition)
+            collapseImageIcon.setImage(null);
         return parentHBoxNode;
     }
 

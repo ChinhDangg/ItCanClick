@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Scale;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
@@ -20,12 +21,24 @@ public class TaskGroupRunController implements JobRunController {
     @FXML
     private Node parentNode;
     @FXML
+    private Node containerPane;
+    @FXML
     private Label taskGroupRunNameLabel;
     @FXML
     private VBox mainTaskGroupRunVBox;
 
     private JobRunStructure currentRunStructure;
     private final String className = this.getClass().getSimpleName();
+
+    private void loadScale() {
+        if (currentRunStructure.getParentController() != null)
+            return;
+        double currentGlobalScale = 1.0;
+        if (currentGlobalScale != AppScene.currentGlobalScale) {
+            currentGlobalScale = AppScene.currentGlobalScale;
+            containerPane.getTransforms().add(new Scale(currentGlobalScale, currentGlobalScale, 0, 0));
+        }
+    }
 
     @Override
     public Node getParentNode() { return parentNode; }
@@ -44,6 +57,7 @@ public class TaskGroupRunController implements JobRunController {
     @Override
     public void setJobRunStructure(JobRunStructure runStructure) {
         currentRunStructure = runStructure;
+        loadScale();
     }
 
     @Override

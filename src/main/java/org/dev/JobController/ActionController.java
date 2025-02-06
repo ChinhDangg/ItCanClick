@@ -167,7 +167,7 @@ public class ActionController implements Initializable, JobDataController, Activ
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Condition Pane");
             whichPane.getChildren().add(pane);
 
-            lastIndex = (lastIndex == -1) ? currentStructure.getSubStructureSize() : lastIndex;
+            lastIndex = (lastIndex == -1) ? currentStructure.getSubStructureSize() : lastIndex+1;
             JobStructure conditionStructure = new JobStructure(this,this, controller, null);
             controller.setJobStructure(conditionStructure);
             currentStructure.addSubJobStructure(lastIndex, conditionStructure);

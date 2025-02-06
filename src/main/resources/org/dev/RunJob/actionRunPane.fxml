@@ -11,108 +11,112 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Group fx:id="mainActionRunGroup" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.RunJob.ActionRunController">
+<StackPane fx:id="parentNode" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.RunJob.ActionRunController">
    <children>
-      <Pane prefWidth="520.0">
+      <Group>
          <children>
-            <VBox layoutX="12.0" spacing="5.0">
+            <Pane fx:id="containerPane" prefWidth="520.0">
                <children>
-                  <Label fx:id="actionRunNameLabel" text="Running Action Name">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Label>
-                  <Separator prefWidth="200.0" />
-                  <HBox spacing="10.0">
+                  <VBox layoutX="12.0" spacing="5.0">
                      <children>
-                        <Label text="Status:" />
-                        <Label fx:id="actionStatusLabel" text="state" />
-                     </children>
-                  </HBox>
-                  <VBox>
-                     <children>
-                        <VBox fx:id="conditionRunEntryVBoxContainer">
+                        <Label fx:id="actionRunNameLabel" text="Running Action Name">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <Separator prefWidth="200.0" />
+                        <HBox spacing="10.0">
                            <children>
-                              <Label text="Entry">
-                                 <font>
-                                    <Font size="10.0" />
-                                 </font>
-                              </Label>
-                              <ScrollPane fx:id="entryConditionScrollPane" vbarPolicy="NEVER">
-                                 <content>
-                                    <HBox fx:id="entryConditionHBox" spacing="10.0" />
-                                 </content>
-                              </ScrollPane>
+                              <Label text="Status:" />
+                              <Label fx:id="actionStatusLabel" text="state" />
                            </children>
-                        </VBox>
-                        <VBox fx:id="actionRunVBox">
+                        </HBox>
+                        <VBox>
                            <children>
-                              <Label text="Action">
-                                 <font>
-                                    <Font size="10.0" />
-                                 </font>
-                              </Label>
-                              <HBox spacing="10.0">
+                              <VBox fx:id="conditionRunEntryVBoxContainer">
                                  <children>
-                                    <VBox>
-                                       <children>
-                                          <Pane prefWidth="242.0" style="-fx-border-color: black; -fx-border-width: 1px;">
-                                             <children>
-                                                <StackPane fx:id="actionStackPaneImageContainer" prefHeight="130.0" prefWidth="240.0">
-                                                   <children>
-                                                      <ImageView fx:id="actionSavedImageView" pickOnBounds="true" preserveRatio="true" />
-                                                   </children>
-                                                </StackPane>
-                                             </children>
-                                          </Pane>
-                                          <StackPane>
-                                             <children>
-                                                <Label text="Saved" />
-                                             </children>
-                                          </StackPane>
-                                       </children>
-                                    </VBox>
-                                    <VBox>
-                                       <children>
-                                          <Pane style="-fx-border-color: black; -fx-border-width: 1px;">
-                                             <children>
-                                                <StackPane layoutX="1.0" layoutY="1.0" prefHeight="130.0" prefWidth="240.0">
-                                                   <children>
-                                                      <ImageView fx:id="actionPerformedImageView" pickOnBounds="true" preserveRatio="true" />
-                                                   </children>
-                                                </StackPane>
-                                             </children>
-                                          </Pane>
-                                          <StackPane>
-                                             <children>
-                                                <Label text="Seen" />
-                                             </children>
-                                          </StackPane>
-                                       </children>
-                                    </VBox>
+                                    <Label text="Entry">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </Label>
+                                    <ScrollPane fx:id="entryConditionScrollPane" vbarPolicy="NEVER">
+                                       <content>
+                                          <HBox fx:id="entryConditionHBox" spacing="10.0" />
+                                       </content>
+                                    </ScrollPane>
                                  </children>
-                              </HBox>
-                           </children>
-                        </VBox>
-                        <VBox fx:id="conditionRunExitVBoxContainer">
-                           <children>
-                              <Label text="Exit">
-                                 <font>
-                                    <Font size="10.0" />
-                                 </font>
-                              </Label>
-                              <ScrollPane fx:id="exitConditionScrollPane" vbarPolicy="NEVER">
-                                 <content>
-                                    <HBox fx:id="exitConditionHBox" />
-                                 </content>
-                              </ScrollPane>
+                              </VBox>
+                              <VBox fx:id="actionRunVBox">
+                                 <children>
+                                    <Label text="Action">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </Label>
+                                    <HBox spacing="10.0">
+                                       <children>
+                                          <VBox>
+                                             <children>
+                                                <Pane prefWidth="242.0" style="-fx-border-color: black; -fx-border-width: 1px;">
+                                                   <children>
+                                                      <StackPane fx:id="actionStackPaneImageContainer" prefHeight="130.0" prefWidth="240.0">
+                                                         <children>
+                                                            <ImageView fx:id="actionSavedImageView" pickOnBounds="true" preserveRatio="true" />
+                                                         </children>
+                                                      </StackPane>
+                                                   </children>
+                                                </Pane>
+                                                <StackPane>
+                                                   <children>
+                                                      <Label text="Saved" />
+                                                   </children>
+                                                </StackPane>
+                                             </children>
+                                          </VBox>
+                                          <VBox>
+                                             <children>
+                                                <Pane style="-fx-border-color: black; -fx-border-width: 1px;">
+                                                   <children>
+                                                      <StackPane layoutX="1.0" layoutY="1.0" prefHeight="130.0" prefWidth="240.0">
+                                                         <children>
+                                                            <ImageView fx:id="actionPerformedImageView" pickOnBounds="true" preserveRatio="true" />
+                                                         </children>
+                                                      </StackPane>
+                                                   </children>
+                                                </Pane>
+                                                <StackPane>
+                                                   <children>
+                                                      <Label text="Seen" />
+                                                   </children>
+                                                </StackPane>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                              <VBox fx:id="conditionRunExitVBoxContainer">
+                                 <children>
+                                    <Label text="Exit">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </Label>
+                                    <ScrollPane fx:id="exitConditionScrollPane" vbarPolicy="NEVER">
+                                       <content>
+                                          <HBox fx:id="exitConditionHBox" />
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </VBox>
                            </children>
                         </VBox>
                      </children>
                   </VBox>
                </children>
-            </VBox>
+            </Pane>
          </children>
-      </Pane>
+      </Group>
    </children>
-</Group>
+</StackPane>

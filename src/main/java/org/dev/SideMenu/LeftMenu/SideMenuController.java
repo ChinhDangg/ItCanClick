@@ -64,6 +64,10 @@ public class SideMenuController implements Initializable {
         newOperationGroupButton.setOnMouseClicked(this::getNewOperationPane);
     }
 
+    private Node getParentNode() {
+        return parentNode;
+    }
+
     // ------------------------------------------------------
     private void setScaleHierarchyVBox() {
         if (currentScale != AppScene.currentGlobalScale) {
@@ -93,9 +97,10 @@ public class SideMenuController implements Initializable {
     }
 
     public void toggleSideMenuHierarchy() {
-        boolean newSet = !sideMenuMainScrollPane.isVisible();
-        sideMenuMainScrollPane.setVisible(newSet);
-        sideMenuMainScrollPane.setManaged(newSet);
+        Node parentNode = getParentNode();
+        boolean newSet = !parentNode.isVisible();
+        parentNode.setVisible(newSet);
+        parentNode.setManaged(newSet);
         AppScene.addLog(LogLevel.DEBUG, className, "Showed Side menu: " + newSet);
     }
 

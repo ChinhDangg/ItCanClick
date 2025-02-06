@@ -3,11 +3,10 @@ package org.dev.RunJob;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import lombok.Getter;
+import javafx.scene.transform.Scale;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
@@ -15,28 +14,35 @@ import org.dev.Job.Action.Action;
 import org.dev.Job.JobData;
 import org.dev.Job.Task.Task;
 import org.dev.JobRunStructure;
-import org.slf4j.helpers.CheckReturnValue;
 
 import java.io.IOException;
 import java.util.List;
 
 public class TaskRunController implements JobRunController {
-
     @FXML
-    private Group mainTaskRunGroup;
+    private Node parentNode;
+    @FXML
+    private Node containerPane;
     @FXML
     private Label taskRunNameLabel;
     @FXML
     private VBox mainTaskRunVBox;
 
     private JobRunStructure currentRunStructure;
-
-    @Getter
-    private VBox taskRunSideContent = new VBox();
     private final String className = this.getClass().getSimpleName();
 
+    private void loadScale() {
+        if (currentRunStructure.getParentController() != null)
+            return;
+        double currentGlobalScale = 1.0;
+        if (currentGlobalScale != AppScene.currentGlobalScale) {
+            currentGlobalScale = AppScene.currentGlobalScale;
+            containerPane.getTransforms().add(new Scale(currentGlobalScale, currentGlobalScale, 0, 0));
+        }
+    }
+
     @Override
-    public Node getParentNode() { return mainTaskRunVBox; }
+    public Node getParentNode() { return parentNode; }
 
     @Override
     public AppLevel getAppLevel() {
@@ -57,6 +63,7 @@ public class TaskRunController implements JobRunController {
     @Override
     public void setJobRunStructure(JobRunStructure runStructure) {
         currentRunStructure = runStructure;
+        loadScale();
     }
 
     @Override

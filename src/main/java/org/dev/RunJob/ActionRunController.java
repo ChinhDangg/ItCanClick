@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -12,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Scale;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.ConditionType;
@@ -30,7 +30,9 @@ import java.util.ResourceBundle;
 public class ActionRunController extends RunActivity implements Initializable, JobRunController {
 
     @FXML
-    private Group mainActionRunGroup;
+    private Node parentNode;
+    @FXML
+    private Node containerPane;
     @FXML
     private ScrollPane entryConditionScrollPane, exitConditionScrollPane;
     @FXML
@@ -54,6 +56,16 @@ public class ActionRunController extends RunActivity implements Initializable, J
         showActionRunPane(false);
         conditionRunExitVBoxContainer.setVisible(false);
         setFitDimensionImageView();
+    }
+
+    private void loadScale() {
+        if (currentRunStructure.getParentController() != null)
+            return;
+        double currentGlobalScale = 1.0;
+        if (currentGlobalScale != AppScene.currentGlobalScale) {
+            currentGlobalScale = AppScene.currentGlobalScale;
+            containerPane.getTransforms().add(new Scale(currentGlobalScale, currentGlobalScale, 0, 0));
+        }
     }
 
     private void setFitDimensionImageView() {
@@ -101,7 +113,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
 
     // ------------------------------------------------------
     @Override
-    public Node getParentNode() { return mainActionRunGroup; }
+    public Node getParentNode() { return parentNode; }
 
     @Override
     public AppLevel getAppLevel() {
@@ -117,6 +129,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
     @Override
     public void setJobRunStructure(JobRunStructure runStructure) {
         currentRunStructure = runStructure;
+        loadScale();
     }
 
     @Override
