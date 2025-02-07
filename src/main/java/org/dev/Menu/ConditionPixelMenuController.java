@@ -5,6 +5,7 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
 import org.dev.AppScene;
@@ -14,6 +15,7 @@ import org.dev.Job.Condition.PixelCondition;
 import org.dev.JobController.ConditionController;
 import org.dev.Enum.ReadingCondition;
 import org.dev.JobController.ActivityController;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
@@ -27,6 +29,8 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     private CheckBox showHideLineCheckBox, blackWhiteLineCheckBox;
     @FXML
     private CheckBox notOptionCheckBox, requiredOptionCheckBox, globalSearchCheckBox;
+    @FXML
+    private Node minXIconButton, minYIconButton;
 
     private ConditionController conditionController;
     private final String className = this.getClass().getSimpleName();
@@ -35,6 +39,8 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
         loadPixelTypeChoiceBox();
+        minXIconButton.setOnMouseClicked(this::minimizeXReadingArea);
+        minYIconButton.setOnMouseClicked(this::minimizeYReadingArea);
     }
     private void loadPixelTypeChoiceBox() {
         showHideLineCheckBox.setOnAction(this::showHideBoxAction);
@@ -110,6 +116,15 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             resetMenu();
             AppScene.addLog(LogLevel.DEBUG, className, "Backed to main condition menu");
         }
+    }
+
+    // ------------------------------------------------------
+    private void minimizeXReadingArea(MouseEvent event) {
+        imageWidth = 1;
+    }
+
+    private void minimizeYReadingArea(MouseEvent event) {
+        imageHeight = 1;
     }
 
     // ------------------------------------------------------

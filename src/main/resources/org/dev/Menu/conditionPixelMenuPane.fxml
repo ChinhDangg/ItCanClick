@@ -7,6 +7,7 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
@@ -157,6 +158,19 @@
                                                 </StackPane>
                                              </children>
                                           </Group>
+                                          <Group>
+                                             <children>
+                                                <StackPane fx:id="minXIconButton">
+                                                   <children>
+                                                      <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@../../../images/icons/compress_icon.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </children>
+                                                </StackPane>
+                                             </children>
+                                          </Group>
                                        </children>
                                     </HBox>
                                     <HBox alignment="CENTER_LEFT" spacing="5.0">
@@ -192,6 +206,19 @@
                                                       <String fx:value="stepper-button" />
                                                       <String fx:value="focusable-button" />
                                                    </styleClass>
+                                                </StackPane>
+                                             </children>
+                                          </Group>
+                                          <Group>
+                                             <children>
+                                                <StackPane fx:id="minYIconButton">
+                                                   <children>
+                                                      <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@../../../images/icons/compress_icon.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </children>
                                                 </StackPane>
                                              </children>
                                           </Group>
