@@ -156,7 +156,7 @@ public class OperationController implements Initializable, JobDataController {
             return;
         }
         if (taskData == null)
-            if (!currentStructure.getSubJobStructures().isEmpty() && currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
+            if (!currentStructure.getSubJobStructures().isEmpty() && !currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
                 AppScene.addLog(LogLevel.INFO, className, "Recent Task Group is not set");
                 return;
             }

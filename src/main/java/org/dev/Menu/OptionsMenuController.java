@@ -99,6 +99,7 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
         else
             mainImageView.setImage(null);
     }
+
     protected int imageWidth = 100, imageHeight = 100;
     protected void resetImageWidthHeight() {
         imageWidth = 100; imageHeight = 100;

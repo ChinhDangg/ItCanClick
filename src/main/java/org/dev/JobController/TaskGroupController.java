@@ -128,7 +128,7 @@ public class TaskGroupController implements Initializable, JobDataController {
             return;
         }
         if (taskData == null)
-            if (!currentStructure.getSubJobStructures().isEmpty() && currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
+            if (!currentStructure.getSubJobStructures().isEmpty() && !currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
                 AppScene.addLog(LogLevel.INFO, className, "Recent Minimized Task is not set");
                 return;
             }

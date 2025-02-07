@@ -143,8 +143,8 @@ public class ActionPerformMenuController extends OptionsMenuController {
         updateWaitBeforeTimeLabel(action.getWaitBeforeTime());
         updateWaitAfterTimeLabel(action.getWaitAfterTime());
         currentDisplayImage = action.getDisplayImage();
-        displayMainImageView(Condition.getImageWithEdges(mainImageBoundingBox, currentDisplayImage, 0.5f));
         mainImageBoundingBox = action.getMainImageBoundingBox();
+        displayMainImageView(Condition.getImageWithEdges(mainImageBoundingBox, currentDisplayImage, 0.5f));
         AppScene.addLog(LogLevel.TRACE, className, "Preset action is loaded");
         return true;
     }
