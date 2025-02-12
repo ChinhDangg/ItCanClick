@@ -19,7 +19,7 @@ public class TaskGroup implements Serializable, MainJob {
     private boolean disabled;
 
     @Override
-    public TaskGroup getDeepCopied() {
+    public TaskGroup clone() {
         return new TaskGroup(taskGroupName, required, disabled);
     }
 }

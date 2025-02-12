@@ -21,7 +21,7 @@ public class Task implements Serializable, MainJob {
     private int repeatNumber;
 
     @Override
-    public Task getDeepCopied() {
+    public Task clone() {
         return new Task(taskName, required, previousPass, repeatNumber);
     }
 }

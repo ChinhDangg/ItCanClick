@@ -99,7 +99,7 @@ public class ConditionController implements Initializable, JobDataController, Ac
     public JobData getSavedData() {
         if (condition == null)
             return null;
-        Condition newCondition = condition.getDeepCopied();
+        Condition newCondition = condition.clone();
         newCondition.setConditionType(conditionType);
         return new JobData(newCondition, null);
     }

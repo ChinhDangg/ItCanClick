@@ -17,7 +17,7 @@ public class Operation implements MainJob, Serializable {
     private String operationName = "Operation Name";
 
     @Override
-    public Operation getDeepCopied() {
+    public Operation clone() {
         return new Operation(operationName);
     }
 }

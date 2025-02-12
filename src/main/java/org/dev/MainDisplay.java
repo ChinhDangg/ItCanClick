@@ -1,11 +1,9 @@
 package org.dev;
 
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
-
 import java.util.Objects;
 
 /*
@@ -25,13 +23,13 @@ import java.util.Objects;
                 topNotificationBanner
      */
 public class MainDisplay {
-    private BorderPane primaryBorderPane = new BorderPane();
+    private final BorderPane primaryBorderPane = new BorderPane();
     private StackPane primaryCenterStackPane = new StackPane();
     private VBox mainCenterVBox = new VBox(); // will contain the main HBox and bottom pane
     private HBox mainCenterHBox = new HBox(); // will contain side menu and main display
-    private StackPane mainDisplayStackPane = new StackPane();
-    private ScrollPane mainDisplayScrollPane = new ScrollPane();
-    private VBox mainDisplayVBox = new VBox();
+    private final StackPane mainDisplayStackPane = new StackPane();
+    private final ScrollPane mainDisplayScrollPane = new ScrollPane();
+    private final VBox mainDisplayVBox = new VBox();
     private StackPane mainNotificationStackPane = new StackPane();
 
     public MainDisplay(Node bottomPane, Node notificationPane, Node topPane, Node leftBarPane, Node leftMenuPane) {

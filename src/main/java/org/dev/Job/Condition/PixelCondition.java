@@ -3,7 +3,6 @@ package org.dev.Job.Condition;
 import lombok.Getter;
 import lombok.Setter;
 import org.dev.AppScene;
-import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Menu.ConditionPixelMenuController;
@@ -28,7 +27,7 @@ public class PixelCondition extends Condition {
     }
 
     @Override
-    public PixelCondition getDeepCopied() {
+    public PixelCondition clone() {
         return new PixelCondition(chosenReadingCondition, displayImage, mainImageBoundingBox, not, required, globalSearch);
     }
 

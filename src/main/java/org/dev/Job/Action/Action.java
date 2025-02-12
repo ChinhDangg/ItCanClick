@@ -67,7 +67,7 @@ public abstract class Action implements MainJob, Serializable {
     }
 
     @Override
-    public Action getDeepCopied() {
+    public Action clone() {
         Action action = getCorrespondAction(chosenActionPerform);
         action.setActionName(actionName);
         action.setRequired(required);

@@ -36,7 +36,7 @@ public abstract class Condition implements MainJob, Serializable {
     }
 
     @Override
-    public Condition getDeepCopied() { return null; }
+    public Condition clone() { return null; }
 
     public abstract BufferedImage getMainDisplayImage();
     public abstract ImageCheckResult checkCondition();

@@ -6,7 +6,6 @@ import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.dev.AppScene;
-import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Job.ImageSerialization;
@@ -35,7 +34,7 @@ public class TextCondition extends Condition {
     }
 
     @Override
-    public TextCondition getDeepCopied() {
+    public TextCondition clone() {
         return new TextCondition(chosenReadingCondition, displayImage, mainImageBoundingBox, not, required,
                 currentTextScale, savedText);
     }

@@ -223,7 +223,7 @@ public class ActionController implements Initializable, JobDataController, Activ
         List<JobData> conditionDataList = new ArrayList<>();
         for (JobStructure subJobStructure : currentStructure.getSubJobStructures())
             conditionDataList.add(subJobStructure.getCurrentController().getSavedData());
-        JobData actionData = new JobData(action.getDeepCopied(), conditionDataList);
+        JobData actionData = new JobData(action.clone(), conditionDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got action data");
         return actionData;
     }
