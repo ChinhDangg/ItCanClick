@@ -99,9 +99,19 @@ public class ConditionController implements Initializable, JobDataController, Ac
     public JobData getSavedData() {
         if (condition == null)
             return null;
-        Condition newCondition = condition.clone();
+        Condition newCondition = condition.cloneData();
         newCondition.setConditionType(conditionType);
+        AppScene.addLog(LogLevel.TRACE, className, "Got condition data");
         return new JobData(newCondition, null);
+    }
+
+    @Override
+    public JobData getSavedDataByReference() {
+        if (condition == null)
+            return null;
+        condition.setConditionType(conditionType);
+        AppScene.addLog(LogLevel.TRACE, className, "Got reference condition data");
+        return new JobData(condition, null);
     }
 
     @Override

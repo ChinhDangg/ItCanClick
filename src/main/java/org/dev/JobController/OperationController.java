@@ -36,6 +36,7 @@ public class OperationController implements Initializable, JobDataController {
     private HBox addTaskButton;
 
     private JobStructure currentStructure;
+    private final Operation operation = new Operation();
     private double currentScale = 1;
 
     private final String className = this.getClass().getSimpleName();
@@ -75,6 +76,7 @@ public class OperationController implements Initializable, JobDataController {
     }
     private void updateOperationName(String name) {
         currentStructure.changeName(name);
+        operation.setOperationName(name);
         renameTextField.setText(name);
         AppScene.addLog(LogLevel.DEBUG, className, "Updated operation name: " + name);
     }
@@ -128,12 +130,22 @@ public class OperationController implements Initializable, JobDataController {
 
     @Override
     public JobData getSavedData() {
-        Operation operation = new Operation(currentStructure.getName());
         List<JobData> taskDataList = new ArrayList<>();
         for (JobStructure subJobStructure : currentStructure.getSubJobStructures())
             taskDataList.add(subJobStructure.getCurrentController().getSavedData());
+        JobData operationData = new JobData(operation.cloneData(), taskDataList);
+        AppScene.addLog(LogLevel.TRACE, className, "Got Operation data");
+        return operationData;
+    }
+
+    @Override
+    public JobData getSavedDataByReference() {
+        List<JobData> taskDataList = new ArrayList<>();
+        for (JobStructure subJobStructure : currentStructure.getSubJobStructures())
+            taskDataList.add(subJobStructure.getCurrentController().getSavedDataByReference());
         JobData operationData = new JobData(operation, taskDataList);
-        AppScene.addLog(LogLevel.TRACE, className, "Got operation data");
+        AppScene.addLog(LogLevel.TRACE, className, "Got Reference Operation data");
+        AppScene.addLog(LogLevel.WARN, className, "Operation Reference should not be called but called anyway");
         return operationData;
     }
 

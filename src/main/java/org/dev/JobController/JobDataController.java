@@ -11,6 +11,8 @@ public interface JobDataController extends MainJobController {
 
     JobData getSavedData();
 
+    JobData getSavedDataByReference();
+
     void loadSavedData(JobData jobData);
 
     void addSavedData(JobData data);

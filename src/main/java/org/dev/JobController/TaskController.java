@@ -107,7 +107,17 @@ public class TaskController implements Initializable, JobDataController {
         for (JobStructure subJobStructure: currentStructure.getSubJobStructures())
             actionDataList.add(subJobStructure.getCurrentController().getSavedData());
         JobData taskData = new JobData(null, actionDataList);
-        AppScene.addLog(LogLevel.TRACE, className, "Got task data");
+        AppScene.addLog(LogLevel.TRACE, className, "Got Task data");
+        return taskData;
+    }
+
+    @Override
+    public JobData getSavedDataByReference() {
+        List<JobData> actionDataList = new ArrayList<>();
+        for (JobStructure subJobStructure: currentStructure.getSubJobStructures())
+            actionDataList.add(subJobStructure.getCurrentController().getSavedDataByReference());
+        JobData taskData = new JobData(null, actionDataList);
+        AppScene.addLog(LogLevel.TRACE, className, "Got Reference Task data");
         return taskData;
     }
 

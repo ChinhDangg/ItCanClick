@@ -36,6 +36,7 @@ public class MinimizedTaskController implements Initializable, JobDataController
 
     private JobStructure currentStructure;
     private TaskController taskController;
+    private final Task task = new Task();
 
     private final String className = this.getClass().getSimpleName();
 
@@ -79,6 +80,7 @@ public class MinimizedTaskController implements Initializable, JobDataController
     private void updateTaskName(String name) {
         currentStructure.changeName(name);
         renameTextField.setText(name);
+        task.setTaskName(name);
         taskController.changeTaskName(name);
         AppScene.addLog(LogLevel.DEBUG, className, "Updated minimized task name: " + name);
     }
@@ -145,9 +147,22 @@ public class MinimizedTaskController implements Initializable, JobDataController
     @Override
     public JobData getSavedData() {
         JobData tempData = taskController.getSavedData();
-        Task newTask = new Task(currentStructure.getName(), requiredCheckBox.isSelected(), previousPassCheckBox.isSelected(), repeatNumber);
-        JobData taskData = new JobData(newTask, tempData.getJobDataList());
+        task.setRequired(requiredCheckBox.isSelected());
+        task.setPreviousPass(previousPassCheckBox.isSelected());
+        task.setRepeatNumber(repeatNumber);
+        JobData taskData = new JobData(task.cloneData(), tempData.getJobDataList());
         AppScene.addLog(LogLevel.TRACE, className, "Get Task Data");
+        return taskData;
+    }
+
+    @Override
+    public JobData getSavedDataByReference() {
+        JobData tempData = taskController.getSavedDataByReference();
+        task.setRequired(requiredCheckBox.isSelected());
+        task.setPreviousPass(previousPassCheckBox.isSelected());
+        task.setRepeatNumber(repeatNumber);
+        JobData taskData = new JobData(task, tempData.getJobDataList());
+        AppScene.addLog(LogLevel.TRACE, className, "Get Reference Task Data");
         return taskData;
     }
 

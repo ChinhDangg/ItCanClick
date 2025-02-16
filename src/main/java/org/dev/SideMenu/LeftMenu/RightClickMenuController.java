@@ -27,13 +27,14 @@ public class RightClickMenuController implements Initializable {
     @FXML
     private HBox runSection;
     @FXML
-    private HBox copySection, pasteSection, deleteSection;
+    private HBox copySection, copyReferenceSection, pasteSection, deleteSection;
     @FXML
     private HBox moveUpSection, moveDownSection;
 
     private Popup rightMenuPopup;
     private JobStructure currentJobStructure;
-    private JobDataController copiedJobDataController;
+    private JobData copiedJobData;
+    private AppLevel copiedAppLevel;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -45,6 +46,7 @@ public class RightClickMenuController implements Initializable {
         newTaskGroupSection.setOnMouseClicked(this::addNewTaskGroup);
         runSection.setOnMouseClicked(this::runJob);
         copySection.setOnMouseClicked(this::copyData);
+        copyReferenceSection.setOnMouseClicked(this::copyReferenceData);
         pasteSection.setOnMouseClicked(this::pasteData);
         deleteSection.setOnMouseClicked(this::deleteData);
         moveUpSection.setOnMouseClicked(this::moveUp);
@@ -77,14 +79,15 @@ public class RightClickMenuController implements Initializable {
     private void enableSelectOption(AppLevel appLevel) {
         if (appLevel == AppLevel.TaskGroup || appLevel == AppLevel.Task || appLevel == AppLevel.Action || appLevel == AppLevel.Condition) {
             copySection.setDisable(false);
+            copyReferenceSection.setDisable(false);
             deleteSection.setDisable(false);
             moveUpSection.setDisable(false);
             moveDownSection.setDisable(false);
         }
         if (appLevel != AppLevel.Condition)
             runSection.setDisable(false);
-        if (copiedJobDataController != null) {
-            int order = copiedJobDataController.getAppLevel().getOrder() - appLevel.getOrder();
+        if (copiedJobData != null) {
+            int order = copiedAppLevel.getOrder() - appLevel.getOrder();
             if (order == 0 || order == 1)
                 pasteSection.setDisable(false);
         }
@@ -97,6 +100,7 @@ public class RightClickMenuController implements Initializable {
         newActionSection.setDisable(disable);
         runSection.setDisable(disable);
         copySection.setDisable(disable);
+        copyReferenceSection.setDisable(disable);
         pasteSection.setDisable(disable);
         deleteSection.setDisable(disable);
         moveUpSection.setDisable(disable);
@@ -133,26 +137,27 @@ public class RightClickMenuController implements Initializable {
     }
 
     private void copyData(MouseEvent event) {
-        copiedJobDataController = currentJobStructure.getCurrentController();
+        copiedJobData = currentJobStructure.getCurrentController().getSavedData();
+        copiedAppLevel = currentJobStructure.getCurrentController().getAppLevel();
+        hideRightMenu();
+    }
+
+    private void copyReferenceData(MouseEvent event) {
+        copiedJobData = currentJobStructure.getCurrentController().getSavedDataByReference();
+        copiedAppLevel = currentJobStructure.getCurrentController().getAppLevel();
         hideRightMenu();
     }
 
     private void pasteData(MouseEvent event) {
         AppLevel currentAppLevel = currentJobStructure.getCurrentController().getAppLevel();
-        if (copiedJobDataController.getAppLevel().getOrder() - currentAppLevel.getOrder() == 0) {
-            if (currentAppLevel == AppLevel.Condition) {
-                JobData copiedJobData = copiedJobDataController.getSavedData();
-                Condition copiedCondition = (Condition) copiedJobData.getMainJob();
-                ConditionType currentConditionType = ((ConditionController) currentJobStructure.getCurrentController()).getConditionType();
-                copiedCondition.setConditionType(currentConditionType);
-                currentJobStructure.getParentController().addSavedData(copiedJobData);
-                hideRightMenu();
-                return;
-            }
-            currentJobStructure.getParentController().addSavedData(copiedJobDataController.getSavedData());
+        if (currentAppLevel == AppLevel.Condition) {
+            Condition copiedCondition = (Condition) copiedJobData.getMainJob();
+            ConditionType currentConditionType = ((ConditionController) currentJobStructure.getCurrentController()).getConditionType();
+            copiedCondition.setConditionType(currentConditionType);
+            currentJobStructure.getParentController().addSavedData(copiedJobData);
         }
         else
-            currentJobStructure.getCurrentController().addSavedData(copiedJobDataController.getSavedData());
+            currentJobStructure.getCurrentController().addSavedData(copiedJobData);
         hideRightMenu();
     }
 

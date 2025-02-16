@@ -90,6 +90,7 @@ public class ActionController implements Initializable, JobDataController, Activ
     private void updateActionName(String name) {
         currentStructure.changeName(name);
         renameTextField.setText(name);
+        action.setActionName(name);
         AppScene.addLog(LogLevel.DEBUG, className, "Renamed action: " + name);
     }
 
@@ -219,12 +220,25 @@ public class ActionController implements Initializable, JobDataController, Activ
             return null;
         action.setRequired(requiredCheckBox.isSelected());
         action.setPreviousPass(previousPassCheckBox.isSelected());
-        action.setActionName(currentStructure.getName());
         List<JobData> conditionDataList = new ArrayList<>();
         for (JobStructure subJobStructure : currentStructure.getSubJobStructures())
             conditionDataList.add(subJobStructure.getCurrentController().getSavedData());
-        JobData actionData = new JobData(action.clone(), conditionDataList);
+        JobData actionData = new JobData(action.cloneData(), conditionDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got action data");
+        return actionData;
+    }
+
+    @Override
+    public JobData getSavedDataByReference() {
+        if (action == null)
+            return null;
+        action.setRequired(requiredCheckBox.isSelected());
+        action.setPreviousPass(previousPassCheckBox.isSelected());
+        List<JobData> conditionDataList = new ArrayList<>();
+        for (JobStructure subJobStructure : currentStructure.getSubJobStructures())
+            conditionDataList.add(subJobStructure.getCurrentController().getSavedDataByReference());
+        JobData actionData = new JobData(action, conditionDataList);
+        AppScene.addLog(LogLevel.TRACE, className, "Got reference action data");
         return actionData;
     }
 

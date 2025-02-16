@@ -35,6 +35,7 @@ public class TaskGroupController implements Initializable, JobDataController {
     private CheckBox requiredCheckBox, disabledCheckBox;
 
     private JobStructure currentStructure;
+    private final TaskGroup taskGroup = new TaskGroup();
 
     private final String className = this.getClass().getSimpleName();
 
@@ -66,6 +67,7 @@ public class TaskGroupController implements Initializable, JobDataController {
     private void updateTaskGroupName(String name) {
         currentStructure.changeName(name);
         renameTextField.setText(name);
+        taskGroup.setTaskGroupName(name);
         AppScene.addLog(LogLevel.DEBUG, className, "Updated task group name: " + name);
     }
 
@@ -98,12 +100,25 @@ public class TaskGroupController implements Initializable, JobDataController {
 
     @Override
     public JobData getSavedData() {
-        TaskGroup taskGroup = new TaskGroup(currentStructure.getName(), requiredCheckBox.isSelected(), disabledCheckBox.isSelected());
+        taskGroup.setRequired(requiredCheckBox.isSelected());
+        taskGroup.setDisabled(disabledCheckBox.isSelected());
         List<JobData> taskDataList = new ArrayList<>();
         for (JobStructure subJobStructure: currentStructure.getSubJobStructures())
             taskDataList.add(subJobStructure.getCurrentController().getSavedData());
+        JobData taskGroupData = new JobData(taskGroup.cloneData(), taskDataList);
+        AppScene.addLog(LogLevel.TRACE, className, "Got Task Group data");
+        return taskGroupData;
+    }
+
+    @Override
+    public JobData getSavedDataByReference() {
+        taskGroup.setRequired(requiredCheckBox.isSelected());
+        taskGroup.setDisabled(disabledCheckBox.isSelected());
+        List<JobData> taskDataList = new ArrayList<>();
+        for (JobStructure subJobStructure: currentStructure.getSubJobStructures())
+            taskDataList.add(subJobStructure.getCurrentController().getSavedDataByReference());
         JobData taskGroupData = new JobData(taskGroup, taskDataList);
-        AppScene.addLog(LogLevel.TRACE, className, "Got task group data");
+        AppScene.addLog(LogLevel.TRACE, className, "Got Reference Task Group data");
         return taskGroupData;
     }
 
