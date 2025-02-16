@@ -28,17 +28,20 @@ public class Testing2 {
 
     public static boolean checkPixelFromCurrentScreen(BufferedImage smallerImage, BufferedImage biggerImage) {
         int bigX = 0, bigY = 0;
-        int smallWidth = smallerImage.getWidth(), smallHeight = smallerImage.getHeight();
-        int bigWidth = biggerImage.getWidth(), bigHeight = biggerImage.getHeight();
+        int bigXMax = biggerImage.getWidth() - smallerImage.getWidth();
+        int bigYMax = biggerImage.getHeight() - smallerImage.getHeight();
+        bigYMax = (bigYMax == 0) ? biggerImage.getHeight() : bigYMax;
+        bigXMax = (bigXMax == 0) ? biggerImage.getWidth() : bigXMax;
 
-        while (bigY < bigHeight) {
+        while (bigY < bigYMax) {
             boolean pass = checkSubImage(bigX, bigY, biggerImage, smallerImage);
             if (!pass) {
-                bigX += smallWidth;
-                if (bigX >= bigWidth) {
+                bigX++;
+                if (bigX >= bigXMax) {
                     bigX = 0;
-                    bigY += smallHeight;
+                    bigY++;
                 }
+                System.out.println(bigX + " " + bigY);
             }
             else
                 return true;
@@ -48,24 +51,33 @@ public class Testing2 {
 
     private static boolean checkSubImage(int xStart, int yStart, BufferedImage bigImage, BufferedImage smallImage) {
         int yEnd = yStart + smallImage.getHeight();
+        int xEnd = xStart + smallImage.getWidth();
         int smallX = 0, smallY = 0;
 
-        while (yStart < yEnd) {
-            if (smallImage.getRGB(smallX, smallY) == bigImage.getRGB(xStart, yStart)) {
-                smallX++;
-                if (smallX == smallImage.getWidth()) {
-                    smallX = 0;
-                    smallY++;
-                    if (smallY == smallImage.getHeight())
-                        return true;
+        try {
+            while (yStart < yEnd) {
+                if (smallImage.getRGB(smallX, smallY) == bigImage.getRGB(xStart, yStart)) {
+                    smallX++;
+                    if (smallX >= smallImage.getWidth()) {
+                        smallX = 0;
+                        smallY++;
+                        if (smallY >= smallImage.getHeight())
+                            return true;
+                    }
+                } else
+                    return false;
+                xStart++;
+                if (xStart >= xEnd) {
+                    xStart = 0;
+                    yStart++;
                 }
-            } else
-                return false;
-            xStart++;
-            if (xStart == bigImage.getWidth()) {
-                xStart = 0;
-                yStart++;
             }
+        } catch (Exception e) {
+            System.out.println(bigImage.getWidth() + " " + bigImage.getHeight());
+            System.out.println(xStart + " " + yStart);
+            System.out.println(xEnd + " " + yEnd);
+            e.printStackTrace();
+            System.exit(1);
         }
 
         return true;
