@@ -1,9 +1,6 @@
 package org.dev.Job.Task;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.dev.Job.MainJob;
 
 import java.io.Serial;
@@ -11,6 +8,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class Task implements Serializable, MainJob {
     @Serial
@@ -21,7 +19,7 @@ public class Task implements Serializable, MainJob {
     private int repeatNumber;
 
     @Override
-    public Task clone() {
+    public Task cloneData() {
         return new Task(taskName, required, previousPass, repeatNumber);
     }
 }

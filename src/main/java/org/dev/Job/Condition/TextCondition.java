@@ -34,7 +34,7 @@ public class TextCondition extends Condition {
     }
 
     @Override
-    public TextCondition clone() {
+    public TextCondition cloneData() {
         return new TextCondition(chosenReadingCondition, displayImage, mainImageBoundingBox, not, required,
                 currentTextScale, savedText);
     }

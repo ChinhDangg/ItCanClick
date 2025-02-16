@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class Operation implements MainJob, Serializable {
     @Serial
@@ -17,7 +18,7 @@ public class Operation implements MainJob, Serializable {
     private String operationName = "Operation Name";
 
     @Override
-    public Operation clone() {
+    public Operation cloneData() {
         return new Operation(operationName);
     }
 }

@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class TaskGroup implements Serializable, MainJob {
     @Serial
@@ -19,7 +20,7 @@ public class TaskGroup implements Serializable, MainJob {
     private boolean disabled;
 
     @Override
-    public TaskGroup clone() {
+    public TaskGroup cloneData() {
         return new TaskGroup(taskGroupName, required, disabled);
     }
 }
