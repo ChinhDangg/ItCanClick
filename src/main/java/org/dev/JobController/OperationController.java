@@ -36,6 +36,7 @@ public class OperationController implements Initializable, JobDataController {
     private HBox addTaskButton;
 
     private JobStructure currentStructure;
+    private JobData jobData = new JobData();
     private final Operation operation = new Operation();
     private double currentScale = 1;
 
@@ -143,18 +144,19 @@ public class OperationController implements Initializable, JobDataController {
         List<JobData> taskDataList = new ArrayList<>();
         for (JobStructure subJobStructure : currentStructure.getSubJobStructures())
             taskDataList.add(subJobStructure.getCurrentController().getSavedDataByReference());
-        JobData operationData = new JobData(operation, taskDataList);
+        jobData.setMainJob(operation.cloneData());
+        jobData.setJobDataList(taskDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got Reference Operation data");
-        AppScene.addLog(LogLevel.WARN, className, "Operation Reference should not be called but called anyway");
-        return operationData;
+        return jobData;
     }
 
     @Override
-    public void loadSavedData(JobData jobData) {
-        if (jobData == null) {
+    public void loadSavedData(JobData newJobData) {
+        if (newJobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Operation data is null - cannot load from save");
             return;
         }
+        jobData = newJobData;
         Operation operation = (Operation) jobData.getMainJob();
         updateOperationName(operation.getOperationName());
         for (JobData taskGroupData : jobData.getJobDataList())

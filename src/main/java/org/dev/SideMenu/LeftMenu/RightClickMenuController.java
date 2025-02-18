@@ -13,7 +13,6 @@ import org.dev.Enum.ConditionType;
 import org.dev.Job.Condition.Condition;
 import org.dev.Job.JobData;
 import org.dev.JobController.ConditionController;
-import org.dev.JobController.JobDataController;
 import org.dev.JobStructure;
 
 import java.net.URL;
@@ -156,8 +155,10 @@ public class RightClickMenuController implements Initializable {
             copiedCondition.setConditionType(currentConditionType);
             currentJobStructure.getParentController().addSavedData(copiedJobData);
         }
-        else
+        else if (currentAppLevel.getOrder() - copiedAppLevel.getOrder() == 1)
             currentJobStructure.getCurrentController().addSavedData(copiedJobData);
+        else
+            currentJobStructure.getParentController().addSavedData(copiedJobData);
         hideRightMenu();
     }
 

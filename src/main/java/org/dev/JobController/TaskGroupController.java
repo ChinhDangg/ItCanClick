@@ -35,6 +35,7 @@ public class TaskGroupController implements Initializable, JobDataController {
     private CheckBox requiredCheckBox, disabledCheckBox;
 
     private JobStructure currentStructure;
+    private JobData jobData = new JobData();
     private final TaskGroup taskGroup = new TaskGroup();
 
     private final String className = this.getClass().getSimpleName();
@@ -117,17 +118,19 @@ public class TaskGroupController implements Initializable, JobDataController {
         List<JobData> taskDataList = new ArrayList<>();
         for (JobStructure subJobStructure: currentStructure.getSubJobStructures())
             taskDataList.add(subJobStructure.getCurrentController().getSavedDataByReference());
-        JobData taskGroupData = new JobData(taskGroup, taskDataList);
+        jobData.setMainJob(taskGroup.cloneData());
+        jobData.setJobDataList(taskDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got Reference Task Group data");
-        return taskGroupData;
+        return jobData;
     }
 
     @Override
-    public void loadSavedData(JobData jobData) {
-        if (jobData == null) {
+    public void loadSavedData(JobData newJobData) {
+        if (newJobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail -task group data is null - cannot load from save");
             return;
         }
+        jobData = newJobData;
         TaskGroup taskGroup = (TaskGroup) jobData.getMainJob();
         requiredCheckBox.setSelected(taskGroup.isRequired());
         disabledCheckBox.setSelected(taskGroup.isDisabled());

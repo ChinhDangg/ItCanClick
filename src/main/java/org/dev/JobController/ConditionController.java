@@ -38,6 +38,7 @@ public class ConditionController implements Initializable, JobDataController, Ac
 
     private JobStructure currentStructure;
 
+    private JobData jobData = new JobData();
     @Getter
     private Condition condition;
     @Getter @Setter
@@ -62,6 +63,7 @@ public class ConditionController implements Initializable, JobDataController, Ac
             return;
         }
         isSet = true;
+        jobData.setMainJob(newCondition);
         condition = newCondition;
         condition.setConditionType(conditionType);
         notIndicationNode.setVisible(condition.isNot());
@@ -110,16 +112,19 @@ public class ConditionController implements Initializable, JobDataController, Ac
         if (condition == null)
             return null;
         condition.setConditionType(conditionType);
+        jobData.setMainJob(condition.cloneData());
+        jobData.setJobDataList(null);
         AppScene.addLog(LogLevel.TRACE, className, "Got reference condition data");
-        return new JobData(condition, null);
+        return jobData;
     }
 
     @Override
-    public void loadSavedData(JobData jobData) {
-        if (jobData == null) {
+    public void loadSavedData(JobData newJobData) {
+        if (newJobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - cannot load null saved condition");
             return;
         }
+        jobData = newJobData;
         Condition condition = (Condition) jobData.getMainJob();
         registerReadingCondition(condition);
     }

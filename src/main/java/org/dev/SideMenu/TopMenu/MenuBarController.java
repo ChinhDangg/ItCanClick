@@ -55,7 +55,7 @@ public class MenuBarController implements Initializable {
             AppScene.addLog(LogLevel.DEBUG, className, "Clicked on save all");
             if (AppScene.currentJobStructure == null)
                 return;
-            JobData operationData = AppScene.currentJobStructure.getCurrentController().getSavedData();
+            JobData operationData = AppScene.currentJobStructure.getCurrentController().getSavedDataByReference();
             String fileName = ((Operation) operationData.getMainJob()).getOperationName() + ".ser";
             Path savedPath = getSavePath(fileName);
             AppScene.addLog(LogLevel.DEBUG, className, "Saving path: " + savedPath);

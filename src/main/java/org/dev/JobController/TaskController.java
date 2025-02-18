@@ -38,6 +38,7 @@ public class TaskController implements Initializable, JobDataController {
     private StackPane addNewActionButton;
 
     private JobStructure currentStructure;
+    private JobData jobData = new JobData();
     private double currentGlobalScale = 1;
 
     private final String className = this.getClass().getSimpleName();
@@ -71,7 +72,7 @@ public class TaskController implements Initializable, JobDataController {
     private void selectTheActionPaneAction(MouseEvent event) {
         selectTheActionPane((Node) event.getSource());
     }
-    private void selectTheActionPane(Node actionPane) {
+    public void selectTheActionPane(Node actionPane) {
         if (currentSelectedActionPane != null)
             setUnSelectedAction(currentSelectedActionPane);
         currentSelectedActionPane = actionPane;
@@ -116,17 +117,18 @@ public class TaskController implements Initializable, JobDataController {
         List<JobData> actionDataList = new ArrayList<>();
         for (JobStructure subJobStructure: currentStructure.getSubJobStructures())
             actionDataList.add(subJobStructure.getCurrentController().getSavedDataByReference());
-        JobData taskData = new JobData(null, actionDataList);
+        jobData.setJobDataList(actionDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got Reference Task data");
-        return taskData;
+        return jobData;
     }
 
     @Override
-    public void loadSavedData(JobData jobData) {
-        if (jobData == null) {
+    public void loadSavedData(JobData newJobData) {
+        if (newJobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task data is null - cannot load from save");
             return;
         }
+        jobData = newJobData;
         Task task = (Task) jobData.getMainJob();
         taskNameLabel.setText(task.getTaskName());
         for (JobData actionData : jobData.getJobDataList())

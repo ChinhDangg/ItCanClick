@@ -54,6 +54,7 @@ public class ActionController implements Initializable, JobDataController, Activ
 
     @Getter
     private boolean isSet;
+    private JobData jobData = new JobData();
     @Getter
     private Action action;
     @Getter @Setter
@@ -90,7 +91,8 @@ public class ActionController implements Initializable, JobDataController, Activ
     private void updateActionName(String name) {
         currentStructure.changeName(name);
         renameTextField.setText(name);
-        action.setActionName(name);
+        if (action != null)
+            action.setActionName(name);
         AppScene.addLog(LogLevel.DEBUG, className, "Renamed action: " + name);
     }
 
@@ -106,8 +108,14 @@ public class ActionController implements Initializable, JobDataController, Activ
             return;
         }
         isSet = true;
+        if (action != null) {
+            newAction.setActionName(action.getActionName());
+            newAction.setRequired(action.isRequired());
+            newAction.setPreviousPass(action.isPreviousPass());
+        }
         action = newAction;
-        displayActionImage(action.getMainDisplayImage());
+        jobData.setMainJob(newAction);
+        displayActionImage(newAction.getMainDisplayImage());
     }
 
     private void displayActionImage(BufferedImage image) {
@@ -210,6 +218,7 @@ public class ActionController implements Initializable, JobDataController, Activ
         AppScene.closeConditionMenuPane();
         TaskController parentTaskController = (TaskController) currentStructure.getParentController();
         parentTaskController.takeToDisplay();
+        parentTaskController.selectTheActionPane(getParentNode());
         AppScene.updateMainDisplayScrollValue(getParentNode());
         AppScene.addLog(LogLevel.DEBUG, className, "Take to display");
     }
@@ -237,23 +246,24 @@ public class ActionController implements Initializable, JobDataController, Activ
         List<JobData> conditionDataList = new ArrayList<>();
         for (JobStructure subJobStructure : currentStructure.getSubJobStructures())
             conditionDataList.add(subJobStructure.getCurrentController().getSavedDataByReference());
-        JobData actionData = new JobData(action, conditionDataList);
+        jobData.setMainJob(action.cloneData());
+        jobData.setJobDataList(conditionDataList);
         AppScene.addLog(LogLevel.TRACE, className, "Got reference action data");
-        return actionData;
+        return jobData;
     }
 
     @Override
-    public void loadSavedData(JobData jobData) {
-        if (jobData == null) {
+    public void loadSavedData(JobData newJobData) {
+        if (newJobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Action data is null - cannot load from save");
             return;
         }
+        jobData = newJobData;
         Action action = (Action) jobData.getMainJob();
         registerActionPerform(action);
         updateActionName(action.getActionName());
         requiredCheckBox.setSelected(action.isRequired());
         previousPassCheckBox.setSelected(action.isPreviousPass());
-        displayActionImage(action.getDisplayImage());
         List<JobData> conditionDataList = jobData.getJobDataList();
         for (JobData conditionData : conditionDataList)
             addSavedData(conditionData);
@@ -261,6 +271,8 @@ public class ActionController implements Initializable, JobDataController, Activ
 
     @Override
     public void addSavedData(JobData conditionData) {
+        if (conditionData == null)
+            return;
         Condition condition = (Condition) conditionData.getMainJob();
         addCondition(condition.getConditionType(), conditionData);
     }

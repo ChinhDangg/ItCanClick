@@ -157,13 +157,13 @@ public class MinimizedTaskController implements Initializable, JobDataController
 
     @Override
     public JobData getSavedDataByReference() {
-        JobData tempData = taskController.getSavedDataByReference();
+        JobData jobDataReference = taskController.getSavedDataByReference();
         task.setRequired(requiredCheckBox.isSelected());
         task.setPreviousPass(previousPassCheckBox.isSelected());
         task.setRepeatNumber(repeatNumber);
-        JobData taskData = new JobData(task, tempData.getJobDataList());
+        jobDataReference.setMainJob(task.cloneData());
         AppScene.addLog(LogLevel.TRACE, className, "Get Reference Task Data");
-        return taskData;
+        return jobDataReference;
     }
 
     @Override
