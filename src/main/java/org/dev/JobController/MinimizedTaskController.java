@@ -35,6 +35,7 @@ public class MinimizedTaskController implements Initializable, JobDataController
     private StackPane repeatMinusButton, repeatPlusButton;
 
     private JobStructure currentStructure;
+    private JobData jobData = new JobData();
     private TaskController taskController;
     private final Task task = new Task();
 
@@ -157,23 +158,24 @@ public class MinimizedTaskController implements Initializable, JobDataController
 
     @Override
     public JobData getSavedDataByReference() {
-        JobData jobDataReference = taskController.getSavedDataByReference();
+        jobData = taskController.getSavedDataByReference();
         task.setRequired(requiredCheckBox.isSelected());
         task.setPreviousPass(previousPassCheckBox.isSelected());
         task.setRepeatNumber(repeatNumber);
-        jobDataReference.setMainJob(task.cloneData());
+        jobData.setMainJob(task.cloneData());
         AppScene.addLog(LogLevel.TRACE, className, "Get Reference Task Data");
-        return jobDataReference;
+        return jobData;
     }
 
     @Override
-    public void loadSavedData(JobData jobData) {
-        taskController.loadSavedData(jobData);
+    public void loadSavedData(JobData newJobData) {
+        jobData = newJobData;
         Task task = (Task) jobData.getMainJob();
         requiredCheckBox.setSelected(task.isRequired());
         previousPassCheckBox.setSelected(task.isPreviousPass());
         updateRepeatNumberLabel(task.getRepeatNumber());
         updateTaskName(task.getTaskName());
+        taskController.loadSavedData(jobData);
         AppScene.addLog(LogLevel.TRACE, className, "Loaded saved task data");
     }
 
