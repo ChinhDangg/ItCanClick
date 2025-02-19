@@ -128,6 +128,8 @@ public class TaskController implements Initializable, JobDataController {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task data is null - cannot load from save");
             return;
         }
+        if (newJobData.isRef())
+            currentStructure.setLabelAsRef();
         jobData = newJobData;
         Task task = (Task) jobData.getMainJob();
         taskNameLabel.setText(task.getTaskName());
@@ -158,9 +160,9 @@ public class TaskController implements Initializable, JobDataController {
                 controller.disablePreviousOption();
             taskVBox.getChildren().add(actionPane);
 
-            JobStructure taskStructure = new JobStructure(this, this, controller, controller.getName());
-            controller.setJobStructure(taskStructure);
-            currentStructure.addSubJobStructure(taskStructure);
+            JobStructure actionStructure = new JobStructure(this, this, controller, controller.getName());
+            controller.setJobStructure(actionStructure);
+            currentStructure.addSubJobStructure(actionStructure);
 
             if (actionData != null)
                 controller.loadSavedData(actionData);

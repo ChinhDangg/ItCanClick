@@ -258,6 +258,8 @@ public class ActionController implements Initializable, JobDataController, Activ
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Action data is null - cannot load from save");
             return;
         }
+        if (newJobData.isRef())
+            currentStructure.setLabelAsRef();
         jobData = newJobData;
         Action action = (Action) jobData.getMainJob();
         registerActionPerform(action);

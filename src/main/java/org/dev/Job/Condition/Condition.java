@@ -13,6 +13,8 @@ import java.io.*;
 
 @Getter @Setter
 public abstract class Condition implements MainJob, Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     protected ConditionType conditionType;
     protected ReadingCondition chosenReadingCondition;
     protected transient BufferedImage displayImage;
@@ -22,9 +24,6 @@ public abstract class Condition implements MainJob, Serializable {
 
     @Getter(AccessLevel.NONE) @Setter(AccessLevel.NONE)
     protected transient String readResult;
-
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     public Condition(ReadingCondition chosenReadingCondition, BufferedImage displayImage, Rectangle mainImageBoundingBox,
                      boolean not, boolean required) {

@@ -37,8 +37,8 @@ public class ConditionController implements Initializable, JobDataController, Ac
     private Node notIndicationNode;
 
     private JobStructure currentStructure;
-
     private JobData jobData = new JobData();
+
     @Getter
     private Condition condition;
     @Getter @Setter

@@ -6,16 +6,20 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.dev.Enum.AppLevel;
 
 public class SideMenuLabelController {
     @FXML
-    private HBox parentHBoxNode;
+    private HBox parentHBoxNode, contentHBox;
     @FXML
     private ImageView collapseImageIcon, labelIndicationImageView;
     @FXML
+    private StackPane refHolderStackPane;
+    @FXML
     private Label sideLabel;
+    private final Label refLabel = new Label("REF");
 
     public Node createHBoxLabel(String name, VBox collapseContent, AppLevel appLevel) {
         if (appLevel == AppLevel.Action || appLevel == AppLevel.Condition) {
@@ -29,6 +33,10 @@ public class SideMenuLabelController {
         if (appLevel == AppLevel.Condition)
             collapseImageIcon.setImage(null);
         return parentHBoxNode;
+    }
+
+    public void markLabelAsRef() {
+        refHolderStackPane.getChildren().add(new Label(refLabel.getText()));
     }
 
     public String getName() {
@@ -49,19 +57,19 @@ public class SideMenuLabelController {
             path += "operation-icon.png";
         else if (appLevel == AppLevel.TaskGroup) {
             path += "group-icon.png";
-            parentHBoxNode.setStyle("-fx-padding: 0 0 0 10");
+            contentHBox.setStyle("-fx-padding: 0 0 0 10");
         }
         else if (appLevel == AppLevel.Task) {
             path += "task-icon.png";
-            parentHBoxNode.setStyle("-fx-padding: 0 0 0 20");
+            contentHBox.setStyle("-fx-padding: 0 0 0 20");
         }
         else if (appLevel == AppLevel.Action) {
             path += "action-icon.png";
-            parentHBoxNode.setStyle("-fx-padding: 0 0 0 30");
+            contentHBox.setStyle("-fx-padding: 0 0 0 30");
         }
         else if (appLevel == AppLevel.Condition) {
             path += "condition-icon.png";
-            parentHBoxNode.setStyle("-fx-padding: 0 0 0 40");
+            contentHBox.setStyle("-fx-padding: 0 0 0 40");
         }
         Image image = new Image(String.valueOf(this.getClass().getResource(path)));
         labelIndicationImageView.setImage(image);

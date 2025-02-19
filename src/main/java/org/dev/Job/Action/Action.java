@@ -14,8 +14,9 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 
 @Getter
-public abstract class Action implements MainJob, Serializable {
-
+public abstract class Action implements MainJob {
+    @Serial
+    private static final long serialVersionUID = 1L;
     @Setter
     protected String actionName = "Action Name";
     @Setter
@@ -29,9 +30,6 @@ public abstract class Action implements MainJob, Serializable {
     @Setter
     protected boolean required, previousPass;
     private final String className = this.getClass().getSimpleName();
-
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     public void setActionOptions(int attempt, boolean progressive, int progressiveSearchTime, int beforeTime,
                                  int afterTime, ActionTypes actionTypes, BufferedImage displayImage,

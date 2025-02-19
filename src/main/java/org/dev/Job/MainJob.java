@@ -1,6 +1,8 @@
 package org.dev.Job;
 
-public interface MainJob {
+import java.io.Serializable;
+
+public interface MainJob extends Serializable {
 
     MainJob cloneData();
 }
