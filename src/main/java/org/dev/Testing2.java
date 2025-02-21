@@ -1,86 +1,126 @@
 package org.dev;
 
-import javax.imageio.ImageIO;
+import org.bytedeco.javacpp.DoublePointer;
+import org.bytedeco.opencv.opencv_core.*;
+import org.bytedeco.opencv.global.opencv_core;
+import org.bytedeco.opencv.global.opencv_imgproc;
+import org.bytedeco.javacpp.Loader;
+import org.bytedeco.opencv.opencv_core.Point;
+import static org.bytedeco.opencv.global.opencv_core.*;
+
+
+
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.awt.image.DataBufferByte;
 import java.io.IOException;
+
+import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
 
 public class Testing2 {
 
+    public static void main(String[] args) throws Exception {
+        String bigImagePath = "C:\\Users\\admin\\IdeaProjects\\SmartClick\\testImageBig.png";
+        String smallImagePath = "C:\\Users\\admin\\IdeaProjects\\SmartClick\\testImageSmall.png";
 
-    public static void main(String[] args) throws AWTException, IOException {
-//        BufferedImage img = new Robot().createScreenCapture(new Rectangle(60+20, 60+20, 100-50, 100-50));
-//        ImageIO.write(img, "png", new File("small.png"));
+//        boolean found = containsImage(bigImagePath, smallImagePath);
+//        System.out.println("Small image found in big image: " + found);
+        record();
+    }
+
+    public static void record() throws AWTException, IOException {
+        BufferedImage big = new Robot().createScreenCapture(new Rectangle(60, 150, 100, 100));
+
+        BufferedImage small = new Robot().createScreenCapture(new Rectangle(160, 250, 100, 100));
+
+        System.out.println(containsImage(big, small));
 
 //        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 //        BufferedImage currentScreen = new Robot().createScreenCapture(new Rectangle(0, 0, screenSize.width-1, screenSize.height-1));
 //        System.out.println(currentScreen.getType());
-
-        BufferedImage small = ImageIO.read(new File("small.png"));
-        BufferedImage big = ImageIO.read(new File("big.png"));
-
-
-        System.out.println(small.getType());
-        System.out.println(big.getType());
-        System.out.println(checkPixelFromCurrentScreen(small, big));
     }
 
-    public static boolean checkPixelFromCurrentScreen(BufferedImage smallerImage, BufferedImage biggerImage) {
-        int bigX = 0, bigY = 0;
-        int bigXMax = biggerImage.getWidth() - smallerImage.getWidth();
-        int bigYMax = biggerImage.getHeight() - smallerImage.getHeight();
-        bigYMax = (bigYMax == 0) ? biggerImage.getHeight() : bigYMax;
-        bigXMax = (bigXMax == 0) ? biggerImage.getWidth() : bigXMax;
+    public static boolean containsImage(String bigImagePath, String smallImagePath) {
+        // Load OpenCV native libraries
+        Loader.load(opencv_core.class);
 
-        while (bigY < bigYMax) {
-            boolean pass = checkSubImage(bigX, bigY, biggerImage, smallerImage);
-            if (!pass) {
-                bigX++;
-                if (bigX >= bigXMax) {
-                    bigX = 0;
-                    bigY++;
-                }
-                System.out.println(bigX + " " + bigY);
-            }
-            else
-                return true;
-        }
-        return false;
-    }
+        // Read images
+        Mat bigImage = imread(bigImagePath);
+        Mat smallImage = imread(smallImagePath);
 
-    private static boolean checkSubImage(int xStart, int yStart, BufferedImage bigImage, BufferedImage smallImage) {
-        int yEnd = yStart + smallImage.getHeight();
-        int xEnd = xStart + smallImage.getWidth();
-        int smallX = 0, smallY = 0;
-
-        try {
-            while (yStart < yEnd) {
-                if (smallImage.getRGB(smallX, smallY) == bigImage.getRGB(xStart, yStart)) {
-                    smallX++;
-                    if (smallX >= smallImage.getWidth()) {
-                        smallX = 0;
-                        smallY++;
-                        if (smallY >= smallImage.getHeight())
-                            return true;
-                    }
-                } else
-                    return false;
-                xStart++;
-                if (xStart >= xEnd) {
-                    xStart = 0;
-                    yStart++;
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(bigImage.getWidth() + " " + bigImage.getHeight());
-            System.out.println(xStart + " " + yStart);
-            System.out.println(xEnd + " " + yEnd);
-            e.printStackTrace();
-            System.exit(1);
+        if (bigImage.empty() || smallImage.empty()) {
+            System.out.println("Failed to load one or both images!");
+            return false;
         }
 
-        return true;
+        // Perform template matching
+        Mat result = new Mat();
+        opencv_imgproc.matchTemplate(bigImage, smallImage, result, opencv_imgproc.TM_CCOEFF_NORMED);
+
+        // Find best match score
+        DoublePointer minVal = new DoublePointer(1);
+        DoublePointer maxVal = new DoublePointer(1);
+        Point minLoc = new Point();
+        Point maxLoc = new Point();
+
+        minMaxLoc(result, minVal, maxVal, minLoc, maxLoc, null);
+
+        // Print match score
+        System.out.println("Match Score: " + maxVal.get());
+
+        // Return true if the match score is high
+        return maxVal.get() >= 0.9;
     }
 
+    public static boolean containsImage(BufferedImage bigImage, BufferedImage smallImage) {
+        // Convert BufferedImage to Mat
+        Mat bigMat = bufferedImageToMat(bigImage);
+        Mat smallMat = bufferedImageToMat(smallImage);
+
+        // Check if images are valid
+        if (bigMat.empty() || smallMat.empty()) {
+            System.out.println("Error: One or both images are empty!");
+            return false;
+        }
+
+        // Perform template matching
+        Mat result = new Mat();
+        opencv_imgproc.matchTemplate(bigMat, smallMat, result, opencv_imgproc.TM_CCOEFF_NORMED);
+
+        // Find best match score
+        DoublePointer minVal = new DoublePointer(1);
+        DoublePointer maxVal = new DoublePointer(1);
+        Point minLoc = new Point();
+        Point maxLoc = new Point();
+
+        opencv_core.minMaxLoc(result, minVal, maxVal, minLoc, maxLoc, null);
+
+        // Print match score
+        System.out.println("Match Score: " + maxVal.get());
+
+        // Return true if similarity is high enough
+        return maxVal.get() >= 0.9;
+    }
+
+    public static Mat bufferedImageToMat(BufferedImage image) {
+        // Check if the BufferedImage is already in a compatible format
+        // javacv probably use 3byte-bgr format for buffered image
+        if (image.getType() != BufferedImage.TYPE_3BYTE_BGR) {
+            BufferedImage convertedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+            Graphics2D g = convertedImage.createGraphics();
+            g.drawImage(image, 0, 0, null);
+            g.dispose();
+            image = convertedImage; // Replace with converted image
+        }
+
+        // Extract pixel data as byte array
+        byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+
+        // Create OpenCV Mat with correct format
+        Mat mat = new Mat(image.getHeight(), image.getWidth(), opencv_core.CV_8UC3);
+        mat.data().put(pixels);
+
+        return mat;
+    }
 }

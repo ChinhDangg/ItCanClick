@@ -6,8 +6,8 @@ module org.dev {
     requires tess4j;
     requires com.github.kwhat.jnativehook;
     requires jdk.compiler;
-    requires com.google.gson;
     requires org.slf4j;
+    requires org.bytedeco.opencv;
 
     exports org.dev;
     opens org.dev;
