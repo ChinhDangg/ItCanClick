@@ -103,18 +103,4 @@ public class PixelCondition extends Condition {
         return new ImageCheckResult(RunningStatus.Failed.name(), null, false);
     }
 
-    @Serial
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
-        ImageSerialization.serializeBufferedImageWriteObject(out, displayImage);
-        AppScene.addLog(LogLevel.TRACE, className, "Serialized display image");
-    }
-
-    @Serial
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        String displayImageString = (String) in.readObject();
-        displayImage = ImageSerialization.deserializeBufferedImageReadObject(in, displayImageString, true);
-        AppScene.addLog(LogLevel.TRACE, className, "Deserialized display image");
-    }
 }

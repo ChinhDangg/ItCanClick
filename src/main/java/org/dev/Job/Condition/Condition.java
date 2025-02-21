@@ -3,8 +3,11 @@ package org.dev.Job.Condition;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.dev.AppScene;
 import org.dev.Enum.ConditionType;
+import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
+import org.dev.Job.ImageSerialization;
 import org.dev.Job.MainJob;
 
 import java.awt.*;
@@ -88,5 +91,20 @@ public abstract class Condition implements MainJob, Serializable {
         g.drawImage(image, 0,0, w, h,null);
         g.dispose();
         return tempImage;
+    }
+
+    @Serial
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        ImageSerialization.serializeBufferedImageWriteObject(out, displayImage);
+        AppScene.addLog(LogLevel.TRACE, this.getClass().getSimpleName(), "Serialized display image");
+    }
+
+    @Serial
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        String displayImageString = (String) in.readObject();
+        displayImage = ImageSerialization.deserializeBufferedImageReadObject(in, displayImageString, true);
+        AppScene.addLog(LogLevel.TRACE, this.getClass().getSimpleName(), "Deserialized display image");
     }
 }
