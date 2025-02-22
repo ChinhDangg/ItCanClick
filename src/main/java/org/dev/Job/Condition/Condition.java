@@ -51,6 +51,7 @@ public abstract class Condition implements MainJob, Serializable {
                 , innerBoundingBox.y - (height - innerBoundingBox.height)/2, width, height));
     }
 
+    // draw smaller image at the center
     public static BufferedImage getImageWithEdges(Rectangle innerBoundingBox, BufferedImage fullImage, float opacity) {
         int fullWidth = fullImage.getWidth(), fullHeight = fullImage.getHeight();
         int innerWidth = innerBoundingBox.width, innerHeight = innerBoundingBox.height;
@@ -68,6 +69,7 @@ public abstract class Condition implements MainJob, Serializable {
         return completeImage;
     }
 
+    // draw smaller image at the center though
     public static BufferedImage getImageWithEdges(BufferedImage seenImage, BufferedImage fullImage, float opacity) {
         int fullWidth = fullImage.getWidth(), fullHeight = fullImage.getHeight();
         int innerWidth = seenImage.getWidth(), innerHeight = seenImage.getHeight();
@@ -79,6 +81,22 @@ public abstract class Condition implements MainJob, Serializable {
         g.drawImage(fullImage, 0, 0, null);
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
         g.drawImage(seenImage, (fullWidth - innerWidth)/2, (fullHeight - innerHeight)/2, null);
+        g.dispose();
+        return completeImage;
+    }
+
+    public static BufferedImage getImageWithEdges(int startX, int startY, Rectangle innerBoundingBox, BufferedImage fullImage, float opacity) {
+        int fullWidth = fullImage.getWidth(), fullHeight = fullImage.getHeight();
+        int innerWidth = innerBoundingBox.width, innerHeight = innerBoundingBox.height;
+        if (innerWidth == fullWidth && innerHeight == fullHeight)
+            return fullImage;
+        BufferedImage innerImage = fullImage.getSubimage(startX, startY, innerWidth, innerHeight);
+        BufferedImage completeImage = new BufferedImage(fullWidth, fullHeight, fullImage.getType());
+        Graphics2D g = completeImage.createGraphics();
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+        g.drawImage(fullImage, 0, 0, null);
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+        g.drawImage(innerImage, startX, startY, null);
         g.dispose();
         return completeImage;
     }

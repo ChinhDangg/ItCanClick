@@ -8,7 +8,6 @@ import net.sourceforge.tess4j.TesseractException;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
-import org.dev.Job.ImageSerialization;
 import org.dev.Menu.ConditionTextMenuController;
 
 import java.awt.*;

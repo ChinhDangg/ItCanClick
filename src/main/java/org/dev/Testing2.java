@@ -6,14 +6,15 @@ import org.bytedeco.opencv.global.opencv_core;
 import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.opencv.opencv_core.Point;
+
+import javax.imageio.ImageIO;
+
 import static org.bytedeco.opencv.global.opencv_core.*;
-
-
-
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.File;
 import java.io.IOException;
 
 import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
@@ -21,27 +22,29 @@ import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
 public class Testing2 {
 
     public static void main(String[] args) throws Exception {
-        String bigImagePath = "C:\\Users\\admin\\IdeaProjects\\SmartClick\\testImageBig.png";
-        String smallImagePath = "C:\\Users\\admin\\IdeaProjects\\SmartClick\\testImageSmall.png";
+        String bigImagePath = "C:\\Users\\admin\\IdeaProjects\\SmartClick\\testBig1.png";
+        String smallImagePath = "C:\\Users\\admin\\IdeaProjects\\SmartClick\\testSmall1.png";
 
-//        boolean found = containsImage(bigImagePath, smallImagePath);
-//        System.out.println("Small image found in big image: " + found);
-        record();
+        //Point found = containsImage(bigImagePath, smallImagePath);
+        BufferedImage bigImage = ImageIO.read(new File("C:\\Users\\admin\\IdeaProjects\\SmartClick\\big1.png"));
+        BufferedImage smallImage = new Robot().createScreenCapture(new Rectangle(60+5, 150+5, 90, 90));
+        Point found = containsImage(bigImage, smallImage);
+        if (found != null)
+            System.out.println("Small image found in big image: " + found.x() + " " + found.y());
+        else
+            System.out.println("Small image not found in big image");
     }
 
     public static void record() throws AWTException, IOException {
         BufferedImage big = new Robot().createScreenCapture(new Rectangle(60, 150, 100, 100));
-
-        BufferedImage small = new Robot().createScreenCapture(new Rectangle(160, 250, 100, 100));
-
-        System.out.println(containsImage(big, small));
+        ImageIO.write(big,  "png", new File("big1.png"));
 
 //        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 //        BufferedImage currentScreen = new Robot().createScreenCapture(new Rectangle(0, 0, screenSize.width-1, screenSize.height-1));
 //        System.out.println(currentScreen.getType());
     }
 
-    public static boolean containsImage(String bigImagePath, String smallImagePath) {
+    public static Point containsImage(String bigImagePath, String smallImagePath) {
         // Load OpenCV native libraries
         Loader.load(opencv_core.class);
 
@@ -51,7 +54,7 @@ public class Testing2 {
 
         if (bigImage.empty() || smallImage.empty()) {
             System.out.println("Failed to load one or both images!");
-            return false;
+            return null;
         }
 
         // Perform template matching
@@ -69,11 +72,11 @@ public class Testing2 {
         // Print match score
         System.out.println("Match Score: " + maxVal.get());
 
-        // Return true if the match score is high
-        return maxVal.get() >= 0.9;
+        // Return maxLoc if the match score is high
+        return (maxVal.get() >= 0.9) ? maxLoc : null;
     }
 
-    public static boolean containsImage(BufferedImage bigImage, BufferedImage smallImage) {
+    public static Point containsImage(BufferedImage bigImage, BufferedImage smallImage) {
         // Convert BufferedImage to Mat
         Mat bigMat = bufferedImageToMat(bigImage);
         Mat smallMat = bufferedImageToMat(smallImage);
@@ -81,7 +84,7 @@ public class Testing2 {
         // Check if images are valid
         if (bigMat.empty() || smallMat.empty()) {
             System.out.println("Error: One or both images are empty!");
-            return false;
+            return null;
         }
 
         // Perform template matching
@@ -100,7 +103,7 @@ public class Testing2 {
         System.out.println("Match Score: " + maxVal.get());
 
         // Return true if similarity is high enough
-        return maxVal.get() >= 0.9;
+        return (maxVal.get() >= 0.9) ? maxLoc : null;
     }
 
     public static Mat bufferedImageToMat(BufferedImage image) {

@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.RadioButton;
 import javafx.scene.input.MouseEvent;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
@@ -26,9 +27,11 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     @FXML
     private Group parentGroup;
     @FXML
-    private CheckBox showHideLineCheckBox, blackWhiteLineCheckBox;
+    private RadioButton exactSearchRadioButton, subImageSearchRadioButton, globalSearchRadioButton;
     @FXML
-    private CheckBox notOptionCheckBox, requiredOptionCheckBox, globalSearchCheckBox;
+    private CheckBox notOptionCheckBox, requiredOptionCheckBox;
+    @FXML
+    private CheckBox showHideLineCheckBox, blackWhiteLineCheckBox;
     @FXML
     private Node minXIconButton, minYIconButton;
 
@@ -39,6 +42,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
         loadPixelTypeChoiceBox();
+        subImageSearchRadioButton.setSelected(true);
         minXIconButton.setOnMouseClicked(this::minimizeXReadingArea);
         minYIconButton.setOnMouseClicked(this::minimizeYReadingArea);
     }
@@ -67,7 +71,9 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
             imageWidth = (int) mainImageBoundingBox.getWidth();
             imageHeight = (int) mainImageBoundingBox.getHeight();
             outsideBoxWidth = (currentDisplayImage.getHeight() - imageHeight)/2;
-            globalSearchCheckBox.setSelected(pixelCondition.isGlobalSearch());
+            globalSearchRadioButton.setSelected(pixelCondition.isGlobalSearch());
+            subImageSearchRadioButton.setSelected(pixelCondition.isSubImageSearch());
+            exactSearchRadioButton.setSelected(pixelCondition.isExactSearch());
             AppScene.addLog(LogLevel.TRACE, className, "Loaded preset reading pixel");
         }
         else
@@ -104,7 +110,7 @@ public class ConditionPixelMenuController extends OptionsMenuController implemen
         }
         conditionController.registerReadingCondition(new PixelCondition(ReadingCondition.Pixel, currentDisplayImage,
                 mainImageBoundingBox, notOptionCheckBox.isSelected(), requiredOptionCheckBox.isSelected(),
-                globalSearchCheckBox.isSelected()));
+                exactSearchRadioButton.isSelected(), subImageSearchRadioButton.isSelected(), globalSearchRadioButton.isSelected()));
         AppScene.addLog(LogLevel.INFO, className, "Pixel - saved");
     }
     @Override

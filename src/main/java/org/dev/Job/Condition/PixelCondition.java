@@ -2,18 +2,26 @@ package org.dev.Job.Condition;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bytedeco.javacpp.DoublePointer;
+import org.bytedeco.opencv.global.opencv_core;
+import org.bytedeco.opencv.global.opencv_imgproc;
+import org.bytedeco.opencv.opencv_core.Mat;
+import org.bytedeco.opencv.opencv_core.Point;
 import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Menu.ConditionPixelMenuController;
-import org.dev.Job.ImageSerialization;
 import org.dev.RunJob.RunningStatus;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.*;
 
 @Getter @Setter
 public class PixelCondition extends Condition {
+
+    private boolean exactSearch;
+    private boolean subImageSearch;
     private boolean globalSearch;
     private transient final String className = this.getClass().getSimpleName();
 
@@ -21,14 +29,18 @@ public class PixelCondition extends Condition {
     private static final long serialVersionUID = 1L;
 
     public PixelCondition(ReadingCondition chosenReadingCondition, BufferedImage displayImage,
-                          Rectangle mainImageBoundingBox, boolean not, boolean required, boolean globalSearch) {
+                          Rectangle mainImageBoundingBox, boolean not, boolean required,
+                          boolean exactSearch, boolean subImageSearch, boolean globalSearch) {
         super(chosenReadingCondition, displayImage, mainImageBoundingBox, not, required);
+        this.exactSearch = exactSearch;
+        this.subImageSearch = subImageSearch;
         this.globalSearch = globalSearch;
     }
 
     @Override
     public PixelCondition cloneData() {
-        return new PixelCondition(chosenReadingCondition, displayImage, mainImageBoundingBox, not, required, globalSearch);
+        return new PixelCondition(chosenReadingCondition, displayImage, mainImageBoundingBox, not, required,
+                exactSearch, subImageSearch, globalSearch);
     }
 
     @Override
@@ -47,6 +59,7 @@ public class PixelCondition extends Condition {
     public ImageCheckResult checkCondition() {
         try {
             ImageCheckResult imageResult = (globalSearch) ? checkPixelFromCurrentScreen(displayImage)
+                    : (subImageSearch) ? checkPixelWithinBoundingBox(mainImageBoundingBox, displayImage)
                     : checkPixelFromBoundingBox(mainImageBoundingBox, displayImage);
             readResult = imageResult.getReadResult();
             if (not)
@@ -101,6 +114,58 @@ public class PixelCondition extends Condition {
     // TODO : check pixel in entire screen
     private ImageCheckResult checkPixelFromCurrentScreen(BufferedImage img2) {
         return new ImageCheckResult(RunningStatus.Failed.name(), null, false);
+    }
+
+    private ImageCheckResult checkPixelWithinBoundingBox(Rectangle boundingBox, BufferedImage fullSaved) throws AWTException {
+        int fullImageWidth = fullSaved.getWidth(), fullImageHeight = fullSaved.getHeight();
+        int difX = (fullImageWidth - boundingBox.width)/2;
+        int difY = (fullImageHeight - boundingBox.height)/2;
+        Rectangle fullBounding = new Rectangle(boundingBox.x - difX, boundingBox.y - difY, fullImageWidth, fullImageHeight);
+        BufferedImage fullSeen = ConditionPixelMenuController.captureCurrentScreen(fullBounding);
+
+        BufferedImage smallSaved = fullSaved.getSubimage(difX, difY, boundingBox.width, boundingBox.height);
+
+        // Convert BufferedImage to Mat
+        Mat bigMat = bufferedImageToMat(fullSeen);
+        Mat smallMat = bufferedImageToMat(smallSaved);
+
+        // Perform template matching
+        Mat result = new Mat();
+        opencv_imgproc.matchTemplate(bigMat, smallMat, result, opencv_imgproc.TM_CCOEFF_NORMED);
+
+        // Find best match score
+        DoublePointer minVal = new DoublePointer(1);
+        DoublePointer maxVal = new DoublePointer(1);
+        org.bytedeco.opencv.opencv_core.Point minLoc = new org.bytedeco.opencv.opencv_core.Point();
+        org.bytedeco.opencv.opencv_core.Point maxLoc = new Point();
+
+        opencv_core.minMaxLoc(result, minVal, maxVal, minLoc, maxLoc, null);
+
+        String matchScore = String.format("Match Score: %.2f and Match Loc: %s,%s", maxVal.get(), maxLoc.x(), maxLoc.y());
+        AppScene.addLog(LogLevel.TRACE, className, matchScore);
+
+        return new ImageCheckResult(matchScore, getImageWithEdges(maxLoc.x(), maxLoc.y(), boundingBox, fullSeen, 0.5f), (maxVal.get() >= 0.9));
+    }
+
+    public static Mat bufferedImageToMat(BufferedImage image) {
+        // Check if the BufferedImage is already in a compatible format
+        // javacv probably use 3byte-bgr format for buffered image
+        if (image.getType() != BufferedImage.TYPE_3BYTE_BGR) {
+            BufferedImage convertedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+            Graphics2D g = convertedImage.createGraphics();
+            g.drawImage(image, 0, 0, null);
+            g.dispose();
+            image = convertedImage; // Replace with converted image
+        }
+
+        // Extract pixel data as byte array
+        byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+
+        // Create OpenCV Mat with correct format
+        Mat mat = new Mat(image.getHeight(), image.getWidth(), opencv_core.CV_8UC3);
+        mat.data().put(pixels);
+
+        return mat;
     }
 
 }

@@ -6,7 +6,9 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
@@ -76,16 +78,36 @@
                         </Group>
                      </children>
                   </StackPane>
-                  <StackPane alignment="CENTER_RIGHT">
+                  <StackPane alignment="CENTER_LEFT">
                      <children>
-                        <Group>
+                        <Group StackPane.alignment="TOP_LEFT">
+                           <children>
+                              <VBox spacing="5.0">
+                                 <children>
+                                    <RadioButton fx:id="exactSearchRadioButton" mnemonicParsing="false" text="Exact">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="pixelSearchGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="subImageSearchRadioButton" mnemonicParsing="false" text="SubImage" toggleGroup="$pixelSearchGroup" />
+                                    <RadioButton fx:id="globalSearchRadioButton" mnemonicParsing="false" text="GlobalSearch" toggleGroup="$pixelSearchGroup" />
+                                 </children>
+                                 <padding>
+                                    <Insets left="5.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                        </Group>
+                        <Group StackPane.alignment="TOP_RIGHT">
                            <children>
                               <VBox spacing="5.0">
                                  <children>
                                     <CheckBox fx:id="notOptionCheckBox" mnemonicParsing="false" text="NOT" />
                                     <CheckBox fx:id="requiredOptionCheckBox" mnemonicParsing="false" selected="true" text="Required" />
-                                    <CheckBox fx:id="globalSearchCheckBox" disable="true" mnemonicParsing="false" text="Global Search" visible="false" />
                                  </children>
+                                 <padding>
+                                    <Insets right="10.0" />
+                                 </padding>
                               </VBox>
                            </children>
                         </Group>
