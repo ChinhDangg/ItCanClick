@@ -158,8 +158,11 @@ public class PixelCondition extends Condition {
         String matchScore = String.format("Match Score: %.2f and Match Loc: %s,%s", maxVal.get(), maxLoc.x(), maxLoc.y());
         AppScene.addLog(LogLevel.TRACE, className, matchScore);
 
+        int maxLocXInLocal = boundingBox.x - (biggerImage.getWidth() - smallerImage.getWidth()) / 2 + maxLoc.x();
+        int maxLocYInLocal = boundingBox.y - (biggerImage.getHeight() - smallerImage.getHeight()) / 2 + maxLoc.y();
+
         return new ImageCheckResult(matchScore, (Math.round(maxVal.get() * 100.0) / 100.0),
-                new Rectangle(maxLoc.x(), maxLoc.y(), smallerImage.getWidth(), smallerImage.getHeight()),
+                new Rectangle(maxLocXInLocal, maxLocYInLocal, smallerImage.getWidth(), smallerImage.getHeight()),
                 getImageWithEdges(maxLoc.x(), maxLoc.y(), boundingBox, biggerImage, 0.5f), (maxVal.get() >= 0.9));
     }
 
