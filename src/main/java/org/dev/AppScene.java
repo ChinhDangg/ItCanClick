@@ -124,7 +124,7 @@ public class AppScene {
     }
 
     private static Task<Void> getRunJobTask(JobDataController jobDataController) {
-        JobRunController jobRunController = jobDataController.getRunJob();
+        JobRunController<Object> jobRunController = jobDataController.getRunJob();
         currentJobRunStructure = new JobRunStructure(null, null, jobRunController, jobDataController.getName());
         jobRunController.setJobRunStructure(currentJobRunStructure);
         JobData jobData = jobDataController.getSavedData();
