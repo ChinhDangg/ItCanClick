@@ -4,9 +4,9 @@ import org.dev.JobController.MainJobController;
 import org.dev.Job.JobData;
 import org.dev.JobRunStructure;
 
-public interface JobRunController extends MainJobController {
+public interface JobRunController<T> extends MainJobController {
 
-    boolean startJob(JobData jobData);
+    T startJob(JobData jobData);
 
     void setJobRunStructure(JobRunStructure jobRunStructure);
 }

@@ -18,7 +18,7 @@ import org.dev.JobRunStructure;
 import java.io.IOException;
 import java.util.List;
 
-public class TaskRunController implements JobRunController {
+public class TaskRunController implements JobRunController<Boolean> {
     @FXML
     private Node parentNode;
     @FXML
@@ -67,7 +67,7 @@ public class TaskRunController implements JobRunController {
     }
 
     @Override
-    public boolean startJob(JobData jobData) {
+    public Boolean startJob(JobData jobData) {
         if (jobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task data is null - cannot start");
             return false;
@@ -121,12 +121,12 @@ public class TaskRunController implements JobRunController {
         return true;
     }
 
-    private JobRunController getNewActionRunPane(String actionName) {
+    private JobRunController<Boolean> getNewActionRunPane(String actionName) {
         AppScene.addLog(LogLevel.TRACE, className, "Loading Action Run Pane");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("actionRunPane.fxml"));
             Node actionRunPaneGroup = fxmlLoader.load();
-            JobRunController controller = fxmlLoader.getController();
+            JobRunController<Boolean> controller = fxmlLoader.getController();
             AppScene.addLog(LogLevel.TRACE, className, "Loaded Action Pane");
             Platform.runLater(() -> mainTaskRunVBox.getChildren().add(actionRunPaneGroup));
 

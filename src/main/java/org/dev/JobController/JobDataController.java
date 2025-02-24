@@ -23,5 +23,5 @@ public interface JobDataController extends MainJobController {
 
     void moveSavedDataDown(JobDataController jobDataController);
 
-    JobRunController getRunJob();
+    JobRunController<Object> getRunJob();
 }
