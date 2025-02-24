@@ -108,38 +108,21 @@ public class PixelCondition extends Condition {
                     break;
                 }
         RunningStatus readResult = pass ? RunningStatus.Passed : RunningStatus.Failed;
-        return new ImageCheckResult(readResult.name(), getImageWithEdges(boundingBox, seenImageWithEdges, 0.5f), pass);
+        return new ImageCheckResult(readResult.name(), 100,
+                boundingBox,
+                getImageWithEdges(boundingBox, seenImageWithEdges, 0.5f), pass);
     }
 
     private ImageCheckResult checkPixelWithinBoundingBox(Rectangle boundingBox, BufferedImage fullSaved) throws AWTException {
         int fullImageWidth = fullSaved.getWidth(), fullImageHeight = fullSaved.getHeight();
         int difX = (fullImageWidth - boundingBox.width)/2;
         int difY = (fullImageHeight - boundingBox.height)/2;
+        BufferedImage smallSaved = fullSaved.getSubimage(difX, difY, boundingBox.width, boundingBox.height);
+
         Rectangle fullBounding = new Rectangle(boundingBox.x - difX, boundingBox.y - difY, fullImageWidth, fullImageHeight);
         BufferedImage fullSeen = ConditionPixelMenuController.captureCurrentScreen(fullBounding);
 
-        BufferedImage smallSaved = fullSaved.getSubimage(difX, difY, boundingBox.width, boundingBox.height);
-
-        // Convert BufferedImage to Mat
-        Mat bigMat = bufferedImageToMat(fullSeen);
-        Mat smallMat = bufferedImageToMat(smallSaved);
-
-        // Perform template matching
-        Mat result = new Mat();
-        opencv_imgproc.matchTemplate(bigMat, smallMat, result, opencv_imgproc.TM_CCOEFF_NORMED);
-
-        // Find best match score
-        DoublePointer minVal = new DoublePointer(1);
-        DoublePointer maxVal = new DoublePointer(1);
-        org.bytedeco.opencv.opencv_core.Point minLoc = new org.bytedeco.opencv.opencv_core.Point();
-        org.bytedeco.opencv.opencv_core.Point maxLoc = new Point();
-
-        opencv_core.minMaxLoc(result, minVal, maxVal, minLoc, maxLoc, null);
-
-        String matchScore = String.format("Match Score: %.2f and Match Loc: %s,%s", maxVal.get(), maxLoc.x(), maxLoc.y());
-        AppScene.addLog(LogLevel.TRACE, className, matchScore);
-
-        return new ImageCheckResult(matchScore, getImageWithEdges(maxLoc.x(), maxLoc.y(), boundingBox, fullSeen, 0.5f), (maxVal.get() >= 0.9));
+        return templateMatching(boundingBox, fullSeen, smallSaved);
     }
 
     // check pixel in entire screen
@@ -152,9 +135,13 @@ public class PixelCondition extends Condition {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         BufferedImage currentScreen = new Robot().createScreenCapture(new Rectangle(0, 0, screenSize.width-1, screenSize.height-1));
 
+        return templateMatching(boundingBox, currentScreen, smallSaved);
+    }
+
+    private ImageCheckResult templateMatching(Rectangle boundingBox, BufferedImage biggerImage, BufferedImage smallerImage) {
         // Convert BufferedImage to Mat
-        Mat bigMat = bufferedImageToMat(currentScreen);
-        Mat smallMat = bufferedImageToMat(smallSaved);
+        Mat bigMat = bufferedImageToMat(biggerImage);
+        Mat smallMat = bufferedImageToMat(smallerImage);
 
         // Perform template matching
         Mat result = new Mat();
@@ -163,15 +150,17 @@ public class PixelCondition extends Condition {
         // Find best match score
         DoublePointer minVal = new DoublePointer(1);
         DoublePointer maxVal = new DoublePointer(1);
-        org.bytedeco.opencv.opencv_core.Point minLoc = new org.bytedeco.opencv.opencv_core.Point();
-        org.bytedeco.opencv.opencv_core.Point maxLoc = new Point();
+        Point minLoc = new Point();
+        Point maxLoc = new Point();
 
         opencv_core.minMaxLoc(result, minVal, maxVal, minLoc, maxLoc, null);
 
         String matchScore = String.format("Match Score: %.2f and Match Loc: %s,%s", maxVal.get(), maxLoc.x(), maxLoc.y());
         AppScene.addLog(LogLevel.TRACE, className, matchScore);
 
-        return new ImageCheckResult(matchScore, getImageWithEdges(maxLoc.x(), maxLoc.y(), boundingBox, currentScreen, 0.5f), (maxVal.get() >= 0.9));
+        return new ImageCheckResult(matchScore, (Math.round(maxVal.get() * 100.0) / 100.0),
+                new Rectangle(maxLoc.x(), maxLoc.y(), smallerImage.getWidth(), smallerImage.getHeight()),
+                getImageWithEdges(maxLoc.x(), maxLoc.y(), boundingBox, biggerImage, 0.5f), (maxVal.get() >= 0.9));
     }
 
     public static Mat bufferedImageToMat(BufferedImage image) {
