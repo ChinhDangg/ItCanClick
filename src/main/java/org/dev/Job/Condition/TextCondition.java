@@ -45,13 +45,9 @@ public class TextCondition extends Condition {
     public String getExpectedResult() { return savedText.toString(); }
 
     @Override
-    public String getActualResult() { return readResult; }
-
-    @Override
     public ImageCheckResult checkCondition() {
         try {
             ImageCheckResult checkResult = readTextFromCurrentScreen(mainImageBoundingBox, getCurrentTextScale());
-            readResult = checkResult.getReadResult();
             if (not)
                 checkResult.setPass(!checkCondition().isPass());
             return checkResult;
@@ -67,7 +63,7 @@ public class TextCondition extends Condition {
             seenImage = getScaledImage(seenImage, scale);
         String readText = readTextFromImage(seenImage).replace("\n", "");
         BufferedImage seenImageWithEdges = getImageWithEdges(seenImage, getFullImage(boundingBox, displayImage), 0.5f);
-        return new ImageCheckResult(readText, seenImageWithEdges, checkTextInList(readText));
+        return new ImageCheckResult(readText, 100, boundingBox, seenImageWithEdges, checkTextInList(readText));
     }
 
     private boolean checkTextInList(String readText) {

@@ -25,9 +25,6 @@ public abstract class Condition implements MainJob, Serializable {
     protected boolean not;
     protected boolean required;
 
-    @Getter(AccessLevel.NONE) @Setter(AccessLevel.NONE)
-    protected transient String readResult;
-
     public Condition(ReadingCondition chosenReadingCondition, BufferedImage displayImage, Rectangle mainImageBoundingBox,
                      boolean not, boolean required) {
         this.chosenReadingCondition = chosenReadingCondition;
@@ -43,7 +40,6 @@ public abstract class Condition implements MainJob, Serializable {
     public abstract BufferedImage getMainDisplayImage();
     public abstract ImageCheckResult checkCondition();
     public abstract String getExpectedResult();
-    public abstract String getActualResult();
 
     public static BufferedImage getFullImage(Rectangle innerBoundingBox, BufferedImage previousFullImage) throws AWTException {
         int width = previousFullImage.getWidth(), height = previousFullImage.getHeight();

@@ -25,10 +25,7 @@ public class Testing2 {
         String bigImagePath = "C:\\Users\\admin\\IdeaProjects\\SmartClick\\testBig1.png";
         String smallImagePath = "C:\\Users\\admin\\IdeaProjects\\SmartClick\\testSmall1.png";
 
-        //Point found = containsImage(bigImagePath, smallImagePath);
-        BufferedImage bigImage = ImageIO.read(new File("C:\\Users\\admin\\IdeaProjects\\SmartClick\\big1.png"));
-        BufferedImage smallImage = new Robot().createScreenCapture(new Rectangle(60+5, 150+5, 90, 90));
-        Point found = containsImage(bigImage, smallImage);
+        Point found = containsImage(bigImagePath, smallImagePath);
         if (found != null)
             System.out.println("Small image found in big image: " + found.x() + " " + found.y());
         else
@@ -74,56 +71,5 @@ public class Testing2 {
 
         // Return maxLoc if the match score is high
         return (maxVal.get() >= 0.9) ? maxLoc : null;
-    }
-
-    public static Point containsImage(BufferedImage bigImage, BufferedImage smallImage) {
-        // Convert BufferedImage to Mat
-        Mat bigMat = bufferedImageToMat(bigImage);
-        Mat smallMat = bufferedImageToMat(smallImage);
-
-        // Check if images are valid
-        if (bigMat.empty() || smallMat.empty()) {
-            System.out.println("Error: One or both images are empty!");
-            return null;
-        }
-
-        // Perform template matching
-        Mat result = new Mat();
-        opencv_imgproc.matchTemplate(bigMat, smallMat, result, opencv_imgproc.TM_CCOEFF_NORMED);
-
-        // Find best match score
-        DoublePointer minVal = new DoublePointer(1);
-        DoublePointer maxVal = new DoublePointer(1);
-        Point minLoc = new Point();
-        Point maxLoc = new Point();
-
-        opencv_core.minMaxLoc(result, minVal, maxVal, minLoc, maxLoc, null);
-
-        // Print match score
-        System.out.println("Match Score: " + maxVal.get());
-
-        // Return true if similarity is high enough
-        return (maxVal.get() >= 0.9) ? maxLoc : null;
-    }
-
-    public static Mat bufferedImageToMat(BufferedImage image) {
-        // Check if the BufferedImage is already in a compatible format
-        // javacv probably use 3byte-bgr format for buffered image
-        if (image.getType() != BufferedImage.TYPE_3BYTE_BGR) {
-            BufferedImage convertedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-            Graphics2D g = convertedImage.createGraphics();
-            g.drawImage(image, 0, 0, null);
-            g.dispose();
-            image = convertedImage; // Replace with converted image
-        }
-
-        // Extract pixel data as byte array
-        byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-
-        // Create OpenCV Mat with correct format
-        Mat mat = new Mat(image.getHeight(), image.getWidth(), opencv_core.CV_8UC3);
-        mat.data().put(pixels);
-
-        return mat;
     }
 }

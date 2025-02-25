@@ -53,15 +53,11 @@ public class PixelCondition extends Condition {
     public String getExpectedResult() { return ReadingCondition.Pixel.name(); }
 
     @Override
-    public String getActualResult() { return readResult; }
-
-    @Override
     public ImageCheckResult checkCondition() {
         try {
             ImageCheckResult imageResult = (globalSearch) ? checkPixelFromCurrentScreen(mainImageBoundingBox, displayImage)
                     : (subImageSearch) ? checkPixelWithinBoundingBox(mainImageBoundingBox, displayImage)
                     : checkPixelFromBoundingBox(mainImageBoundingBox, displayImage);
-            readResult = imageResult.getReadResult();
             if (not)
                 imageResult.setPass(!imageResult.isPass());
             return imageResult;

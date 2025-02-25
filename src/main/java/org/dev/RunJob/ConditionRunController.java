@@ -4,12 +4,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import lombok.Setter;
 import org.dev.AppScene;
 import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
@@ -20,7 +18,7 @@ import org.dev.JobRunStructure;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ConditionRunController extends RunActivity implements Initializable, JobRunController {
+public class ConditionRunController extends RunActivity implements Initializable, JobRunController<ImageCheckResult> {
 
     @FXML
     private HBox mainConditionRunHBox;
@@ -35,8 +33,6 @@ public class ConditionRunController extends RunActivity implements Initializable
 
     private JobRunStructure currentRunStructure;
 
-    @Setter
-    private ScrollPane parentScrollPane;
     private final String className = this.getClass().getSimpleName();
 
     @Override
@@ -71,20 +67,20 @@ public class ConditionRunController extends RunActivity implements Initializable
     }
 
     @Override
-    public boolean startJob(JobData jobData) {
+    public ImageCheckResult startJob(JobData jobData) {
         Condition condition = (Condition) jobData.getMainJob();
         updateImageView(conditionExpectedImageView, condition.getMainDisplayImage());
         changeLabelText(expectedResultLabel, condition.getExpectedResult());
 
         ImageCheckResult checkedResult = condition.checkCondition();
-        changeLabelText(readResultLabel, condition.getActualResult());
+        changeLabelText(readResultLabel, checkedResult.getReadResult());
         updateImageView(conditionReadImageView, checkedResult.getDisplayImage());
 
         boolean passed = checkedResult.isPass();
         updatePaneStatusColor(conditionReadPane, passed);
         if (condition.isRequired())
             updatePaneStatusColor(conditionExpectedPane, passed);
-        return passed;
+        return checkedResult;
     }
 
 }
