@@ -13,7 +13,6 @@ import static org.bytedeco.opencv.global.opencv_core.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 
