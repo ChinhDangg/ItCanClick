@@ -118,7 +118,7 @@ public class PixelCondition extends Condition {
         Rectangle fullBounding = new Rectangle(boundingBox.x - difX, boundingBox.y - difY, fullImageWidth, fullImageHeight);
         BufferedImage fullSeen = ConditionPixelMenuController.captureCurrentScreen(fullBounding);
 
-        return templateMatching(boundingBox, fullSeen, smallSaved);
+        return templateMatching(boundingBox, fullSeen, smallSaved, true);
     }
 
     // check pixel in entire screen
@@ -131,10 +131,10 @@ public class PixelCondition extends Condition {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         BufferedImage currentScreen = new Robot().createScreenCapture(new Rectangle(0, 0, screenSize.width-1, screenSize.height-1));
 
-        return templateMatching(boundingBox, currentScreen, smallSaved);
+        return templateMatching(boundingBox, currentScreen, smallSaved, false);
     }
 
-    private ImageCheckResult templateMatching(Rectangle boundingBox, BufferedImage biggerImage, BufferedImage smallerImage) {
+    private ImageCheckResult templateMatching(Rectangle boundingBox, BufferedImage biggerImage, BufferedImage smallerImage, boolean useCenter) {
         // Convert BufferedImage to Mat
         Mat bigMat = bufferedImageToMat(biggerImage);
         Mat smallMat = bufferedImageToMat(smallerImage);
@@ -151,11 +151,11 @@ public class PixelCondition extends Condition {
 
         opencv_core.minMaxLoc(result, minVal, maxVal, minLoc, maxLoc, null);
 
-        String matchScore = String.format("Match Score: %.2f and Match Loc: %s,%s", maxVal.get(), maxLoc.x(), maxLoc.y());
-        AppScene.addLog(LogLevel.TRACE, className, matchScore);
+        int maxLocXInLocal = (!useCenter) ? maxLoc.x() : (boundingBox.x - (biggerImage.getWidth() - smallerImage.getWidth()) / 2 + maxLoc.x());
+        int maxLocYInLocal = (!useCenter) ? maxLoc.y() : (boundingBox.y - (biggerImage.getHeight() - smallerImage.getHeight()) / 2 + maxLoc.y());
 
-        int maxLocXInLocal = boundingBox.x - (biggerImage.getWidth() - smallerImage.getWidth()) / 2 + maxLoc.x();
-        int maxLocYInLocal = boundingBox.y - (biggerImage.getHeight() - smallerImage.getHeight()) / 2 + maxLoc.y();
+        String matchScore = String.format("Match Score: %.2f and Match Loc: %s,%s", maxVal.get(), maxLocXInLocal, maxLocYInLocal);
+        AppScene.addLog(LogLevel.TRACE, className, matchScore);
 
         return new ImageCheckResult(matchScore, (Math.round(maxVal.get() * 100.0) / 100.0),
                 new Rectangle(maxLocXInLocal, maxLocYInLocal, smallerImage.getWidth(), smallerImage.getHeight()),
