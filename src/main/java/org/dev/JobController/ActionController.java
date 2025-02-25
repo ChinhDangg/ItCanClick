@@ -118,6 +118,24 @@ public class ActionController implements Initializable, JobDataController, Activ
         displayActionImage(newAction.getMainDisplayImage());
     }
 
+    public void registerActionPerformUseEntryCondition(Action newAction) {
+        int index = getConditionControllerIndex(ConditionType.Entry, false);
+        if (index == -1) {
+            AppScene.addLog(LogLevel.ERROR, className, "Fail - No Required Entry Condition");
+            return;
+        }
+        ConditionController conditionController = (ConditionController) currentStructure.getSubJobStructures().get(index).getCurrentController();
+        Condition condition = conditionController.getCondition();
+        newAction.setMainImageBoundingBox(condition.getMainImageBoundingBox());
+        newAction.setDisplayImage(condition.getDisplayImage());
+        registerActionPerform(newAction);
+    }
+
+    public boolean hasRequiredEntryCondition() {
+        int index = getConditionControllerIndex(ConditionType.Entry, false);
+        return index != -1;
+    }
+
     private void displayActionImage(BufferedImage image) {
         actionImage.setImage(SwingFXUtils.toFXImage(image, null));
     }
@@ -155,7 +173,7 @@ public class ActionController implements Initializable, JobDataController, Activ
     private void addCondition(ConditionType conditionType, JobData conditionData) {
         HBox whichPane = findWhichConditionHBox(conditionType);
         int numberOfCondition = whichPane.getChildren().size();
-        int lastIndex = getLastConditionControllerIndex(conditionType);
+        int lastIndex = getConditionControllerIndex(conditionType, false);
         if (conditionData == null) {
             if (numberOfCondition > 0 && (lastIndex != -1 && !currentStructure.getSubJobStructures().get(lastIndex).getCurrentController().isSet())) {
                 AppScene.addLog(LogLevel.INFO, className, "Previous Condition is not set");
@@ -188,14 +206,16 @@ public class ActionController implements Initializable, JobDataController, Activ
         }
     }
 
-    private int getLastConditionControllerIndex(ConditionType conditionType) {
-        int count = 0;
+    private int getConditionControllerIndex(ConditionType conditionType, boolean getFirstIndex) {
+        int count = -1;
         for (JobStructure subJobStructure : currentStructure.getSubJobStructures()) {
-            if (((ConditionController) subJobStructure.getCurrentController()).getConditionType() == conditionType)
-                return count;
-            count++;
+            if (((ConditionController) subJobStructure.getCurrentController()).getConditionType() == conditionType) {
+                count++;
+                if (getFirstIndex)
+                    return count;
+            }
         }
-        return -1;
+        return count;
     }
 
     private HBox findWhichConditionHBox(ConditionType conditionType) {

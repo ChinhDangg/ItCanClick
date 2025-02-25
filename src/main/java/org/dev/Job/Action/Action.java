@@ -21,21 +21,24 @@ public abstract class Action implements MainJob {
     protected String actionName = "Action Name";
     @Setter
     protected ActionTypes chosenActionPerform;
+    @Setter
     protected transient BufferedImage displayImage;
+    @Setter
     protected Rectangle mainImageBoundingBox;
     protected int attempt;
     protected int keyCode;
-    protected boolean progressiveSearch;
+    protected boolean useEntry, useProgressiveSearch;
     protected int progressiveSearchTime, waitBeforeTime, waitAfterTime;
     @Setter
     protected boolean required, previousPass;
     private final String className = this.getClass().getSimpleName();
 
-    public void setActionOptions(int attempt, boolean progressive, int progressiveSearchTime, int beforeTime,
+    public void setActionOptions(int attempt, boolean useEntry, boolean useProgressive, int progressiveSearchTime, int beforeTime,
                                  int afterTime, ActionTypes actionTypes, BufferedImage displayImage,
                                  Rectangle boundingBox, int keyCode) {
         this.attempt = attempt;
-        progressiveSearch = progressive;
+        this.useEntry = useEntry;
+        useProgressiveSearch = useProgressive;
         this.progressiveSearchTime = progressiveSearchTime;
         waitBeforeTime = beforeTime;
         waitAfterTime = afterTime;
@@ -70,7 +73,7 @@ public abstract class Action implements MainJob {
         action.setActionName(actionName);
         action.setRequired(required);
         action.setPreviousPass(previousPass);
-        action.setActionOptions(attempt, isProgressiveSearch(), progressiveSearchTime, waitBeforeTime, getWaitAfterTime(),
+        action.setActionOptions(attempt, useEntry, useProgressiveSearch, progressiveSearchTime, waitBeforeTime, waitAfterTime,
                 chosenActionPerform, displayImage, mainImageBoundingBox, keyCode);
         return action;
     }

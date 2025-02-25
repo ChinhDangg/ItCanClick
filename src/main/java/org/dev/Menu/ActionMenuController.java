@@ -17,6 +17,8 @@ import org.dev.Job.Action.Action;
 import org.dev.Job.Condition.Condition;
 import org.dev.JobController.ActionController;
 import org.dev.JobController.ActivityController;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -24,6 +26,7 @@ import java.util.ResourceBundle;
 public class ActionMenuController extends MenuController implements Initializable {
     @FXML
     private ChoiceBox<ActionTypes> readingTypeChoice;
+
     private ActionController actionController;
 
     private final String className = this.getClass().getSimpleName();

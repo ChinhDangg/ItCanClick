@@ -30,17 +30,17 @@ public class ActionPerformMenuController extends OptionsMenuController {
     @FXML
     private Label actionPerformIndicationLabel;
     @FXML
-    private CheckBox progressiveSearchCheckBox;
+    private CheckBox useEntryCheckBox, progressiveSearchCheckBox;
+    @FXML
+    private Label attemptNumberLabel;
+    @FXML
+    private Node attemptMinusButton, attemptPlusButton;
     @FXML
     private Node registeredKeyPane, registeredKeyLabelPane, progressiveSearchButtonsPane, progressiveSearchMinusButton, progressiveSearchPlusButton;
     @FXML
     private Node waitBeforeMinusButton, waitBeforePlusButton, waitAfterMinusButton, waitAfterPlusButton;
     @FXML
     private Label registeredKeyLabel, progressiveSearchTimeLabel, waitBeforeTimeLabel, waitAfterTimeLabel;
-    @FXML
-    private Label attemptNumberLabel;
-    @FXML
-    private Node attemptMinusButton, attemptPlusButton;
     @FXML
     private StackPane startRegisterKeyButton;
 
@@ -79,9 +79,12 @@ public class ActionPerformMenuController extends OptionsMenuController {
             return;
         }
         Action newAction = Action.getCorrespondAction(actionTypes);
-        newAction.setActionOptions(attempt, progressiveSearchCheckBox.isSelected(), progressiveSearchTime, waitBeforeTime,
+        newAction.setActionOptions(attempt, useEntryCheckBox.isSelected(), progressiveSearchCheckBox.isSelected(), progressiveSearchTime, waitBeforeTime,
                 waitAfterTime, actionTypes, currentDisplayImage, mainImageBoundingBox, registeredKey);
-        actionController.registerActionPerform(newAction);
+        if (useEntryCheckBox.isSelected())
+            actionController.registerActionPerformUseEntryCondition(newAction);
+        else
+            actionController.registerActionPerform(newAction);
         AppScene.addLog(LogLevel.INFO, className, "Saved registered action");
     }
 
@@ -98,6 +101,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     @Override
     protected void resetMenu() {
         super.resetMenu();
+        useEntryCheckBox.setSelected(false);
         progressiveSearchCheckBox.setSelected(false);
         updateProgressiveSearchTimeLabel(1000);
         updateWaitBeforeTimeLabel(1000);
@@ -115,11 +119,12 @@ public class ActionPerformMenuController extends OptionsMenuController {
     @Override
     protected void loadMenu(ActivityController activityController) {
         if (activityController == null) {
-            AppScene.addLog(LogLevel.WARN, className, "loadMenu - Action is not set");
+            AppScene.addLog(LogLevel.ERROR, className, "loadMenu - Action is not set");
             return;
         }
         GlobalScreen.addNativeKeyListener(this);
         actionController = (ActionController) activityController;
+        enableUseEntryCondition();
         ActionTypes actionTypes = actionController.getChosenActionPerform();
         actionPerformIndicationLabel.setText(actionTypes.name());
         registeredKeyPane.setVisible(actionTypes.isKeyAction());
@@ -138,7 +143,8 @@ public class ActionPerformMenuController extends OptionsMenuController {
         if (actionTypes.isKeyAction())
             updateRegisteredKeyLabel(action.getKeyCode());
         updateAttemptLabel(action.getAttempt());
-        progressiveSearchCheckBox.setSelected(action.isProgressiveSearch());
+        useEntryCheckBox.setSelected(action.isUseEntry());
+        progressiveSearchCheckBox.setSelected(action.isUseProgressiveSearch());
         updateProgressiveSearchTimeLabel(action.getProgressiveSearchTime());
         updateWaitBeforeTimeLabel(action.getWaitBeforeTime());
         updateWaitAfterTimeLabel(action.getWaitAfterTime());
@@ -147,6 +153,11 @@ public class ActionPerformMenuController extends OptionsMenuController {
         displayMainImageView(Condition.getImageWithEdges(mainImageBoundingBox, currentDisplayImage, 0.5f));
         AppScene.addLog(LogLevel.TRACE, className, "Preset action is loaded");
         return true;
+    }
+
+    private void enableUseEntryCondition() {
+        useEntryCheckBox.setDisable(!actionController.hasRequiredEntryCondition() ||
+                actionController.getChosenActionPerform().isKeyAction());
     }
 
     // ------------------------------------------------------

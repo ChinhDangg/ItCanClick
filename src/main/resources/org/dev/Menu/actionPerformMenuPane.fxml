@@ -75,51 +75,56 @@
                         </Group>
                      </children>
                   </StackPane>
-                  <HBox alignment="CENTER_LEFT" spacing="150.0">
+                  <HBox alignment="CENTER_LEFT" spacing="120.0">
                      <children>
-                        <HBox alignment="CENTER_LEFT" spacing="5.0">
+                        <VBox spacing="5.0">
                            <children>
-                              <Label text="Attempt">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <Group>
+                              <CheckBox fx:id="useEntryCheckBox" mnemonicParsing="false" text="Use Entry Condition (last required one)" />
+                              <HBox alignment="CENTER_LEFT" spacing="5.0">
                                  <children>
-                                    <StackPane fx:id="attemptMinusButton" focusTraversable="true">
+                                    <Label text="Attempt">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <Group>
                                        <children>
-                                          <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                          <StackPane fx:id="attemptMinusButton" focusTraversable="true">
+                                             <children>
+                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                             </children>
+                                             <styleClass>
+                                                <String fx:value="stackpane-button" />
+                                                <String fx:value="stepper-button" />
+                                                <String fx:value="focusable-button" />
+                                             </styleClass>
+                                          </StackPane>
                                        </children>
-                                       <styleClass>
-                                          <String fx:value="stackpane-button" />
-                                          <String fx:value="stepper-button" />
-                                          <String fx:value="focusable-button" />
-                                       </styleClass>
-                                    </StackPane>
-                                 </children>
-                              </Group>
-                              <Group>
-                                 <children>
-                                    <StackPane fx:id="attemptPlusButton" focusTraversable="true">
+                                    </Group>
+                                    <Group>
                                        <children>
-                                          <Line endX="-78.22222900390625" startX="-95.49999237060547" />
-                                          <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                          <StackPane fx:id="attemptPlusButton" focusTraversable="true">
+                                             <children>
+                                                <Line endX="-78.22222900390625" startX="-95.49999237060547" />
+                                                <Line endX="-78.22222900390625" rotate="-90.0" startX="-95.49999237060547" />
+                                             </children>
+                                             <styleClass>
+                                                <String fx:value="stackpane-button" />
+                                                <String fx:value="stepper-button" />
+                                                <String fx:value="focusable-button" />
+                                             </styleClass>
+                                          </StackPane>
                                        </children>
-                                       <styleClass>
-                                          <String fx:value="stackpane-button" />
-                                          <String fx:value="stepper-button" />
-                                          <String fx:value="focusable-button" />
-                                       </styleClass>
-                                    </StackPane>
+                                    </Group>
+                                    <Label fx:id="attemptNumberLabel" prefHeight="20.0" prefWidth="29.0" text="1">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
                                  </children>
-                              </Group>
-                              <Label fx:id="attemptNumberLabel" prefHeight="20.0" prefWidth="29.0" text="1">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
+                              </HBox>
                            </children>
-                        </HBox>
+                        </VBox>
                         <VBox spacing="5.0">
                            <children>
                               <CheckBox fx:id="progressiveSearchCheckBox" mnemonicParsing="false" text="Progressive Search" />

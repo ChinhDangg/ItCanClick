@@ -18,6 +18,7 @@ import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Action.Action;
 import org.dev.Job.Condition.Condition;
+import org.dev.Job.Condition.ImageCheckResult;
 import org.dev.Job.JobData;
 import org.dev.JobRunStructure;
 import java.awt.*;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ActionRunController extends RunActivity implements Initializable, JobRunController {
+public class ActionRunController extends RunActivity implements Initializable, JobRunController<Boolean> {
 
     @FXML
     private Node parentNode;
@@ -133,7 +134,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
     }
 
     @Override
-    public boolean startJob(JobData jobData) {
+    public Boolean startJob(JobData jobData) {
         if (jobData == null) {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Action data is null - cannot start");
             return false;
@@ -156,7 +157,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
 
     private boolean runAction(JobData actionData) throws InterruptedException {
         boolean passed;
-        if (((Action) actionData.getMainJob()).isProgressiveSearch())
+        if (((Action) actionData.getMainJob()).isUseProgressiveSearch())
             passed = performActionWithProgressiveSearch(actionData);
         else
             passed = performActionWithAttempt(actionData);
@@ -175,7 +176,8 @@ public class ActionRunController extends RunActivity implements Initializable, J
             count--;
             AppScene.addLog(LogLevel.INFO, className, "Waiting " + action.getWaitBeforeTime()/1000 + " seconds");
             Thread.sleep(action.getWaitBeforeTime());
-            entryPassed = checkAllConditions(actionData.getJobDataList(), ConditionType.Entry);
+            ImageCheckResult entryResult = checkAllConditions(actionData.getJobDataList(), ConditionType.Entry);
+            entryPassed = entryResult.isPass();
             if (!entryPassed) {
                 AppScene.addLog(LogLevel.INFO, className, "Not found entry at action: " + actionName + " : " + count + "/" + totalAttempt);
                 if (!actionPerformed)
@@ -184,12 +186,15 @@ public class ActionRunController extends RunActivity implements Initializable, J
             }
             else {
                 AppScene.addLog(LogLevel.INFO, className, "Found entry at action: " + actionName + " : " + count + "/" + totalAttempt);
+                if (action.isUseEntry()) // if action is set to click on found entry
+                    action.setMainImageBoundingBox(entryResult.getBoundingBox());
                 performAction(action);
                 actionPerformed = true;
             }
             AppScene.addLog(LogLevel.INFO, className, "Waiting " + action.getWaitAfterTime()/1000 + " seconds");
             Thread.sleep(action.getWaitAfterTime());
-            if (checkAllConditions(actionData.getJobDataList(), ConditionType.Exit)) {
+            ImageCheckResult exitResult = checkAllConditions(actionData.getJobDataList(), ConditionType.Exit);
+            if (exitResult.isPass()) {
                 AppScene.addLog(LogLevel.INFO, className, "Found exit at action: " + actionName + " : " + count + "/" + totalAttempt);
                 return true;
             }
@@ -207,18 +212,22 @@ public class ActionRunController extends RunActivity implements Initializable, J
         boolean entryPassed, actionPerformed = false;
         AppScene.addLog(LogLevel.INFO, className, "Start progressive search at action: " + actionName + " for: " + duration);
         while (System.currentTimeMillis() - startTime < duration) {
-            entryPassed = checkAllConditions(actionData.getJobDataList(), ConditionType.Entry);
+            ImageCheckResult entryResult = checkAllConditions(actionData.getJobDataList(), ConditionType.Entry);
+            entryPassed = entryResult.isPass();
             if (!entryPassed) {
                 if (!actionPerformed)
                     continue;
                 actionPerformed = false;
             }
             else {
+                if (action.isUseEntry()) // if action is set to click on found entry
+                    action.setMainImageBoundingBox(entryResult.getBoundingBox());
                 performAction(action);
                 actionPerformed = true;
             }
             conditionRunExitVBoxContainer.setVisible(true);
-            if (checkAllConditions(actionData.getJobDataList(), ConditionType.Exit))
+            ImageCheckResult exitResult = checkAllConditions(actionData.getJobDataList(), ConditionType.Exit);
+            if (exitResult.isPass())
                 return true;
         }
         AppScene.addLog(LogLevel.INFO, className, "Exceeded progressive search time at action: " + actionName);
@@ -227,7 +236,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
 
     private void performAction(Action action) {
         showActionRunPane(true);
-        updateImageView(actionSavedImageView, action.getDisplayImage());
+        updateImageView(actionSavedImageView, action.getMainDisplayImage());
         try {
             updateImageView(actionPerformedImageView, action.getSeenImage());
         } catch (AWTException e) {
@@ -237,30 +246,35 @@ public class ActionRunController extends RunActivity implements Initializable, J
         AppScene.addLog(LogLevel.INFO, className, "Performed action: " + action.getActionName());
     }
 
-    private boolean checkAllConditions(List<JobData> fullConditionList, ConditionType conditionType) {
+    private ImageCheckResult checkAllConditions(List<JobData> fullConditionList, ConditionType conditionType) {
         AppScene.addLog(LogLevel.INFO, className, "Start checking condition: " + conditionType);
         if (fullConditionList == null)
-            return true;
+            return new ImageCheckResult(true);
         List<JobData> conditionDataList = getConditionList(fullConditionList, conditionType);
         if (conditionDataList.isEmpty())
-            return true;
+            return new ImageCheckResult(true);
         Platform.runLater(() -> clearConditionHBox(conditionType));
         // all conditions are optional therefore only need one condition to pass
         if (checkAllConditionsIsNotRequired(conditionDataList)) {
             for (JobData c : conditionDataList) {
                 loadConditionRunPane(conditionType);
-                if (currentConditionRunController.startJob(c))
-                    return true;
+                ImageCheckResult result = currentConditionRunController.startJob(c);
+                if (result.isPass())
+                    return result;
             }
-            return false;
+            return new ImageCheckResult(false);
         }
         else { // only check required condition and they must pass
+            ImageCheckResult result = null;
             for (JobData c : conditionDataList) {
                 loadConditionRunPane(conditionType);
-                if (((Condition) c.getMainJob()).isRequired() && !currentConditionRunController.startJob(c))
-                    return false;
+                if (((Condition) c.getMainJob()).isRequired()) {
+                    result = currentConditionRunController.startJob(c);
+                    if (!result.isPass())
+                        return new ImageCheckResult(false);
+                }
             }
-            return true;
+            return result; // return the last result, still passed
         }
     }
     private boolean checkAllConditionsIsNotRequired(List<JobData> conditionData) {
@@ -294,7 +308,6 @@ public class ActionRunController extends RunActivity implements Initializable, J
             AppScene.addLog(LogLevel.ERROR, className, "Fail - cannot load condition run pane - Could not load entry condition run pane");
             return;
         }
-        currentConditionRunController.setParentScrollPane(entryConditionScrollPane);
         conditionRunEntryVBoxContainer.setVisible(true);
         Platform.runLater(() -> entryConditionHBox.getChildren().add(conditionRunPane));
         Platform.runLater(() -> currentRunStructure.getSideContent().getChildren().clear());
@@ -310,7 +323,6 @@ public class ActionRunController extends RunActivity implements Initializable, J
             AppScene.addLog(LogLevel.ERROR, className, "Fail - condition run pane is null - Could not load exit condition run pane");
             return;
         }
-        currentConditionRunController.setParentScrollPane(exitConditionScrollPane);
         conditionRunExitVBoxContainer.setVisible(true);
         Platform.runLater(() -> exitConditionHBox.getChildren().add(conditionRunPane));
 
