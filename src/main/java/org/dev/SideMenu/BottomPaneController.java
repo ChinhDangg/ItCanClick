@@ -46,16 +46,21 @@ public class BottomPaneController implements Initializable {
     }
 
     private double maxHeight = Double.MAX_VALUE;
+    private int smallestLayoutY = Integer.MAX_VALUE;
     private void resizeBottomPane(MouseEvent event) {
         double newHeight = bottomMainStackPane.getMaxHeight() - event.getY();
         if (newHeight > maxHeight || newHeight < topVBoxHeader.getHeight())
             return;
-        if (bottomMainStackPane.getLayoutY() <= topVBoxHeader.getHeight())
-            maxHeight = newHeight;
+        boolean isBiggerHeight = newHeight > bottomMainStackPane.getPrefHeight();
+
         bottomMainStackPane.setMaxHeight(newHeight);
         bottomMainStackPane.setPrefHeight(newHeight);
         bottomMainStackPane.setMinHeight(newHeight);
         bottomTextVBox.setPrefHeight(newHeight - topVBoxHeader.getHeight());
+
+        if (bottomMainStackPane.getLayoutY() == smallestLayoutY && isBiggerHeight)
+            maxHeight = newHeight;
+        smallestLayoutY = Math.min((int) bottomMainStackPane.getLayoutY(), smallestLayoutY);
     }
 
     private void minimizeStackPaneButtonEvent(MouseEvent event) {
