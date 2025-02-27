@@ -13,6 +13,7 @@ import org.dev.Enum.ConditionType;
 import org.dev.Job.Condition.Condition;
 import org.dev.Job.JobData;
 import org.dev.JobController.ConditionController;
+import org.dev.JobReferenceHolder;
 import org.dev.JobStructure;
 
 import java.net.URL;
@@ -35,6 +36,7 @@ public class RightClickMenuController implements Initializable {
     private JobData copiedJobData;
     private JobStructure copiedJobStructure;
     private boolean isCopiedDataRef = false;
+    JobReferenceHolder jobReferenceHolder = new JobReferenceHolder();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -151,21 +153,20 @@ public class RightClickMenuController implements Initializable {
     }
 
     private void pasteData(MouseEvent event) {
-        if (isCopiedDataRef) {
-            copiedJobData.setRef(true);
-            copiedJobStructure.setLabelAsRef();
-        }
+        JobStructure newAddJobStructure;
         AppLevel currentAppLevel = currentJobStructure.getCurrentController().getAppLevel();
         if (currentAppLevel == AppLevel.Condition) {
             Condition copiedCondition = (Condition) copiedJobData.getMainJob();
             ConditionType currentConditionType = ((ConditionController) currentJobStructure.getCurrentController()).getConditionType();
             copiedCondition.setConditionType(currentConditionType);
-            currentJobStructure.getParentController().addSavedData(copiedJobData);
+            newAddJobStructure = currentJobStructure.getParentController().addSavedData(copiedJobData);
         }
         else if (currentAppLevel.getOrder() - copiedJobStructure.getCurrentController().getAppLevel().getOrder() == 1)
-            currentJobStructure.getCurrentController().addSavedData(copiedJobData);
+            newAddJobStructure = currentJobStructure.getCurrentController().addSavedData(copiedJobData);
         else
-            currentJobStructure.getParentController().addSavedData(copiedJobData);
+            newAddJobStructure = currentJobStructure.getParentController().addSavedData(copiedJobData);
+        if (isCopiedDataRef)
+            jobReferenceHolder.addJobReference(copiedJobData, copiedJobStructure, newAddJobStructure);
         hideRightMenu();
     }
 
@@ -173,6 +174,7 @@ public class RightClickMenuController implements Initializable {
         currentJobStructure.getParentController().removeSavedData(currentJobStructure.getCurrentController());
         if (currentJobStructure.getCurrentController().getAppLevel() == AppLevel.Task)
             currentJobStructure.getParentController().takeToDisplay();
+        jobReferenceHolder.removeJohReference(currentJobStructure.getCurrentController().getSavedDataByReference(), currentJobStructure);
         hideRightMenu();
     }
 

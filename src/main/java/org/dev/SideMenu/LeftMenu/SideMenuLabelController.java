@@ -36,7 +36,13 @@ public class SideMenuLabelController {
     }
 
     public void markLabelAsRef() {
+        if (!refHolderStackPane.getChildren().isEmpty())
+            return;
         refHolderStackPane.getChildren().add(new Label(refLabel.getText()));
+    }
+
+    public void unmarkLabelAsRef() {
+        refHolderStackPane.getChildren().clear();
     }
 
     public String getName() {
