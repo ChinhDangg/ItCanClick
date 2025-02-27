@@ -71,7 +71,7 @@ public class TaskGroupRunController implements JobRunController<Boolean> {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task group is null - cannot start");
             return false;
         }
-        taskGroupRunNameLabel.setText(taskGroup.getTaskGroupName());
+        Platform.runLater(() -> taskGroupRunNameLabel.setText(taskGroup.getTaskGroupName()));
         if (taskGroup.isDisabled())
             return true;
         return runTaskGroup(jobData);
