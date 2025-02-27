@@ -31,8 +31,12 @@ public class JobStructure {
             labelController = SideMenuController.getNewSideHBoxLabelController(name, this);
     }
 
-    public void setLabelAsRef() {
+    public void markLabelAsRef() {
         labelController.markLabelAsRef();
+    }
+
+    public void unmarkLabelAsRef() {
+        labelController.unmarkLabelAsRef();
     }
 
     public String getName() {
