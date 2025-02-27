@@ -130,8 +130,6 @@ public class TaskGroupController implements Initializable, JobDataController {
             AppScene.addLog(LogLevel.ERROR, className, "Fail -task group data is null - cannot load from save");
             return;
         }
-        if (newJobData.isRef())
-            currentStructure.setLabelAsRef();
         jobData = newJobData;
         TaskGroup taskGroup = (TaskGroup) jobData.getMainJob();
         requiredCheckBox.setSelected(taskGroup.isRequired());
@@ -142,15 +140,15 @@ public class TaskGroupController implements Initializable, JobDataController {
     }
 
     @Override
-    public void addSavedData(JobData taskData) {
+    public JobStructure addSavedData(JobData taskData) {
         if (AppScene.isJobRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Another job is running - cannot modify");
-            return;
+            return null;
         }
         if (taskData == null)
             if (!currentStructure.getSubJobStructures().isEmpty() && !currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
                 AppScene.addLog(LogLevel.INFO, className, "Recent Minimized Task is not set");
-                return;
+                return null;
             }
         try {
             AppScene.addLog(LogLevel.TRACE, className, "Loading Minimized Task Pane");
@@ -171,8 +169,11 @@ public class TaskGroupController implements Initializable, JobDataController {
                 controller.loadSavedData(taskData);
             else
                 controller.addSavedData(null);
+
+            return taskStructure;
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding minimized task pane: " + e.getMessage());
+            return null;
         }
     }
 

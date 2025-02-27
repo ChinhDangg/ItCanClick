@@ -1,6 +1,7 @@
 package org.dev.JobController;
 
 import org.dev.Job.JobData;
+import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
 
 public interface JobDataController extends MainJobController {
@@ -15,7 +16,7 @@ public interface JobDataController extends MainJobController {
 
     void loadSavedData(JobData jobData);
 
-    void addSavedData(JobData data);
+    JobStructure addSavedData(JobData data);
 
     void removeSavedData(JobDataController jobDataController);
 

@@ -180,8 +180,8 @@ public class MinimizedTaskController implements Initializable, JobDataController
     }
 
     @Override
-    public void addSavedData(JobData jobData) {
-        taskController.addSavedData(jobData);
+    public JobStructure addSavedData(JobData jobData) {
+        return taskController.addSavedData(jobData);
     }
 
     @Override

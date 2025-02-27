@@ -128,8 +128,6 @@ public class TaskController implements Initializable, JobDataController {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task data is null - cannot load from save");
             return;
         }
-        if (newJobData.isRef())
-            currentStructure.setLabelAsRef();
         jobData = newJobData;
         Task task = (Task) jobData.getMainJob();
         taskNameLabel.setText(task.getTaskName());
@@ -138,15 +136,15 @@ public class TaskController implements Initializable, JobDataController {
     }
 
     @Override
-    public void addSavedData(JobData actionData) {
+    public JobStructure addSavedData(JobData actionData) {
         if (AppScene.isJobRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Another job is running - cannot modify");
-            return;
+            return null;
         }
         if (actionData == null)
             if (!currentStructure.getSubJobStructures().isEmpty() && !currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
                 AppScene.addLog(LogLevel.INFO, className, "Recent Action is not set");
-                return;
+                return null;
             }
         try {
             AppScene.addLog(LogLevel.TRACE, className, "Loading Action Pane");
@@ -166,8 +164,11 @@ public class TaskController implements Initializable, JobDataController {
 
             if (actionData != null)
                 controller.loadSavedData(actionData);
+
+            return actionStructure;
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding action pane: " + e.getMessage());
+            return null;
         }
     }
 

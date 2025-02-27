@@ -130,7 +130,7 @@ public class ConditionController implements Initializable, JobDataController, Ac
     }
 
     @Override
-    public void addSavedData(JobData data) {}
+    public JobStructure addSavedData(JobData data) { return null; }
 
     @Override
     public void removeSavedData(JobDataController jobDataController) {}

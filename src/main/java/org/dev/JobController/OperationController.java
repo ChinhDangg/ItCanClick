@@ -164,15 +164,15 @@ public class OperationController implements Initializable, JobDataController {
     }
 
     @Override
-    public void addSavedData(JobData taskData) {
+    public JobStructure addSavedData(JobData taskData) {
         if (AppScene.isJobRunning) {
             AppScene.addLog(LogLevel.INFO, className, "Another job is running - cannot modify");
-            return;
+            return null;
         }
         if (taskData == null)
             if (!currentStructure.getSubJobStructures().isEmpty() && !currentStructure.getSubJobStructures().getLast().getCurrentController().isSet()) {
                 AppScene.addLog(LogLevel.INFO, className, "Recent Task Group is not set");
-                return;
+                return null;
             }
         try {
             AppScene.addLog(LogLevel.TRACE, className, "Loading Task Group Pane");
@@ -193,8 +193,11 @@ public class OperationController implements Initializable, JobDataController {
                 controller.loadSavedData(taskData);
             else
                 controller.addSavedData(null);
+
+            return taskGroupStructure;
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading and adding task group pane: " + e.getMessage());
+            return null;
         }
     }
 
