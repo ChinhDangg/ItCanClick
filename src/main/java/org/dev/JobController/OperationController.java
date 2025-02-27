@@ -17,7 +17,6 @@ import org.dev.Job.JobData;
 import org.dev.Job.Operation;
 import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
-import org.dev.RunJob.OperationRunController;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -251,11 +250,11 @@ public class OperationController implements Initializable, JobDataController {
     }
 
     @Override
-    public JobRunController getRunJob() {
+    public JobRunController<Object> getRunJob() {
         try {
             FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("RunJob/operationRunPane.fxml"));
             loader.load();
-            OperationRunController operationRunController = loader.getController();
+            JobRunController<Object> operationRunController = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Operation Run");
             return operationRunController;
         } catch (Exception e) {

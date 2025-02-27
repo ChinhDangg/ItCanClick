@@ -149,5 +149,5 @@ public class ConditionController implements Initializable, JobDataController, Ac
     public void moveSavedDataUp(JobDataController jobDataController) {}
 
     @Override
-    public JobRunController getRunJob() { return null; }
+    public JobRunController<Object> getRunJob() { return null; }
 }

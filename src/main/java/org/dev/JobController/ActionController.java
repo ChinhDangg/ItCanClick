@@ -25,7 +25,6 @@ import org.dev.Job.Action.ActionKeyClick;
 import org.dev.Job.Condition.Condition;
 import org.dev.Job.JobData;
 import org.dev.JobStructure;
-import org.dev.RunJob.ActionRunController;
 import org.dev.RunJob.JobRunController;
 
 import java.awt.image.BufferedImage;
@@ -366,11 +365,11 @@ public class ActionController implements Initializable, JobDataController, Activ
     }
 
     @Override
-    public JobRunController getRunJob() {
+    public JobRunController<Object> getRunJob() {
         try {
             FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("RunJob/actionRunPane.fxml"));
             loader.load();
-            ActionRunController actionRunController = loader.getController();
+            JobRunController<Object> actionRunController = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Action Run");
             return actionRunController;
         } catch (Exception e) {

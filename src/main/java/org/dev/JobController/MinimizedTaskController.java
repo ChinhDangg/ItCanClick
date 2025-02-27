@@ -191,5 +191,5 @@ public class MinimizedTaskController implements Initializable, JobDataController
     @Override
     public void moveSavedDataDown(JobDataController jobDataController) {}
     @Override
-    public JobRunController getRunJob() { return taskController.getRunJob(); }
+    public JobRunController<Object> getRunJob() { return taskController.getRunJob(); }
 }

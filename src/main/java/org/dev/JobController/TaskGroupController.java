@@ -16,7 +16,6 @@ import org.dev.Job.Task.TaskGroup;
 import org.dev.Job.JobData;
 import org.dev.JobStructure;
 import org.dev.RunJob.JobRunController;
-import org.dev.RunJob.TaskGroupRunController;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -230,11 +229,11 @@ public class TaskGroupController implements Initializable, JobDataController {
     }
 
     @Override
-    public JobRunController getRunJob() {
+    public JobRunController<Object> getRunJob() {
         try {
             FXMLLoader loader = new FXMLLoader(AppScene.class.getResource("RunJob/taskGroupRunPane.fxml"));
             loader.load();
-            TaskGroupRunController taskGroupRunController = loader.getController();
+            JobRunController<Object> taskGroupRunController = loader.getController();
             AppScene.addLog(LogLevel.DEBUG, className, "Loaded Task Group Run");
             return taskGroupRunController;
         } catch (Exception e) {
