@@ -53,6 +53,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
         startRegisterKeyButton.setOnMouseClicked(this::startRegisteringKey);
         attemptMinusButton.setOnMouseClicked(this::decreaseNumberOfAttempt);
         attemptPlusButton.setOnMouseClicked(this::increaseNumberOfAttempt);
+        useEntryCheckBox.setOnAction(this::useEntryCheckBoxAction);
         progressiveSearchCheckBox.setOnAction(this::toggleProgressiveSearchCheckBox);
         progressiveSearchMinusButton.setOnMouseClicked(this::decreaseProgressiveSearchTime);
         progressiveSearchPlusButton.setOnMouseClicked(this::increaseProgressiveSearchTime);
@@ -158,6 +159,15 @@ public class ActionPerformMenuController extends OptionsMenuController {
     private void enableUseEntryCondition() {
         useEntryCheckBox.setDisable(!actionController.hasRequiredEntryCondition() ||
                 actionController.getChosenActionPerform().isKeyAction());
+    }
+
+    private void useEntryCheckBoxAction(javafx.event.ActionEvent event) {
+        if (useEntryCheckBox.isSelected()) {
+            currentDisplayImage = actionController.getLastRequiredEntryConditionImage();
+            displayMainImageView(currentDisplayImage);
+        }
+        else
+            displayMainImageView(null);
     }
 
     // ------------------------------------------------------

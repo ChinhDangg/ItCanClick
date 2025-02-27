@@ -21,6 +21,7 @@ import org.dev.Enum.AppLevel;
 import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Action.Action;
+import org.dev.Job.Action.ActionKeyClick;
 import org.dev.Job.Condition.Condition;
 import org.dev.Job.JobData;
 import org.dev.JobStructure;
@@ -131,6 +132,18 @@ public class ActionController implements Initializable, JobDataController, Activ
         registerActionPerform(newAction);
     }
 
+    public BufferedImage getLastRequiredEntryConditionImage() {
+        int index = getConditionControllerIndex(ConditionType.Entry, false);
+        if (index == -1)
+            return null;
+        ConditionController conditionController = (ConditionController) currentStructure.getSubJobStructures().get(index).getCurrentController();
+        Condition condition = conditionController.getCondition();
+        Action tempAction = new ActionKeyClick(); // just for the method
+        tempAction.setMainImageBoundingBox(condition.getMainImageBoundingBox());
+        tempAction.setDisplayImage(condition.getDisplayImage());
+        return tempAction.getMainDisplayImage();
+    }
+
     public boolean hasRequiredEntryCondition() {
         int index = getConditionControllerIndex(ConditionType.Entry, false);
         return index != -1;
@@ -170,18 +183,18 @@ public class ActionController implements Initializable, JobDataController, Activ
         }
     }
 
-    private void addCondition(ConditionType conditionType, JobData conditionData) {
+    private JobStructure addCondition(ConditionType conditionType, JobData conditionData) {
         HBox whichPane = findWhichConditionHBox(conditionType);
         int numberOfCondition = whichPane.getChildren().size();
         int lastIndex = getConditionControllerIndex(conditionType, false);
         if (conditionData == null) {
             if (numberOfCondition > 0 && (lastIndex != -1 && !currentStructure.getSubJobStructures().get(lastIndex).getCurrentController().isSet())) {
                 AppScene.addLog(LogLevel.INFO, className, "Previous Condition is not set");
-                return;
+                return null;
             }
             if (numberOfCondition >= 5) {
                 AppScene.addLog(LogLevel.INFO, className, "Max number of condition's reached");
-                return;
+                return null;
             }
         }
 
@@ -201,8 +214,11 @@ public class ActionController implements Initializable, JobDataController, Activ
 
             if (conditionData != null)
                 controller.loadSavedData(conditionData);
+
+            return conditionStructure;
         } catch (Exception e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading condition pane: " + e.getMessage());
+            return null;
         }
     }
 
@@ -278,8 +294,6 @@ public class ActionController implements Initializable, JobDataController, Activ
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Action data is null - cannot load from save");
             return;
         }
-        if (newJobData.isRef())
-            currentStructure.setLabelAsRef();
         jobData = newJobData;
         Action action = (Action) jobData.getMainJob();
         registerActionPerform(action);
@@ -292,11 +306,11 @@ public class ActionController implements Initializable, JobDataController, Activ
     }
 
     @Override
-    public void addSavedData(JobData conditionData) {
+    public JobStructure addSavedData(JobData conditionData) {
         if (conditionData == null)
-            return;
+            return null;
         Condition condition = (Condition) conditionData.getMainJob();
-        addCondition(condition.getConditionType(), conditionData);
+        return addCondition(condition.getConditionType(), conditionData);
     }
 
     @Override
