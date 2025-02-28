@@ -264,6 +264,7 @@ public class ActionController implements Initializable, JobDataController, Activ
             return null;
         action.setRequired(requiredCheckBox.isSelected());
         action.setPreviousPass(previousPassCheckBox.isSelected());
+        action.setActionName(renameTextField.getText());
         List<JobData> conditionDataList = new ArrayList<>();
         for (JobStructure subJobStructure : currentStructure.getSubJobStructures())
             conditionDataList.add(subJobStructure.getCurrentController().getSavedData());
@@ -278,6 +279,7 @@ public class ActionController implements Initializable, JobDataController, Activ
             return null;
         action.setRequired(requiredCheckBox.isSelected());
         action.setPreviousPass(previousPassCheckBox.isSelected());
+        action.setActionName(renameTextField.getText());
         List<JobData> conditionDataList = new ArrayList<>();
         for (JobStructure subJobStructure : currentStructure.getSubJobStructures())
             conditionDataList.add(subJobStructure.getCurrentController().getSavedDataByReference());
@@ -293,6 +295,8 @@ public class ActionController implements Initializable, JobDataController, Activ
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Action data is null - cannot load from save");
             return;
         }
+        if (newJobData.isRef())
+            currentStructure.markLabelAsRef();
         jobData = newJobData;
         Action action = (Action) jobData.getMainJob();
         registerActionPerform(action);
