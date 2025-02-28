@@ -169,6 +169,8 @@ public class MinimizedTaskController implements Initializable, JobDataController
 
     @Override
     public void loadSavedData(JobData newJobData) {
+        if (newJobData.isRef())
+            currentStructure.markLabelAsRef();
         jobData = newJobData;
         Task task = (Task) jobData.getMainJob();
         requiredCheckBox.setSelected(task.isRequired());

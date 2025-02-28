@@ -127,6 +127,8 @@ public class TaskController implements Initializable, JobDataController {
             AppScene.addLog(LogLevel.ERROR, className, "Fail - Task data is null - cannot load from save");
             return;
         }
+        if (newJobData.isRef())
+            currentStructure.markLabelAsRef();
         jobData = newJobData;
         Task task = (Task) jobData.getMainJob();
         taskNameLabel.setText(task.getTaskName());

@@ -129,6 +129,8 @@ public class TaskGroupController implements Initializable, JobDataController {
             AppScene.addLog(LogLevel.ERROR, className, "Fail -task group data is null - cannot load from save");
             return;
         }
+        if (newJobData.isRef())
+            currentStructure.markLabelAsRef();
         jobData = newJobData;
         TaskGroup taskGroup = (TaskGroup) jobData.getMainJob();
         requiredCheckBox.setSelected(taskGroup.isRequired());
