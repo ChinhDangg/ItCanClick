@@ -9,6 +9,7 @@ import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Menu.ConditionTextMenuController;
+import org.w3c.dom.Text;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -34,8 +35,10 @@ public class TextCondition extends Condition {
 
     @Override
     public TextCondition cloneData() {
-        return new TextCondition(chosenReadingCondition, displayImage, mainImageBoundingBox, not, required,
+        TextCondition condition = new TextCondition(chosenReadingCondition, displayImage, mainImageBoundingBox, not, required,
                 currentTextScale, savedText);
+        condition.setConditionType(conditionType);
+        return condition;
     }
 
     @Override

@@ -39,8 +39,10 @@ public class PixelCondition extends Condition {
 
     @Override
     public PixelCondition cloneData() {
-        return new PixelCondition(chosenReadingCondition, displayImage, mainImageBoundingBox, not, required,
+         PixelCondition condition = new PixelCondition(chosenReadingCondition, displayImage, mainImageBoundingBox, not, required,
                 exactSearch, subImageSearch, globalSearch);
+         condition.setConditionType(conditionType);
+         return condition;
     }
 
     @Override
