@@ -161,7 +161,7 @@ public class RightClickMenuController implements Initializable {
             copiedCondition.setConditionType(currentConditionType);
             newAddJobStructure = currentJobStructure.getParentController().addSavedData(copiedJobData);
         }
-        else if (currentAppLevel.getOrder() - copiedJobStructure.getCurrentController().getAppLevel().getOrder() == 1)
+        else if (copiedJobStructure.getCurrentController().getAppLevel().getOrder() - currentAppLevel.getOrder() == 1)
             newAddJobStructure = currentJobStructure.getCurrentController().addSavedData(copiedJobData);
         else
             newAddJobStructure = currentJobStructure.getParentController().addSavedData(copiedJobData);
