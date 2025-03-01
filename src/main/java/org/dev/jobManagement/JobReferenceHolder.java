@@ -1,5 +1,6 @@
-package org.dev;
+package org.dev.jobManagement;
 
+import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.JobData;
 
