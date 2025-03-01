@@ -1,16 +1,13 @@
 package org.dev;
 
-import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import org.dev.Enum.LogLevel;
-import org.dev.JobController.JobDataController;
 import org.dev.Job.JobData;
-import org.dev.RunJob.JobRunController;
+import org.dev.JobController.JobDataController;
 import org.dev.SideMenu.*;
 import org.dev.Menu.ActionMenuController;
 import org.dev.Menu.ConditionMenuController;
@@ -22,6 +19,9 @@ import org.dev.SideMenu.LeftMenu.SideBarController;
 import org.dev.SideMenu.TopMenu.MenuBarController;
 import org.dev.SideMenu.TopMenu.SettingMenuController;
 import org.dev.SideMenu.TopMenu.WindowSizeMode;
+import org.dev.jobManagement.JobRunScheduler;
+import org.dev.jobManagement.JobRunStructure;
+import org.dev.jobManagement.JobStructure;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,10 +42,9 @@ public class AppScene {
     public static ConditionMenuController conditionMenuController;
 
     public static JobStructure currentJobStructure;
-    public static JobRunStructure currentJobRunStructure;
+    public static final JobRunScheduler jobRunScheduler = new JobRunScheduler();
 
     public static double currentGlobalScale = 1.3;
-    public static boolean isJobRunning = false;
     public static WindowSizeMode windowSizeMode;
 
     public static Scene getAppMainScene() {
@@ -89,11 +88,13 @@ public class AppScene {
     }
 
     // ------------------------------------------------------
-    private static Thread runJobThread = null;
 
-    private static void setIsJobRunning(boolean isJobRunning) {
-        AppScene.isJobRunning = isJobRunning;
-        Platform.runLater(() -> menuBarController.setOperationRunning(isJobRunning));
+    public static boolean isJobRunning() {
+        return jobRunScheduler.isJobRunning();
+    }
+
+    public static void setIsJobRunning(boolean isJobRunning) {
+        menuBarController.setOperationRunning(isJobRunning);
     }
 
     public static void startOperationRun() {
@@ -103,50 +104,11 @@ public class AppScene {
     }
 
     public static void stopOperationRun() {
-        stopRunJob();
+        jobRunScheduler.stopRunJob();
     }
 
     public static void startJobRun(JobDataController jobDataController) {
-        if (jobDataController == null)
-            return;
-        if (isJobRunning) {
-            AppScene.addLog(LogLevel.INFO, className, "Fail to start - as another job is running");
-            return;
-        }
-        setIsJobRunning(true);
-        AppScene.addLog(LogLevel.INFO, className, "Starting to run job");
-        Task<Void> runJobTask = getRunJobTask(jobDataController);
-        runJobThread = new Thread(runJobTask);
-        displayCurrentRunJobNode();
-        loadRunSideMenuHierarchy();
-        runJobThread.start();
-        setIsJobRunning(false);
-    }
-
-    private static Task<Void> getRunJobTask(JobDataController jobDataController) {
-        JobRunController<Object> jobRunController = jobDataController.getRunJob();
-        currentJobRunStructure = new JobRunStructure(null, null, jobRunController, jobDataController.getName());
-        jobRunController.setJobRunStructure(currentJobRunStructure);
-        JobData jobData = jobDataController.getSavedData();
-        return new Task<>() {
-            @Override
-            protected Void call() {
-                try {
-                    currentJobRunStructure.getCurrentController().startJob(jobData);
-                    AppScene.addLog(LogLevel.INFO, className, "Finished running job");
-                    Platform.runLater(() -> setIsJobRunning(false));
-                } catch (Exception e) {
-                    AppScene.addLog(LogLevel.ERROR, className, "Error to start run job");
-                }
-                return null;
-            }
-        };
-    }
-
-    public static void stopRunJob() {
-        AppScene.addLog(LogLevel.INFO, className, "Stopping running job");
-        runJobThread.interrupt();
-        setIsJobRunning(false);
+        jobRunScheduler.startJobRun(jobDataController);
     }
 
     // ------------------------------------------------------
@@ -155,8 +117,9 @@ public class AppScene {
             sideBarController.loadSideHierarchy(currentJobStructure);
     }
     public static void loadRunSideMenuHierarchy() {
-        if (currentJobRunStructure != null)
-            sideBarController.loadRunSideHierarchy(currentJobRunStructure);
+        JobRunStructure jobRunStructure = jobRunScheduler.getCurrentJobRunStructure();
+        if (jobRunStructure != null)
+            sideBarController.loadRunSideHierarchy(jobRunStructure);
     }
 
     // ------------------------------------------------------
@@ -177,10 +140,12 @@ public class AppScene {
     }
 
     public static boolean displayCurrentRunJobNode() {
-        if (currentJobRunStructure == null)
+        try {
+            displayNewCenterNode(jobRunScheduler.getCurrentJobRunStructure().getCurrentController().getParentNode());
+            return true;
+        } catch (NullPointerException e) {
             return false;
-        displayNewCenterNode(currentJobRunStructure.getCurrentController().getParentNode());
-        return true;
+        }
     }
 
     // ------------------------------------------------------
