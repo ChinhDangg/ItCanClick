@@ -13,7 +13,7 @@ import org.dev.Enum.LogLevel;
 import org.dev.Job.Operation;
 import org.dev.Job.Task.TaskGroup;
 import org.dev.Job.JobData;
-import org.dev.JobRunStructure;
+import org.dev.jobManagement.JobRunStructure;
 
 import java.util.List;
 
@@ -93,10 +93,14 @@ public class OperationRunController implements JobRunController<Boolean> {
                 continue;
             TaskGroup currentTaskGroup = (TaskGroup) taskData.getMainJob();
             String taskName = currentTaskGroup.getTaskGroupName();
+            if (currentTaskGroup.isDisabled()) {
+                AppScene.addLog(LogLevel.INFO, className, "Task Group is disabled - skipping: " + taskName);
+                continue;
+            }
             boolean pass = getNewTaskGroupRunController(taskName).startJob(taskData);
-            if (currentTaskGroup.isRequired() && !pass) { // task is required but failed
-                AppScene.addLog(LogLevel.WARN, className, "Fail performing task group: " + taskName);
-                break;
+            if (!pass && currentTaskGroup.isRequired()) { // task is required but failed
+                AppScene.addLog(LogLevel.INFO, className, "Fail performing task group: " + taskName);
+                return false;
             }
         }
         AppScene.addLog(LogLevel.INFO, className, "Finished running operation: " + ((Operation) operationData.getMainJob()).getOperationName());

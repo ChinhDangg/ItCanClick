@@ -13,7 +13,7 @@ import org.dev.Enum.LogLevel;
 import org.dev.Job.Action.Action;
 import org.dev.Job.JobData;
 import org.dev.Job.Task.Task;
-import org.dev.JobRunStructure;
+import org.dev.jobManagement.JobRunStructure;
 
 import java.io.IOException;
 import java.util.List;
@@ -113,8 +113,8 @@ public class TaskRunController implements JobRunController<Boolean> {
             if (!currentAction.isRequired())
                 pass = true;
             else if (!pass) { // action is required but failed
-                AppScene.addLog(LogLevel.WARN, className, "Fail performing action: " + actionName);
-                break;
+                AppScene.addLog(LogLevel.INFO, className, "Fail performing action: " + actionName);
+                return false;
             }
         }
         AppScene.addLog(LogLevel.INFO, className, "Finished running task: " + ((Task) jobData.getMainJob()).getTaskName());

@@ -20,7 +20,7 @@ import org.dev.Job.Action.Action;
 import org.dev.Job.Condition.Condition;
 import org.dev.Job.Condition.ImageCheckResult;
 import org.dev.Job.JobData;
-import org.dev.JobRunStructure;
+import org.dev.jobManagement.JobRunStructure;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;

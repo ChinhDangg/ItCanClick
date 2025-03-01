@@ -13,7 +13,7 @@ import org.dev.Enum.LogLevel;
 import org.dev.Job.Task.Task;
 import org.dev.Job.Task.TaskGroup;
 import org.dev.Job.JobData;
-import org.dev.JobRunStructure;
+import org.dev.jobManagement.JobRunStructure;
 
 import java.util.List;
 
@@ -96,8 +96,8 @@ public class TaskGroupRunController implements JobRunController<Boolean> {
             if (!currentTask.isRequired())
                 pass = true;
             else if (!pass) { // task is required but failed
-                AppScene.addLog(LogLevel.WARN, className, "Fail performing task: " + taskName);
-                break;
+                AppScene.addLog(LogLevel.INFO, className, "Fail performing task: " + taskName);
+                return false;
             }
         }
         AppScene.addLog(LogLevel.INFO, className, "Finish running task group: " + ((TaskGroup) jobData.getMainJob()).getTaskGroupName());

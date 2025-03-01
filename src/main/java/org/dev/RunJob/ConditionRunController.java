@@ -14,7 +14,7 @@ import org.dev.Enum.LogLevel;
 import org.dev.Job.Condition.Condition;
 import org.dev.Job.Condition.ImageCheckResult;
 import org.dev.Job.JobData;
-import org.dev.JobRunStructure;
+import org.dev.jobManagement.JobRunStructure;
 import java.net.URL;
 import java.util.ResourceBundle;
 
