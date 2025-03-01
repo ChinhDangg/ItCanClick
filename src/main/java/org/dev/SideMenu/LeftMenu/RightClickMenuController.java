@@ -13,8 +13,8 @@ import org.dev.Enum.ConditionType;
 import org.dev.Job.Condition.Condition;
 import org.dev.Job.JobData;
 import org.dev.JobController.ConditionController;
-import org.dev.JobReferenceHolder;
-import org.dev.JobStructure;
+import org.dev.jobManagement.JobReferenceHolder;
+import org.dev.jobManagement.JobStructure;
 
 import java.net.URL;
 import java.util.ResourceBundle;

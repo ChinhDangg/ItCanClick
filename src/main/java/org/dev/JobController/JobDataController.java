@@ -1,7 +1,7 @@
 package org.dev.JobController;
 
 import org.dev.Job.JobData;
-import org.dev.JobStructure;
+import org.dev.jobManagement.JobStructure;
 import org.dev.RunJob.JobRunController;
 
 public interface JobDataController extends MainJobController {

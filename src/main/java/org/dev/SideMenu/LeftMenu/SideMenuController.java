@@ -18,8 +18,8 @@ import org.dev.Enum.CurrentTab;
 import org.dev.Enum.LogLevel;
 import org.dev.JobController.JobDataController;
 import org.dev.JobController.MainJobController;
-import org.dev.JobRunStructure;
-import org.dev.JobStructure;
+import org.dev.jobManagement.JobRunStructure;
+import org.dev.jobManagement.JobStructure;
 
 import java.net.URL;
 import java.util.ResourceBundle;

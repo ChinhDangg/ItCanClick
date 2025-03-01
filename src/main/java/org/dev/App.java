@@ -18,7 +18,7 @@ public class App {
             System.exit(1);
         }
 
-        Application.launch(SmartClick.class, args);
+        Application.launch(ItCanClick.class, args);
     }
 
 }

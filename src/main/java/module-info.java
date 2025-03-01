@@ -33,5 +33,7 @@ module org.dev {
     opens org.dev.SideMenu.LeftMenu;
     exports org.dev.SideMenu.TopMenu;
     opens org.dev.SideMenu.TopMenu;
+    exports org.dev.jobManagement;
+    opens org.dev.jobManagement;
 
 }

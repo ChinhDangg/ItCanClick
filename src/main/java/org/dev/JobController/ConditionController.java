@@ -18,7 +18,7 @@ import org.dev.Enum.ConditionType;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.Condition.Condition;
 import org.dev.Job.JobData;
-import org.dev.JobStructure;
+import org.dev.jobManagement.JobStructure;
 import org.dev.RunJob.JobRunController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
 
@@ -74,7 +74,7 @@ public class ConditionController implements Initializable, JobDataController, Ac
     }
 
     private void openConditionOptionPane(MouseEvent event) {
-        if (AppScene.isJobRunning) {
+        if (AppScene.isJobRunning()) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }

@@ -1,4 +1,4 @@
-package org.dev;
+package org.dev.jobManagement;
 
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;

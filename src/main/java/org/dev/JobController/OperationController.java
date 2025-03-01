@@ -15,7 +15,7 @@ import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.JobData;
 import org.dev.Job.Operation;
-import org.dev.JobStructure;
+import org.dev.jobManagement.JobStructure;
 import org.dev.RunJob.JobRunController;
 import java.net.URL;
 import java.util.ArrayList;
@@ -164,7 +164,7 @@ public class OperationController implements Initializable, JobDataController {
 
     @Override
     public JobStructure addSavedData(JobData taskData) {
-        if (AppScene.isJobRunning) {
+        if (AppScene.isJobRunning()) {
             AppScene.addLog(LogLevel.INFO, className, "Another job is running - cannot modify");
             return null;
         }

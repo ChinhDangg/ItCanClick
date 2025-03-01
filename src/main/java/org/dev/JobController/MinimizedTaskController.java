@@ -14,7 +14,7 @@ import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.JobData;
 import org.dev.Job.Task.Task;
-import org.dev.JobStructure;
+import org.dev.jobManagement.JobStructure;
 import org.dev.RunJob.JobRunController;
 
 import java.net.URL;
@@ -88,7 +88,7 @@ public class MinimizedTaskController implements Initializable, JobDataController
 
     // ------------------------------------------------------
     public void openTask(MouseEvent event) {
-        if (AppScene.isJobRunning) {
+        if (AppScene.isJobRunning()) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot navigate");
             return;
         }

@@ -9,7 +9,6 @@ import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Enum.ReadingCondition;
 import org.dev.Menu.ConditionTextMenuController;
-import org.w3c.dom.Text;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

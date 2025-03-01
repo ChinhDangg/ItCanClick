@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import org.dev.SideMenu.TopMenu.WindowSizeMode;
 
-public class SmartClick extends Application {
+public class ItCanClick extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {

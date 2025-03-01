@@ -24,7 +24,7 @@ import org.dev.Job.Action.Action;
 import org.dev.Job.Action.ActionKeyClick;
 import org.dev.Job.Condition.Condition;
 import org.dev.Job.JobData;
-import org.dev.JobStructure;
+import org.dev.jobManagement.JobStructure;
 import org.dev.RunJob.JobRunController;
 
 import java.awt.image.BufferedImage;
@@ -153,7 +153,7 @@ public class ActionController implements Initializable, JobDataController, Activ
     }
 
     private void openActionMenuPane(MouseEvent event) {
-        if (AppScene.isJobRunning) {
+        if (AppScene.isJobRunning()) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
@@ -162,7 +162,7 @@ public class ActionController implements Initializable, JobDataController, Activ
 
     private void addNewEntryCondition(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on add entry condition");
-        if (AppScene.isJobRunning) {
+        if (AppScene.isJobRunning()) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
@@ -173,7 +173,7 @@ public class ActionController implements Initializable, JobDataController, Activ
 
     private void addNewExitCondition(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on add exit condition");
-        if (AppScene.isJobRunning) {
+        if (AppScene.isJobRunning()) {
             AppScene.addLog(LogLevel.INFO, className, "Operation is running - cannot modify");
             return;
         }
