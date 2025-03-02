@@ -197,8 +197,8 @@ public class TaskGroupController implements Initializable, JobDataController {
             return;
         int changeIndex = selectedTaskIndex -1;
         updateTaskPaneList(selectedTaskIndex, changeIndex);
-        updateTaskPreviousOption(changeIndex);
         currentStructure.updateSubJobStructure(jobDataController, changeIndex);
+        updateTaskPreviousOption(changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved up Task: " + changeIndex);
     }
 
@@ -212,8 +212,8 @@ public class TaskGroupController implements Initializable, JobDataController {
         if (changeIndex == numberOfTasks)
             return;
         updateTaskPaneList(selectedTaskIndex, changeIndex);
-        updateTaskPreviousOption(changeIndex);
         currentStructure.updateSubJobStructure(jobDataController, changeIndex);
+        updateTaskPreviousOption(changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved down task group: " + changeIndex);
     }
 
