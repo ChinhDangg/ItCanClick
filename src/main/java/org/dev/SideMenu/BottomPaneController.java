@@ -1,8 +1,10 @@
 package org.dev.SideMenu;
 
 import javafx.application.Platform;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -29,9 +31,14 @@ public class BottomPaneController implements Initializable {
     private ScrollPane logScrollPane;
     @FXML
     private VBox topVBoxHeader, bottomTextVBox;
+    @FXML
+    private VBox normalLogVBox, runLogVBox;
+    @FXML
+    private Node normalLogButton, runLogButton;
 
     @Setter
     private boolean isDebug, isTrace;
+    private boolean isShowingNormalLog = false;
     private final String className = this.getClass().getSimpleName();
 
     @Override
@@ -39,10 +46,13 @@ public class BottomPaneController implements Initializable {
         bottomTextVBox.setPrefHeight(bottomMainStackPane.getMaxHeight() - resizeStackPane.getPrefHeight() - 30);
         resizeStackPane.setOnMouseDragged(this::resizeBottomPane);
         trashStackPaneButton.setOnMouseClicked(this::clearLog);
+        normalLogButton.setOnMouseClicked(this::showNormalLog);
+        runLogButton.setOnMouseClicked(this::showRunLog);
         minimizeStackPaneButton.setOnMouseClicked(this::minimizeStackPaneButtonEvent);
         bottomTextVBox.heightProperty().addListener((_, _, _) -> logScrollPane.setVvalue(1.0));
         bottomMainStackPane.setVisible(false);
         bottomMainStackPane.setManaged(false);
+        showNormalLog(null);
     }
 
     private double maxHeight = Double.MAX_VALUE;
@@ -64,7 +74,7 @@ public class BottomPaneController implements Initializable {
     }
 
     private void minimizeStackPaneButtonEvent(MouseEvent event) {
-        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on minimized bottom pane button");
+        AppScene.addLog(LogLevel.TRACE, className, "Clicked on minimized bottom pane button");
         AppScene.sideBarController.toggleLogPane();
     }
 
@@ -72,7 +82,33 @@ public class BottomPaneController implements Initializable {
         boolean newVisible = !bottomMainStackPane.isVisible();
         bottomMainStackPane.setVisible(newVisible);
         bottomMainStackPane.setManaged(newVisible);
-        AppScene.addLog(LogLevel.DEBUG, className, "Bottom pane visible switched: " + newVisible);
+        AppScene.addLog(LogLevel.TRACE, className, "Bottom pane visible switched: " + newVisible);
+    }
+
+    private void showNormalLog(MouseEvent event) {
+        if (isShowingNormalLog)
+            return;
+        isShowingNormalLog = true;
+        normalLogVBox.setVisible(true);
+        normalLogVBox.setManaged(isShowingNormalLog);
+        normalLogButton.pseudoClassStateChanged(PseudoClass.getPseudoClass("highlighted"), isShowingNormalLog);
+        runLogVBox.setVisible(!isShowingNormalLog);
+        runLogVBox.setManaged(!isShowingNormalLog);
+        runLogButton.pseudoClassStateChanged(PseudoClass.getPseudoClass("highlighted"), !isShowingNormalLog);
+        addToLog(LogLevel.TRACE, className, "Showed normal log");
+    }
+
+    private void showRunLog(MouseEvent event) {
+        if (!isShowingNormalLog)
+            return;
+        isShowingNormalLog = false;
+        runLogVBox.setVisible(true);
+        runLogVBox.setManaged(!isShowingNormalLog);
+        runLogButton.pseudoClassStateChanged(PseudoClass.getPseudoClass("highlighted"), !isShowingNormalLog);
+        normalLogVBox.setVisible(isShowingNormalLog);
+        normalLogVBox.setManaged(isShowingNormalLog);
+        normalLogButton.pseudoClassStateChanged(PseudoClass.getPseudoClass("highlighted"), isShowingNormalLog);
+        addToLog(LogLevel.TRACE, className, "Showed run log");
     }
 
     Font monospacedFont = Font.font("Courier New", 14);
@@ -88,11 +124,15 @@ public class BottomPaneController implements Initializable {
 
         TextFlow line = getLogLine(logLevel, className, content);
         //System.out.println(logLevel + " " + className + " " + content);
-        Platform.runLater(() -> bottomTextVBox.getChildren().add(line));
+        if (className.contains("Run"))
+            Platform.runLater(() -> runLogVBox.getChildren().add(line));
+        else
+            Platform.runLater(() -> normalLogVBox.getChildren().add(line));
     }
 
     private void clearLog(MouseEvent event) {
-        Platform.runLater(() -> bottomTextVBox.getChildren().clear());
+        Platform.runLater(() -> normalLogVBox.getChildren().clear());
+        Platform.runLater(() -> runLogVBox.getChildren().clear());
     }
 
     private TextFlow getLogLine(LogLevel logLevel, String className, String content) {
