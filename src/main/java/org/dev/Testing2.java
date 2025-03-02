@@ -21,8 +21,8 @@ import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
 public class Testing2 {
 
     public static void main(String[] args) throws Exception {
-        String bigImagePath = "C:\\Users\\admin\\IdeaProjects\\SmartClick\\testBig1.png";
-        String smallImagePath = "C:\\Users\\admin\\IdeaProjects\\SmartClick\\testSmall1.png";
+        String bigImagePath = "C:\\Users\\admin\\IdeaProjects\\ItCanClick\\testBig1.png";
+        String smallImagePath = "C:\\Users\\admin\\IdeaProjects\\ItCanClick\\testSmall1.png";
 
         Point found = containsImage(bigImagePath, smallImagePath);
         if (found != null)
