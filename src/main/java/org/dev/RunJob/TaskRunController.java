@@ -24,7 +24,7 @@ public class TaskRunController implements JobRunController<Boolean> {
     @FXML
     private Node containerPane;
     @FXML
-    private Label taskRunNameLabel;
+    private Label requireLabel, taskRunNameLabel;
     @FXML
     private VBox mainTaskRunVBox;
 
@@ -79,6 +79,7 @@ public class TaskRunController implements JobRunController<Boolean> {
         }
         String taskName = currentTask.getTaskName();
         changeTaskRunName(taskName);
+        requireLabel.setText(currentTask.isRequired() ? "Required" : "Optional");
 
         int repeatNumber = currentTask.getRepeatNumber();
         if (repeatNumber == -1) {
@@ -96,7 +97,7 @@ public class TaskRunController implements JobRunController<Boolean> {
 
     private boolean runTask(JobData jobData) {
         AppScene.addLog(LogLevel.INFO, className, "Start running task: " + ((Task) jobData.getMainJob()).getTaskName());
-        boolean pass = false;
+        boolean pass = true;
         List<JobData> actionDataList = jobData.getJobDataList();
         for (JobData actionData : actionDataList) {
             if (actionData == null)
@@ -105,17 +106,22 @@ public class TaskRunController implements JobRunController<Boolean> {
             if (currentAction == null)
                 continue;
             String actionName = currentAction.getActionName();
+            JobRunController<Boolean> actionRunController = getNewActionRunPane(actionName);
             if (pass && currentAction.isPreviousPass()) {
                 AppScene.addLog(LogLevel.INFO, className, "Skipping action as previous is passed: " + actionName);
                 continue;
             }
-            pass = getNewActionRunPane(actionName).startJob(actionData);
-            if (!currentAction.isRequired())
-                pass = true;
-            else if (!pass) { // action is required but failed
+            else if (!pass && !currentAction.isPreviousPass()) {
                 AppScene.addLog(LogLevel.INFO, className, "Fail performing action: " + actionName);
                 return false;
             }
+            pass = actionRunController.startJob(actionData);
+            if (!currentAction.isRequired())
+                pass = true;
+        }
+        if (!pass) {
+            AppScene.addLog(LogLevel.INFO, className, "Fail performing last action:");
+            return false;
         }
         AppScene.addLog(LogLevel.INFO, className, "Finished running task: " + ((Task) jobData.getMainJob()).getTaskName());
         return true;

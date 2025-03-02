@@ -23,7 +23,7 @@ public class TaskGroupRunController implements JobRunController<Boolean> {
     @FXML
     private Node containerPane;
     @FXML
-    private Label taskGroupRunNameLabel;
+    private Label requiredLabel, taskGroupRunNameLabel;
     @FXML
     private VBox mainTaskGroupRunVBox;
 
@@ -72,6 +72,7 @@ public class TaskGroupRunController implements JobRunController<Boolean> {
             return false;
         }
         Platform.runLater(() -> taskGroupRunNameLabel.setText(taskGroup.getTaskGroupName()));
+        Platform.runLater(() -> requiredLabel.setText(taskGroup.isRequired() ? "Required" : "Optional"));
         if (taskGroup.isDisabled())
             return true;
         return runTaskGroup(jobData);
@@ -79,7 +80,7 @@ public class TaskGroupRunController implements JobRunController<Boolean> {
 
     private boolean runTaskGroup(JobData jobData) {
         AppScene.addLog(LogLevel.INFO, className, "Start running task group: " + ((TaskGroup) jobData.getMainJob()).getTaskGroupName());
-        boolean pass = false;
+        boolean pass = true;
         List<JobData> taskDataList = jobData.getJobDataList();
         for (JobData taskData : taskDataList) {
             if (taskData == null)
@@ -88,17 +89,23 @@ public class TaskGroupRunController implements JobRunController<Boolean> {
             if (currentTask == null)
                 continue;
             String taskName = currentTask.getTaskName();
+            JobRunController<Boolean> taskRunController = getNewTaskRunPane(taskName);
             if (pass && currentTask.isPreviousPass()) {
                 AppScene.addLog(LogLevel.INFO, className, "Previous is passed, Skipping task " + taskName);
                 continue;
             }
-            pass = getNewTaskRunPane(taskName).startJob(taskData);
-            if (!currentTask.isRequired())
-                pass = true;
-            else if (!pass) { // task is required but failed
+            else if (!pass && !currentTask.isPreviousPass()) {
                 AppScene.addLog(LogLevel.INFO, className, "Fail performing task: " + taskName);
                 return false;
             }
+            pass = taskRunController.startJob(taskData);
+            System.out.println(pass);
+            if (!currentTask.isRequired())
+                pass = true;
+        }
+        if (!pass) {
+            AppScene.addLog(LogLevel.INFO, className, "Fail performing last task");
+            return false;
         }
         AppScene.addLog(LogLevel.INFO, className, "Finish running task group: " + ((TaskGroup) jobData.getMainJob()).getTaskGroupName());
         return true;
