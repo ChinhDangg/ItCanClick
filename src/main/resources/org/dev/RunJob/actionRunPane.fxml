@@ -19,11 +19,17 @@
                <children>
                   <VBox layoutX="12.0" spacing="5.0">
                      <children>
-                        <Label fx:id="actionRunNameLabel" text="Running Action Name">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <Label fx:id="actionRequireLabel" text="Required" />
+                              <Label text="-" />
+                              <Label fx:id="actionRunNameLabel" text="Running Action Name">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
                         <Separator prefWidth="200.0" />
                         <HBox spacing="10.0">
                            <children>
@@ -33,7 +39,7 @@
                         </HBox>
                         <VBox>
                            <children>
-                              <VBox fx:id="conditionRunEntryVBoxContainer">
+                              <VBox fx:id="conditionRunEntryVBoxContainer" prefWidth="496.0">
                                  <children>
                                     <Label text="Entry">
                                        <font>
@@ -69,7 +75,7 @@
                                                 </Pane>
                                                 <StackPane>
                                                    <children>
-                                                      <Label text="Saved" />
+                                                      <Label text="Expected" />
                                                    </children>
                                                 </StackPane>
                                              </children>
@@ -103,7 +109,7 @@
                                           <Font size="10.0" />
                                        </font>
                                     </Label>
-                                    <ScrollPane fx:id="exitConditionScrollPane" vbarPolicy="NEVER">
+                                    <ScrollPane fx:id="exitConditionScrollPane" prefWidth="496.0" vbarPolicy="NEVER">
                                        <content>
                                           <HBox fx:id="exitConditionHBox" />
                                        </content>

@@ -3,6 +3,7 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -16,11 +17,17 @@
                <children>
                   <VBox fx:id="mainTaskGroupRunVBox" layoutX="12.0" spacing="5.0">
                      <children>
-                        <Label fx:id="taskGroupRunNameLabel" text="Running Task Group Name">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <Label fx:id="requiredLabel" text="Required" />
+                              <Label text="-" />
+                              <Label fx:id="taskGroupRunNameLabel" text="Running Task Group Name">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
                         <Separator />
                      </children>
                   </VBox>
