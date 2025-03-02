@@ -192,8 +192,8 @@ public class TaskController implements Initializable, JobDataController {
             return;
         int changeIndex = selectedActionPaneIndex -1;
         updateActionPaneList(selectedActionPaneIndex, changeIndex);
-        updateActionPreviousOption(changeIndex);
         currentStructure.updateSubJobStructure(jobDataController, changeIndex);
+        updateActionPreviousOption(changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved up action: " + changeIndex);
     }
 
@@ -207,8 +207,8 @@ public class TaskController implements Initializable, JobDataController {
         if (changeIndex == numberOfActions)
             return;
         updateActionPaneList(selectedActionPaneIndex, changeIndex);
-        updateActionPreviousOption(changeIndex);
         currentStructure.updateSubJobStructure(jobDataController, changeIndex);
+        updateActionPreviousOption(changeIndex);
         AppScene.addLog(LogLevel.DEBUG, className, "Moved down action: " + changeIndex);
     }
 
