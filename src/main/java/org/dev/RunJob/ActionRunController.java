@@ -41,7 +41,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
     @FXML
     private Label actionRunNameLabel;
     @FXML
-    private Label actionStatusLabel;
+    private Label actionStatusLabel, actionRequireLabel;
     @FXML
     private StackPane actionStackPaneImageContainer;
     @FXML
@@ -145,6 +145,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
             return false;
         }
         changeLabelText(actionRunNameLabel, action.getActionName());
+        actionRequireLabel.setText(action.isRequired() ? "Required" : "Optional");
         changeActionRunStatus(RunningStatus.Running);
         AppScene.addLog(LogLevel.INFO, className, "Start running action: " + action.getActionName());
         try {

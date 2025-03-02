@@ -70,7 +70,10 @@ public class ConditionRunController extends RunActivity implements Initializable
     public ImageCheckResult startJob(JobData jobData) {
         Condition condition = (Condition) jobData.getMainJob();
         updateImageView(conditionExpectedImageView, condition.getMainDisplayImage());
-        changeLabelText(expectedResultLabel, condition.getExpectedResult());
+        if (condition.isNot())
+            changeLabelText(expectedResultLabel, "Not " + condition.getExpectedResult());
+        else
+            changeLabelText(expectedResultLabel, condition.getExpectedResult());
 
         ImageCheckResult checkedResult = condition.checkCondition();
         changeLabelText(readResultLabel, checkedResult.getReadResult());
