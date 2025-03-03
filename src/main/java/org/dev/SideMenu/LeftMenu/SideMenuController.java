@@ -87,11 +87,15 @@ public class SideMenuController implements Initializable {
     public void showSideMenuContent(CurrentTab whatTab) {
         if (whatTab == CurrentTab.Operation) {
             sideHierarchyVBox.setVisible(true);
+            sideHierarchyVBox.setManaged(true);
             runSideHierarchyVBox.setVisible(false);
+            runSideHierarchyVBox.setManaged(false);
         }
         else {
-            sideHierarchyVBox.setVisible(false);
             runSideHierarchyVBox.setVisible(true);
+            runSideHierarchyVBox.setManaged(true);
+            sideHierarchyVBox.setVisible(false);
+            sideHierarchyVBox.setManaged(false);
         }
         AppScene.addLog(LogLevel.DEBUG, className, "Showing tab: " + whatTab.name());
     }
