@@ -3,7 +3,6 @@ package org.dev.jobManagement;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 import lombok.Getter;
 import org.dev.AppScene;
@@ -37,7 +36,6 @@ public class JobRunScheduler implements NativeKeyListener {
         AppScene.displayCurrentRunJobNode();
         AppScene.loadRunSideMenuHierarchy();
         runJobThread.start();
-        setIsJobRunning(false);
     }
 
     private Task<Void> getRunJobTask(JobDataController jobDataController) {
@@ -52,6 +50,7 @@ public class JobRunScheduler implements NativeKeyListener {
                     currentJobRunStructure.getCurrentController().startJob(jobData);
                     AppScene.addLog(LogLevel.INFO, className, "Finished running job");
                     setIsJobRunning(false);
+                    unregisterKeyListener();
                 } catch (Exception e) {
                     AppScene.addLog(LogLevel.ERROR, className, "Error to start run job");
                 }
@@ -64,11 +63,12 @@ public class JobRunScheduler implements NativeKeyListener {
         AppScene.addLog(LogLevel.INFO, className, "Stopping running job");
         runJobThread.interrupt();
         setIsJobRunning(false);
+        unregisterKeyListener();
     }
 
     private void setIsJobRunning(boolean isJobRunning) {
         this.isJobRunning = isJobRunning;
-        Platform.runLater(() -> AppScene.setIsJobRunning(isJobRunning));
+        AppScene.setIsJobRunning(isJobRunning);
     }
 
     private void registerKeyListener() {
@@ -77,7 +77,6 @@ public class JobRunScheduler implements NativeKeyListener {
         GlobalScreen.addNativeKeyListener(this);
         isKeyListening = true;
         AppScene.addLog(LogLevel.TRACE, className, "Registering key listener");
-        System.out.println("Starting job run");
     }
 
     private void unregisterKeyListener() {
@@ -86,14 +85,12 @@ public class JobRunScheduler implements NativeKeyListener {
         GlobalScreen.removeNativeKeyListener(this);
         isKeyListening = false;
         AppScene.addLog(LogLevel.TRACE, className, "Unregistering key listener");
-        System.out.println("Stopping job run");
     }
 
     public void nativeKeyReleased(NativeKeyEvent e) {
         if (e.getKeyCode() == NativeKeyEvent.VC_F1) {
             AppScene.addLog(LogLevel.INFO, className, "Hot key clicked to stop running job");
             stopRunJob();
-            unregisterKeyListener();
         }
     }
 }
