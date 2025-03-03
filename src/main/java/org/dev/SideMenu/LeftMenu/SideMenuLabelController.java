@@ -20,6 +20,7 @@ public class SideMenuLabelController {
     @FXML
     private Label sideLabel;
     private final Label refLabel = new Label("REF");
+    private VBox collapseContent;
 
     public Node createHBoxLabel(String name, VBox collapseContent, AppLevel appLevel) {
         if (appLevel == AppLevel.Action || appLevel == AppLevel.Condition) {
@@ -28,8 +29,10 @@ public class SideMenuLabelController {
         }
         setIndicationIcon(appLevel);
         sideLabel.setText(name);
-        if (collapseContent != null)
-            collapseImageIcon.setOnMouseClicked(_ -> collapseContent(collapseContent));
+        if (collapseContent != null) {
+            this.collapseContent = collapseContent;
+            collapseImageIcon.setOnMouseClicked(_ -> collapseContent());
+        }
         if (appLevel == AppLevel.Condition)
             collapseImageIcon.setImage(null);
         return parentHBoxNode;
@@ -81,7 +84,7 @@ public class SideMenuLabelController {
         labelIndicationImageView.setImage(image);
     }
 
-    private void collapseContent(VBox collapseContent) {
+    public void collapseContent() {
         boolean isCollapsed = !collapseContent.isVisible();
         double newRotate = (isCollapsed) ? 0.0 : -90;
         collapseImageIcon.setRotate(newRotate);
