@@ -75,11 +75,11 @@
                         </Group>
                      </children>
                   </StackPane>
-                  <HBox alignment="CENTER_LEFT" spacing="120.0">
+                  <HBox alignment="CENTER_LEFT" spacing="130.0">
                      <children>
                         <VBox spacing="5.0">
                            <children>
-                              <CheckBox fx:id="useEntryCheckBox" mnemonicParsing="false" text="Use Entry Condition (last required one)" />
+                              <CheckBox fx:id="useEntryCheckBox" mnemonicParsing="false" text="Use Entry Condition (last one)" />
                               <HBox alignment="CENTER_LEFT" spacing="5.0">
                                  <children>
                                     <Label text="Attempt">

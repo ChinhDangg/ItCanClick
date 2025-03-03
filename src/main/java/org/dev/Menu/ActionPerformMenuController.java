@@ -157,7 +157,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     }
 
     private void enableUseEntryCondition() {
-        useEntryCheckBox.setDisable(!actionController.hasRequiredEntryCondition() ||
+        useEntryCheckBox.setDisable(!actionController.hasEntryCondition() ||
                 actionController.getChosenActionPerform().isKeyAction());
     }
 
@@ -173,7 +173,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     // ------------------------------------------------------
     private int attempt = 1;
     private void increaseNumberOfAttempt(MouseEvent event) {
-        updateAttemptLabel(Math.min(attempt + 1, 10));
+        updateAttemptLabel(Math.min(attempt + 1, 1000));
     }
     private void decreaseNumberOfAttempt(MouseEvent event) {
         updateAttemptLabel(Math.max(attempt - 1, 1));
