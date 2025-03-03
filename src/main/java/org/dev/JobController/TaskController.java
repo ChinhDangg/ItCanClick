@@ -128,7 +128,7 @@ public class TaskController implements Initializable, JobDataController {
             return;
         }
         if (newJobData.isRef())
-            currentStructure.markLabelAsRef();
+            AppScene.addKnownJobReference(newJobData, currentStructure);
         jobData = newJobData;
         Task task = (Task) jobData.getMainJob();
         taskNameLabel.setText(task.getTaskName());

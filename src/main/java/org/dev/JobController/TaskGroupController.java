@@ -130,7 +130,7 @@ public class TaskGroupController implements Initializable, JobDataController {
             return;
         }
         if (newJobData.isRef())
-            currentStructure.markLabelAsRef();
+            AppScene.addKnownJobReference(newJobData, currentStructure);
         jobData = newJobData;
         TaskGroup taskGroup = (TaskGroup) jobData.getMainJob();
         requiredCheckBox.setSelected(taskGroup.isRequired());

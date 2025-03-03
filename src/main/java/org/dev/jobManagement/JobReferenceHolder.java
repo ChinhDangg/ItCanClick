@@ -4,38 +4,46 @@ import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.JobData;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class JobReferenceHolder {
 
-    HashMap<JobData, List<JobStructure>> holder = new HashMap<>();
+    HashMap<JobData, HashSet<JobStructure>> holder = new HashMap<>();
 
-    public void addJobReference(JobData refData, JobStructure beingRef, JobStructure newRef) {
-        if (holder.containsKey(refData))
-            holder.get(refData).add(newRef);
-        else {
-            List<JobStructure> list = new ArrayList<>();
-            list.add(beingRef);
-            list.add(newRef);
+    public void addNewJobReference(JobData refData, JobStructure beingRef) {
+        if (!holder.containsKey(refData)) {
+            HashSet<JobStructure> set = new HashSet<>();
+            set.add(beingRef);
             refData.setRef(true);
-            holder.put(refData, list);
+            holder.put(refData, set);
         }
         beingRef.markLabelAsRef();
-        newRef.markLabelAsRef();
     }
 
-    public void removeJohReference(JobData refData, JobStructure toRemove) {
-        List<JobStructure> list = holder.get(refData);
-        if (list == null)
+    public void addKnownJobReference(JobData refData, JobStructure knownRefJobStructure) {
+        if (!refData.isRef())
             return;
-        list.remove(toRemove);
-        if (list.size() == 1) {
-            list.getFirst().unmarkLabelAsRef();
+        if (holder.containsKey(refData))
+            holder.get(refData).add(knownRefJobStructure);
+        else {
+            HashSet<JobStructure> set = new HashSet<>();
+            set.add(knownRefJobStructure);
+            holder.put(refData, set);
+        }
+        knownRefJobStructure.markLabelAsRef();
+    }
+
+    public void removeJobReference(JobData refData, JobStructure toRemove) {
+        HashSet<JobStructure> set = holder.get(refData);
+        if (set == null)
+            return;
+        set.remove(toRemove);
+        if (set.size() == 1) {
+            for(JobStructure ref : set)
+                ref.unmarkLabelAsRef();
             holder.remove(refData);
         }
-        else if (list.isEmpty())
+        else if (set.isEmpty())
             AppScene.addLog(LogLevel.ERROR, this.getClass().getSimpleName(), "Should not be empty");
     }
 }

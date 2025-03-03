@@ -99,7 +99,6 @@ public class TaskGroupRunController implements JobRunController<Boolean> {
                 return false;
             }
             pass = taskRunController.startJob(taskData);
-            System.out.println(pass);
             if (!currentTask.isRequired())
                 pass = true;
         }

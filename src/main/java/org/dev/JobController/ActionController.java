@@ -143,7 +143,7 @@ public class ActionController implements Initializable, JobDataController, Activ
         return tempAction.getMainDisplayImage();
     }
 
-    public boolean hasRequiredEntryCondition() {
+    public boolean hasEntryCondition() {
         int index = getConditionControllerIndex(ConditionType.Entry, false);
         return index != -1;
     }
@@ -296,7 +296,7 @@ public class ActionController implements Initializable, JobDataController, Activ
             return;
         }
         if (newJobData.isRef())
-            currentStructure.markLabelAsRef();
+            AppScene.addKnownJobReference(newJobData, currentStructure);
         jobData = newJobData;
         Action action = (Action) jobData.getMainJob();
         registerActionPerform(action);

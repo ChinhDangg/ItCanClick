@@ -19,6 +19,7 @@ import org.dev.SideMenu.LeftMenu.SideBarController;
 import org.dev.SideMenu.TopMenu.MenuBarController;
 import org.dev.SideMenu.TopMenu.SettingMenuController;
 import org.dev.SideMenu.TopMenu.WindowSizeMode;
+import org.dev.jobManagement.JobReferenceHolder;
 import org.dev.jobManagement.JobRunScheduler;
 import org.dev.jobManagement.JobRunStructure;
 import org.dev.jobManagement.JobStructure;
@@ -43,6 +44,7 @@ public class AppScene {
 
     public static JobStructure currentJobStructure;
     public static final JobRunScheduler jobRunScheduler = new JobRunScheduler();
+    public static final JobReferenceHolder jobReferenceHolder = new JobReferenceHolder();
 
     public static double currentGlobalScale = 1.3;
     public static WindowSizeMode windowSizeMode;
@@ -88,7 +90,19 @@ public class AppScene {
     }
 
     // ------------------------------------------------------
+    public static void addNewToJobReference(JobData refData, JobStructure beingRef) {
+        jobReferenceHolder.addNewJobReference(refData, beingRef);
+    }
 
+    public static void addKnownJobReference(JobData refData, JobStructure knownRef) {
+        jobReferenceHolder.addKnownJobReference(refData, knownRef);
+    }
+
+    public static void removeFromJobReference(JobData refData, JobStructure toRemove) {
+        jobReferenceHolder.removeJobReference(refData, toRemove);
+    }
+
+    // ------------------------------------------------------
     public static boolean isJobRunning() {
         return jobRunScheduler.isJobRunning();
     }
