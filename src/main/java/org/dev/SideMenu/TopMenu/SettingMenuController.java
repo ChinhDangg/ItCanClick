@@ -100,7 +100,6 @@ public class SettingMenuController implements Initializable {
             properties.setProperty("app.config.scene-scale", String.valueOf(scaleValue));
             properties.setProperty("app.config.window-size", String.valueOf(windowSizeChoiceBox.getValue()));
             properties.store(output, "Application Configuration");
-            System.out.println("Property saved successfully!");
             AppScene.addLog(LogLevel.INFO, className, "Setting will apply in the next start up");
         } catch (IOException e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error saving properties file: " + e.getMessage());
