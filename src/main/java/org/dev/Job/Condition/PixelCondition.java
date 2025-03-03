@@ -3,6 +3,7 @@ package org.dev.Job.Condition;
 import lombok.Getter;
 import lombok.Setter;
 import org.bytedeco.javacpp.DoublePointer;
+import org.bytedeco.javacpp.Loader;
 import org.bytedeco.opencv.global.opencv_core;
 import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_core.Mat;
@@ -23,7 +24,6 @@ public class PixelCondition extends Condition {
     private boolean exactSearch;
     private boolean subImageSearch;
     private boolean globalSearch;
-    private transient final String className = this.getClass().getSimpleName();
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -64,7 +64,7 @@ public class PixelCondition extends Condition {
                 imageResult.setPass(!imageResult.isPass());
             return imageResult;
         } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error checking pixel condition: " + e.getMessage());
+            AppScene.addLog(LogLevel.ERROR, this.getClass().getSimpleName(), "Error checking pixel condition: " + e.getMessage());
             return null;
         }
     }
@@ -92,6 +92,7 @@ public class PixelCondition extends Condition {
 //        ImageIO.write(seen, "png", new File("seen.png"));
 //        ImageIO.write(saved, "png", new File("saved.png"));
 
+        String className = this.getClass().getSimpleName();
         AppScene.addLog(LogLevel.TRACE, className, "Img1 type: " + seen.getType() + " | Img2 type: " + saved.getType());
         AppScene.addLog(LogLevel.TRACE, className, "Img1 color model: " + seen.getColorModel() + " | Img2 color model: " + saved.getColorModel());
         AppScene.addLog(LogLevel.TRACE, className, "Img1 width: " + seen.getWidth() + " | Img2 width: " + saved.getWidth());
@@ -137,6 +138,9 @@ public class PixelCondition extends Condition {
     }
 
     private ImageCheckResult templateMatching(Rectangle boundingBox, BufferedImage biggerImage, BufferedImage smallerImage, boolean useCenter) {
+        // Load OpenCV native libraries
+        Loader.load(opencv_core.class);
+
         // Convert BufferedImage to Mat
         Mat bigMat = bufferedImageToMat(biggerImage);
         Mat smallMat = bufferedImageToMat(smallerImage);
@@ -157,7 +161,7 @@ public class PixelCondition extends Condition {
         int maxLocYInLocal = (!useCenter) ? maxLoc.y() : (boundingBox.y - (biggerImage.getHeight() - smallerImage.getHeight()) / 2 + maxLoc.y());
 
         String matchScore = String.format("Match Score: %.2f and Match Loc: %s,%s", maxVal.get(), maxLocXInLocal, maxLocYInLocal);
-        AppScene.addLog(LogLevel.TRACE, className, matchScore);
+        AppScene.addLog(LogLevel.TRACE, this.getClass().getSimpleName(), matchScore);
 
         return new ImageCheckResult(matchScore, (Math.round(maxVal.get() * 100.0) / 100.0),
                 new Rectangle(maxLocXInLocal, maxLocYInLocal, smallerImage.getWidth(), smallerImage.getHeight()),

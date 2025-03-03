@@ -20,7 +20,6 @@ public class TextCondition extends Condition {
 
     private Set<String> savedText;
     private double currentTextScale;
-    private transient final String className = this.getClass().getSimpleName();
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -54,7 +53,7 @@ public class TextCondition extends Condition {
                 checkResult.setPass(!checkCondition().isPass());
             return checkResult;
         } catch (Exception e) {
-            AppScene.addLog(LogLevel.ERROR, className, "Error checking text condition: " + e.getMessage());
+            AppScene.addLog(LogLevel.ERROR, this.getClass().getSimpleName(), "Error checking text condition: " + e.getMessage());
             return null;
         }
     }

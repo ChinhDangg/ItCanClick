@@ -131,14 +131,12 @@ public class ConditionTextMenuController extends OptionsMenuController implement
     private double currentTextScaleValue = 1.00;
     private final String initialReadingResult = ".....";
     private void increaseTextScale(MouseEvent event) {
-        System.out.println("Clicked on increase text scale");
         double step = 0.25, max = 5.00;
         updateTextScaleValue(Math.min((currentTextScaleValue+step), max));
         updateZoomValue(1.00);
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on increase text scale");
     }
     private void decreaseTextScale(MouseEvent event) {
-        System.out.println("Clicked on decrease text scale");
         double step = 0.25, min = 0.25;
         updateTextScaleValue(Math.max((currentTextScaleValue-step), min));
         updateZoomValue(1.00);
