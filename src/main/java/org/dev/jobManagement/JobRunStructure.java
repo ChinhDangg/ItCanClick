@@ -1,10 +1,16 @@
 package org.dev.jobManagement;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.dev.RunJob.JobRunController;
 import org.dev.SideMenu.LeftMenu.SideMenuController;
+import org.dev.SideMenu.LeftMenu.SideMenuLabelController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class JobRunStructure {
@@ -12,18 +18,34 @@ public class JobRunStructure {
     private final JobRunController parentController;
     private final JobRunController currentController;
 
-    private final Node sideHBoxLabel;
+    @Getter(AccessLevel.NONE)
+    private SideMenuLabelController labelController;
     private final VBox sideContent = new VBox();
+    private final List<JobRunStructure> subJobRunStructures;
 
     public JobRunStructure(JobRunController displayParentController, JobRunController parentController, JobRunController currentController,
                            String name) {
+        subJobRunStructures = new ArrayList<>();
         this.displayParentController = displayParentController;
         this.parentController = parentController;
         this.currentController = currentController;
-        sideHBoxLabel = SideMenuController.getNewSideHBoxLabel(name, this);
+        labelController = SideMenuController.getNewRunSideHBoxController(name, sideContent, currentController);
     }
 
-    public void addToSideContent(Node hBoxLabel, Node content) {
-        sideContent.getChildren().addAll(hBoxLabel, content);
+    public void collapseContent() {
+        labelController.collapseContent();
+    }
+
+    public Node getSideHBoxLabel() {
+        return labelController.getHBoxLabel();
+    }
+
+    public void addSubJobRunStructure(JobRunStructure subJobRunStructure) {
+        subJobRunStructures.add(subJobRunStructure);
+        addToSideContent(subJobRunStructure.getSideHBoxLabel(), subJobRunStructure.getSideContent());
+    }
+
+    private void addToSideContent(Node hBoxLabel, Node content) {
+        Platform.runLater(() -> sideContent.getChildren().addAll(hBoxLabel, content));
     }
 }

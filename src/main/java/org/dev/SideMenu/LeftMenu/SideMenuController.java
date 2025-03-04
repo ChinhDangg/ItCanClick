@@ -18,6 +18,7 @@ import org.dev.Enum.CurrentTab;
 import org.dev.Enum.LogLevel;
 import org.dev.JobController.JobDataController;
 import org.dev.JobController.MainJobController;
+import org.dev.RunJob.JobRunController;
 import org.dev.jobManagement.JobRunStructure;
 import org.dev.jobManagement.JobStructure;
 
@@ -118,14 +119,13 @@ public class SideMenuController implements Initializable {
         return controller;
     }
 
-    public static Node getNewSideHBoxLabel(String name, JobRunStructure jobRunStructure) {
+    public static SideMenuLabelController getNewRunSideHBoxController(String name, VBox sideContent, JobRunController<Object> jobRunController) {
         SideMenuLabelController controller = getSideMenuLabelController();
         if (controller == null)
             return null;
-        Node hBoxLabel = controller.createHBoxLabel(name, jobRunStructure.getSideContent(),
-                jobRunStructure.getCurrentController().getAppLevel());
-        hBoxLabel.setOnMouseClicked(event -> doubleClick(event, jobRunStructure.getCurrentController()));
-        return hBoxLabel;
+        Node hBoxLabel = controller.createHBoxLabel(name, sideContent, jobRunController.getAppLevel());
+        hBoxLabel.setOnMouseClicked(event -> doubleClick(event, jobRunController));
+        return controller;
     }
 
     private static SideMenuLabelController getSideMenuLabelController() {

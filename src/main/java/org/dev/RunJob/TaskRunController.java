@@ -138,7 +138,7 @@ public class TaskRunController implements JobRunController<Boolean> {
 
             JobRunStructure jobRunStructure = new JobRunStructure(currentRunStructure.getDisplayParentController(), this, controller, actionName);
             controller.setJobRunStructure(jobRunStructure);
-            Platform.runLater(() -> currentRunStructure.addToSideContent(jobRunStructure.getSideHBoxLabel(), jobRunStructure.getSideContent()));
+            currentRunStructure.addSubJobRunStructure(jobRunStructure);
             return controller;
         } catch (IOException e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading action run pane: " + e.getMessage());

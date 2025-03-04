@@ -315,7 +315,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
 
         JobRunStructure jobRunStructure = new JobRunStructure(currentRunStructure.getDisplayParentController(), this, currentConditionRunController, ConditionType.Entry.name());
         currentConditionRunController.setJobRunStructure(jobRunStructure);
-        Platform.runLater(() -> currentRunStructure.addToSideContent(jobRunStructure.getSideHBoxLabel(), jobRunStructure.getSideContent()));
+        currentRunStructure.addSubJobRunStructure(jobRunStructure);
     }
 
     private void loadExitConditionRunPane() {
@@ -329,7 +329,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
 
         JobRunStructure jobRunStructure = new JobRunStructure(currentRunStructure.getDisplayParentController(), this, currentConditionRunController, ConditionType.Exit.name());
         currentConditionRunController.setJobRunStructure(jobRunStructure);
-        Platform.runLater(() -> currentRunStructure.addToSideContent(jobRunStructure.getSideHBoxLabel(), jobRunStructure.getSideContent()));
+        currentRunStructure.addSubJobRunStructure(jobRunStructure);
     }
 
     private Node loadConditionRunPane() {
