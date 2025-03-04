@@ -27,6 +27,8 @@ import org.dev.jobManagement.JobStructure;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AppScene {
     private static final String className = AppScene.class.getSimpleName();
@@ -87,6 +89,21 @@ public class AppScene {
     // ------------------------------------------------------
     public static void addLog(LogLevel logLevel, String className, String content) {
         bottomPaneController.addToLog(logLevel, className, content);
+    }
+
+    // ------------------------------------------------------
+    public static List<JobStructure> getAllTaskGroupStructure() {
+        return currentJobStructure.getSubJobStructures();
+    }
+
+    public static List<JobStructure> getAllTaskStructure() {
+        List<JobStructure> taskGroupStructureList = getAllTaskGroupStructure();
+        List<JobStructure> taskStructureList = new ArrayList<>();
+        for (JobStructure taskGroupJobStructure : taskGroupStructureList) {
+            List<JobStructure> taskJobStructureList = taskGroupJobStructure.getSubJobStructures();
+            taskStructureList.addAll(taskJobStructureList);
+        }
+        return taskStructureList;
     }
 
     // ------------------------------------------------------

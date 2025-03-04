@@ -13,12 +13,15 @@ import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.JobData;
 import org.dev.Job.Operation;
+import org.dev.jobManagement.JobStructure;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MenuBarController implements Initializable {
@@ -29,6 +32,8 @@ public class MenuBarController implements Initializable {
     private MenuItem saveMenuItem, exitMenuItem, settingMenuItem;
     @FXML
     private MenuItem newOperationMenuItem, openSavedOperationMenuItem;
+    @FXML
+    private MenuItem collapseTaskGroupMenuItem, collapseTaskMenuItem;
     @FXML
     private StackPane startRunStackPaneButton, stopRunStackPaneButton;
     @FXML
@@ -44,6 +49,8 @@ public class MenuBarController implements Initializable {
         settingMenuItem.setOnAction(this::openSetting);
         newOperationMenuItem.setOnAction(this::createNewOperationEvent);
         openSavedOperationMenuItem.setOnAction(this::openSavedOperationEvent);
+        collapseTaskGroupMenuItem.setOnAction(this::collapseTaskGroup);
+        collapseTaskMenuItem.setOnAction(this::collapseTask);
         startRunStackPaneButton.setOnMouseClicked(this::startOperationRunEvent);
         stopRunStackPaneButton.setOnMouseClicked(this::stopOperationRunEvent);
         stopRunStackPaneButton.setVisible(false);
@@ -130,4 +137,17 @@ public class MenuBarController implements Initializable {
         stopRunStackPaneButton.setVisible(isRunning);
         operationRunningIndicationHBox.setVisible(isRunning);
     }
+
+    private void collapseTaskGroup(ActionEvent event) {
+        List<JobStructure> taskGroupStructureList = AppScene.getAllTaskGroupStructure();
+        for (JobStructure taskGroupStructure : taskGroupStructureList)
+            taskGroupStructure.collapseSubContent();
+    }
+
+    private void collapseTask(ActionEvent event) {
+        List<JobStructure> taskStructureList = AppScene.getAllTaskStructure();
+        for (JobStructure taskStructure : taskStructureList)
+            taskStructure.collapseSubContent();
+    }
+
 }

@@ -35,6 +35,8 @@
             </Menu>
             <Menu mnemonicParsing="false" text="View">
               <items>
+                  <MenuItem fx:id="collapseTaskGroupMenuItem" mnemonicParsing="false" text="Collapse Task Group" />
+                  <MenuItem fx:id="collapseTaskMenuItem" mnemonicParsing="false" text="Collapse Task" />
                 <MenuItem mnemonicParsing="false" text="Zoom In" />
                   <MenuItem mnemonicParsing="false" text="Zoom Out" />
                   <MenuItem mnemonicParsing="false" text="Zoom Reset" />

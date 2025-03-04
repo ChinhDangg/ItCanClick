@@ -31,6 +31,8 @@ public class JobStructure {
             labelController = SideMenuController.getNewSideHBoxLabelController(name, this);
     }
 
+    public void collapseSubContent() { labelController.collapseContent(); }
+
     public void markLabelAsRef() {
         labelController.markLabelAsRef();
     }

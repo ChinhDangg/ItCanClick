@@ -31,7 +31,7 @@ public class SideMenuLabelController {
         sideLabel.setText(name);
         if (collapseContent != null) {
             this.collapseContent = collapseContent;
-            collapseImageIcon.setOnMouseClicked(_ -> collapseContent());
+            collapseImageIcon.setOnMouseClicked(_ -> toggleCollapseContent());
         }
         if (appLevel == AppLevel.Condition)
             collapseImageIcon.setImage(null);
@@ -84,11 +84,18 @@ public class SideMenuLabelController {
         labelIndicationImageView.setImage(image);
     }
 
-    public void collapseContent() {
+    private void toggleCollapseContent() {
         boolean isCollapsed = !collapseContent.isVisible();
         double newRotate = (isCollapsed) ? 0.0 : -90;
         collapseImageIcon.setRotate(newRotate);
         collapseContent.setVisible(isCollapsed);
         collapseContent.setManaged(isCollapsed);
     }
+
+    public void collapseContent() {
+        boolean isCollapsed = !collapseContent.isVisible();
+        if (!isCollapsed)
+            toggleCollapseContent();
+    }
+
 }
