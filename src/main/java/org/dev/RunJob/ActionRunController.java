@@ -255,36 +255,24 @@ public class ActionRunController extends RunActivity implements Initializable, J
         if (conditionDataList.isEmpty())
             return new ImageCheckResult(true);
         Platform.runLater(() -> clearConditionHBox(conditionType));
-        // all conditions are optional therefore only need one condition to pass
-        if (checkAllConditionsIsNotRequired(conditionDataList)) {
-            for (JobData c : conditionDataList) {
-                loadConditionRunPane(conditionType);
-                ImageCheckResult result = currentConditionRunController.startJob(c);
-                if (result.isPass())
-                    return result;
+        // check required condition, they must pass, and 1 optional condition must pass if any
+        ImageCheckResult result = null;
+        ImageCheckResult optionalResult = new ImageCheckResult(false);
+        for (JobData c : conditionDataList) {
+            loadConditionRunPane(conditionType);
+            if (((Condition) c.getMainJob()).isRequired()) {
+                result = currentConditionRunController.startJob(c);
+                if (!result.isPass())
+                    return new ImageCheckResult(false);
             }
+            else if (!optionalResult.isPass()) { //only check all optional until get one passed
+                result = currentConditionRunController.startJob(c);
+                optionalResult = result;
+            }
+        }
+        if (!optionalResult.isPass()) //false if all optional failed regardless if all required condition passed
             return new ImageCheckResult(false);
-        }
-        else { // only check required condition and they must pass
-            ImageCheckResult result = null;
-            for (JobData c : conditionDataList) {
-                loadConditionRunPane(conditionType);
-                if (((Condition) c.getMainJob()).isRequired()) {
-                    result = currentConditionRunController.startJob(c);
-                    if (!result.isPass())
-                        return new ImageCheckResult(false);
-                }
-            }
-            return result; // return the last result, still passed
-        }
-    }
-    private boolean checkAllConditionsIsNotRequired(List<JobData> conditionData) {
-        if (conditionData == null || conditionData.isEmpty())
-            return true;
-        for (JobData c : conditionData)
-            if (((Condition) c.getMainJob()).isRequired())
-                return false;
-        return true;
+        return result; // return the last result, still passed
     }
     private List<JobData> getConditionList(List<JobData> fullCondition, ConditionType conditionType) {
         List<JobData> conditionList = new ArrayList<>();
