@@ -107,7 +107,7 @@ public class TaskRunController implements JobRunController<Boolean> {
                 continue;
             String actionName = currentAction.getActionName();
             JobRunController<Boolean> actionRunController = getNewActionRunPane(actionName);
-            if (pass && currentAction.isPreviousPass()) {
+            if (pass && currentAction.isPreviousPass() && actionDataList.getFirst() != actionData) { //not the first one
                 AppScene.addLog(LogLevel.INFO, className, "Skipping action as previous is passed: " + actionName);
                 continue;
             }

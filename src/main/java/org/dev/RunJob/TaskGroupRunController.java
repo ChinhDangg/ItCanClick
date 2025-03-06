@@ -90,7 +90,7 @@ public class TaskGroupRunController implements JobRunController<Boolean> {
                 continue;
             String taskName = currentTask.getTaskName();
             JobRunController<Boolean> taskRunController = getNewTaskRunPane(taskName);
-            if (pass && currentTask.isPreviousPass()) {
+            if (pass && currentTask.isPreviousPass() && taskDataList.getFirst() != taskData) { //not the first one
                 AppScene.addLog(LogLevel.INFO, className, "Previous is passed, Skipping task " + taskName);
                 continue;
             }
