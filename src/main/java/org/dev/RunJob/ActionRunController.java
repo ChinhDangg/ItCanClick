@@ -258,6 +258,7 @@ public class ActionRunController extends RunActivity implements Initializable, J
         // check required condition, they must pass, and 1 optional condition must pass if any
         ImageCheckResult result = null;
         ImageCheckResult optionalResult = new ImageCheckResult(false);
+        boolean optionalChecked = false;
         for (JobData c : conditionDataList) {
             loadConditionRunPane(conditionType);
             if (((Condition) c.getMainJob()).isRequired()) {
@@ -266,11 +267,12 @@ public class ActionRunController extends RunActivity implements Initializable, J
                     return new ImageCheckResult(false);
             }
             else if (!optionalResult.isPass()) { //only check all optional until get one passed
+                optionalChecked = true;
                 result = currentConditionRunController.startJob(c);
                 optionalResult = result;
             }
         }
-        if (!optionalResult.isPass()) //false if all optional failed regardless if all required condition passed
+        if (optionalChecked && !optionalResult.isPass()) //false if all optional failed regardless if all required condition passed
             return new ImageCheckResult(false);
         return result; // return the last result, still passed
     }
