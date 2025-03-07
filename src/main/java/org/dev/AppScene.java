@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
+import org.dev.Enum.AppLevel;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.JobData;
 import org.dev.JobController.JobDataController;
@@ -104,6 +105,49 @@ public class AppScene {
             taskStructureList.addAll(taskJobStructureList);
         }
         return taskStructureList;
+    }
+
+    private static AppLevel getCurrentJobRunAppLevel() {
+        if (jobRunScheduler.getCurrentJobRunStructure() == null)
+            return null;
+        return jobRunScheduler.getCurrentJobRunStructure().getCurrentController().getAppLevel();
+    }
+
+    public static List<JobRunStructure> getAllTaskGroupRunStructure() {
+        AppLevel runAppLevel = getCurrentJobRunAppLevel();
+        if (runAppLevel == AppLevel.Operation)
+            return jobRunScheduler.getCurrentJobRunStructure().getSubJobRunStructures();
+        else if (runAppLevel == AppLevel.TaskGroup)
+            return List.of(jobRunScheduler.getCurrentJobRunStructure());
+        return null;
+    }
+
+    public static List<JobRunStructure> getAllTaskRunStructure() {
+        if (getCurrentJobRunAppLevel() == AppLevel.Task)
+            return List.of(jobRunScheduler.getCurrentJobRunStructure());
+        List<JobRunStructure> taskGroupRunStructureList = getAllTaskGroupRunStructure();
+        if (taskGroupRunStructureList == null)
+            return null;
+        List<JobRunStructure> taskRunStructureList = new ArrayList<>();
+        for (JobRunStructure taskGroupRunStructure : taskGroupRunStructureList) {
+            List<JobRunStructure> currentTaskRunStructureList = taskGroupRunStructure.getSubJobRunStructures();
+            taskRunStructureList.addAll(currentTaskRunStructureList);
+        }
+        return taskRunStructureList;
+    }
+
+    public static List<JobRunStructure> getAllActionRunStructure() {
+        if (getCurrentJobRunAppLevel() == AppLevel.Action)
+            return List.of(jobRunScheduler.getCurrentJobRunStructure());
+        List<JobRunStructure> taskRunStructureList = getAllTaskRunStructure();
+        if (taskRunStructureList == null)
+            return null;
+        List<JobRunStructure> actionRunStructureList = new ArrayList<>();
+        for (JobRunStructure taskRunStructure : taskRunStructureList) {
+            List<JobRunStructure> currentActionRunStructureList = taskRunStructure.getSubJobRunStructures();
+            actionRunStructureList.addAll(currentActionRunStructureList);
+        }
+        return actionRunStructureList;
     }
 
     // ------------------------------------------------------

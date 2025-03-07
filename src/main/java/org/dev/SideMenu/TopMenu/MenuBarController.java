@@ -13,6 +13,7 @@ import org.dev.AppScene;
 import org.dev.Enum.LogLevel;
 import org.dev.Job.JobData;
 import org.dev.Job.Operation;
+import org.dev.jobManagement.JobRunStructure;
 import org.dev.jobManagement.JobStructure;
 
 import java.io.File;
@@ -35,6 +36,8 @@ public class MenuBarController implements Initializable {
     @FXML
     private MenuItem collapseTaskGroupMenuItem, collapseTaskMenuItem;
     @FXML
+    private MenuItem collapseTaskGroupRunMenuItem, collapseTaskRunMenuItem, collapseActionRunMenuItem;
+    @FXML
     private StackPane startRunStackPaneButton, stopRunStackPaneButton;
     @FXML
     private HBox operationRunningIndicationHBox;
@@ -51,6 +54,9 @@ public class MenuBarController implements Initializable {
         openSavedOperationMenuItem.setOnAction(this::openSavedOperationEvent);
         collapseTaskGroupMenuItem.setOnAction(this::collapseTaskGroup);
         collapseTaskMenuItem.setOnAction(this::collapseTask);
+        collapseTaskGroupRunMenuItem.setOnAction(this::collapseTaskGroupRun);
+        collapseTaskRunMenuItem.setOnAction(this::collapseTaskRun);
+        collapseActionRunMenuItem.setOnAction(this::collapseActionRun);
         startRunStackPaneButton.setOnMouseClicked(this::startOperationRunEvent);
         stopRunStackPaneButton.setOnMouseClicked(this::stopOperationRunEvent);
         stopRunStackPaneButton.setVisible(false);
@@ -148,6 +154,25 @@ public class MenuBarController implements Initializable {
         List<JobStructure> taskStructureList = AppScene.getAllTaskStructure();
         for (JobStructure taskStructure : taskStructureList)
             taskStructure.collapseSubContent();
+    }
+
+    private void collapseTaskGroupRun(ActionEvent event) {
+        collapseJobRun(AppScene.getAllTaskGroupRunStructure());
+    }
+
+    private void collapseTaskRun(ActionEvent event) {
+        collapseJobRun(AppScene.getAllTaskRunStructure());
+    }
+
+    private void collapseActionRun(ActionEvent event) {
+        collapseJobRun(AppScene.getAllActionRunStructure());
+    }
+
+    private void collapseJobRun(List<JobRunStructure> jobRunStructureList) {
+        if (jobRunStructureList == null)
+            return;
+        for (JobRunStructure jobRunStructure : jobRunStructureList)
+            jobRunStructure.collapseContent();
     }
 
 }
