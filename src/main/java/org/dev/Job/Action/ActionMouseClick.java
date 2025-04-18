@@ -24,9 +24,9 @@ public class ActionMouseClick extends Action {
         int randomY = (int) (box.getY() + Math.random() * (box.getHeight() + 1));
         robot.mouseMove(randomX, randomY);
         for (int i = 0; i < numOfClick; i++) {
-            robot.delay(100 + (int) (Math.random() * 100));
+            robot.delay(50 + (int) (Math.random() * 50));
             robot.mousePress(InputEvent.BUTTON1_DOWN_MASK); // left mouse
-            robot.delay(100 + (int) (Math.random() * 100));
+            robot.delay(50 + (int) (Math.random() * 50));
             robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
         }
         AppScene.addLog(LogLevel.DEBUG, className, "Mouse clicked at (" + randomX + ", " + randomY + ")");
