@@ -191,25 +191,23 @@ public abstract class OptionsMenuController implements ActionListener, Initializ
         if (mouseStopped) {
             mouseTimer.start();
             mouseStopped = false;
-            AppScene.addLog(LogLevel.DEBUG, className, "Started mouse motion listening");
+            AppScene.addLog(LogLevel.INFO, className, "Started mouse motion listening");
         }
     }
     protected void stopMouseMotionListening() {
         if (!mouseStopped) {
             mouseTimer.stop();
             mouseStopped = true;
-            AppScene.addLog(LogLevel.DEBUG, className, "Stopped mouse motion listening");
+            AppScene.addLog(LogLevel.INFO, className, "Stopped mouse motion listening");
         }
     }
 
     @FXML
     protected Node startReadingConditionButton, stopReadingConditionButton;
     protected void startMouseMotion(MouseEvent event) {
-        AppScene.addLog(LogLevel.INFO, className, "Starting capturing image at mouse");
         startMouseMotionListening();
     }
     protected void stopMouseMotion(MouseEvent event) {
-        AppScene.addLog(LogLevel.INFO, className, "Stopping capturing image at mouse");
         stopMouseMotionListening();
     }
     protected void stopAllListeners() {
