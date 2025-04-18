@@ -224,7 +224,8 @@ public class ActionController implements Initializable, JobDataController, Activ
     private int getConditionControllerIndex(ConditionType conditionType, boolean getFirstIndex) {
         int count = -1;
         for (JobStructure subJobStructure : currentStructure.getSubJobStructures()) {
-            if (((ConditionController) subJobStructure.getCurrentController()).getConditionType() == conditionType) {
+            ConditionController conditionController = ((ConditionController) subJobStructure.getCurrentController());
+            if (conditionController.getConditionType() == conditionType && conditionController.getCondition() != null) {
                 count++;
                 if (getFirstIndex)
                     return count;
