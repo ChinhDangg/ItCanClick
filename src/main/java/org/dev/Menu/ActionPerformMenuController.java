@@ -50,7 +50,7 @@ public class ActionPerformMenuController extends OptionsMenuController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
-        startRegisterKeyButton.setOnMouseClicked(this::startRegisteringKey);
+        startRegisterKeyButton.setOnMouseClicked(this::startKeyListening);
         attemptMinusButton.setOnMouseClicked(this::decreaseNumberOfAttempt);
         attemptPlusButton.setOnMouseClicked(this::increaseNumberOfAttempt);
         useEntryCheckBox.setOnAction(this::useEntryCheckBoxAction);
@@ -263,20 +263,20 @@ public class ActionPerformMenuController extends OptionsMenuController {
 
     // ------------------------------------------------------
     private boolean keyIsListening = false;
-    private void startRegisteringKey(MouseEvent event) {
-        keyIsListening = true;
-        GlobalScreen.addNativeKeyListener(this);
-        registeredKeyLabelPane.setDisable(false);
-        AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start registering key button");
+    private void startKeyListening(MouseEvent event) {
+        if (!keyIsListening) {
+            GlobalScreen.addNativeKeyListener(this);
+            registeredKeyLabelPane.setDisable(false);
+            keyIsListening = true;
+            AppScene.addLog(LogLevel.INFO, className, "Start registering key button");
+        }
     }
-
-    @Override
-    protected void stopMouseMotion(MouseEvent event) {
-        super.stopMouseMotion(event);
+    private void stopKeyListening() {
         if (keyIsListening) {
             GlobalScreen.removeNativeKeyListener(this);
             registeredKeyLabelPane.setDisable(true);
             keyIsListening = false;
+            AppScene.addLog(LogLevel.INFO, className, "Stopped registering key button");
         }
     }
 
@@ -287,20 +287,19 @@ public class ActionPerformMenuController extends OptionsMenuController {
         if (keyIsListening) {
             int keyEvent = mapNativeKeyToKeyEvent(nativeKeyCode);
             if (keyEvent == -1) {
-                AppScene.addLog(LogLevel.WARN, className, "Key is not supported, please try another key");
-                return;
+                AppScene.addLog(LogLevel.INFO, className, "Key is not supported, please try another key");
+            } else {
+                updateRegisteredKeyLabel(keyEvent);
             }
-            updateRegisteredKeyLabel(keyEvent);
         }
         if (nativeKeyCode == NativeKeyEvent.VC_F2) {
-            AppScene.addLog(LogLevel.INFO, className, "Starting mouse listening");
             AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to start mouse listening");
             startMouseMotionListening();
         }
         else if (nativeKeyCode == NativeKeyEvent.VC_F1) {
-            AppScene.addLog(LogLevel.INFO, className, "Stopping mouse listening");
-            AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F2 key to start mouse listening");
+            AppScene.addLog(LogLevel.DEBUG, className, "Clicked on F1 key to stop mouse listening");
             stopMouseMotionListening();
+            stopKeyListening();
         }
     }
     private void updateRegisteredKeyLabel(int keyEvent) {
