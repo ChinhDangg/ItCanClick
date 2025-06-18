@@ -130,7 +130,7 @@ public class BottomPaneController implements Initializable {
             Platform.runLater(() -> normalLogVBox.getChildren().add(line));
     }
 
-    private void clearLog(MouseEvent event) {
+    public void clearLog(MouseEvent event) {
         Platform.runLater(() -> normalLogVBox.getChildren().clear());
         Platform.runLater(() -> runLogVBox.getChildren().clear());
     }

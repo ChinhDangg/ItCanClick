@@ -92,6 +92,10 @@ public class AppScene {
         bottomPaneController.addToLog(logLevel, className, content);
     }
 
+    public static void clearLog() {
+        bottomPaneController.clearLog(null);
+    }
+
     // ------------------------------------------------------
     public static List<JobStructure> getAllTaskGroupStructure() {
         return currentJobStructure.getSubJobStructures();
