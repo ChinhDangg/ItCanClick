@@ -1,5 +1,8 @@
 package org.dev.SideMenu.TopMenu;
 
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -25,7 +28,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class MenuBarController implements Initializable {
+public class MenuBarController implements Initializable, NativeKeyListener {
 
     @FXML
     private HBox topMenuBarMainHBox;
@@ -61,6 +64,7 @@ public class MenuBarController implements Initializable {
         stopRunStackPaneButton.setOnMouseClicked(this::stopOperationRunEvent);
         stopRunStackPaneButton.setVisible(false);
         operationRunningIndicationHBox.setVisible(false);
+        registerKeyListener();
     }
 
     public void save(ActionEvent event) {
@@ -105,6 +109,7 @@ public class MenuBarController implements Initializable {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        unregisterKeyListener();
         System.exit(0);
     }
 
@@ -132,6 +137,7 @@ public class MenuBarController implements Initializable {
 
     private void startOperationRunEvent(MouseEvent event) {
         AppScene.addLog(LogLevel.DEBUG, className, "Clicked on start operation");
+        AppScene.clearLog();
         AppScene.startOperationRun();
     }
 
@@ -143,6 +149,34 @@ public class MenuBarController implements Initializable {
         stopRunStackPaneButton.setVisible(isRunning);
         operationRunningIndicationHBox.setVisible(isRunning);
     }
+
+    private boolean isKeyListening = false;
+    private void registerKeyListener() {
+        if (isKeyListening)
+            return;
+        GlobalScreen.addNativeKeyListener(this);
+        isKeyListening = true;
+        AppScene.addLog(LogLevel.TRACE, className, "Registering key listener");
+    }
+
+    private void unregisterKeyListener() {
+        if (!isKeyListening)
+            return;
+        GlobalScreen.removeNativeKeyListener(this);
+        isKeyListening = false;
+        AppScene.addLog(LogLevel.TRACE, className, "Unregistering key listener");
+    }
+
+    public void nativeKeyReleased(NativeKeyEvent e) {
+        if (e.getKeyCode() == NativeKeyEvent.VC_F1) {
+            AppScene.addLog(LogLevel.INFO, className, "Hot key clicked to stop running job");
+            stopOperationRunEvent(null);
+        } else if (e.getKeyCode() == NativeKeyEvent.VC_F2) {
+            AppScene.addLog(LogLevel.INFO, className, "Hot key clicked to start running job");
+            startOperationRunEvent(null);
+        }
+    }
+
 
     private void collapseTaskGroup(ActionEvent event) {
         List<JobStructure> taskGroupStructureList = AppScene.getAllTaskGroupStructure();
