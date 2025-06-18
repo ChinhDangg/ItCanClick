@@ -84,14 +84,18 @@ public class TaskRunController implements JobRunController<Boolean> {
         int repeatNumber = currentTask.getRepeatNumber();
         if (repeatNumber == -1) {
             AppScene.addLog(LogLevel.INFO, className, "Task is set to run Infinitely");
-            for (int j = 0; j < Integer.MAX_VALUE; j++)
+            for (int j = 0; j < Integer.MAX_VALUE; j++) {
                 if (!runTask(jobData))
                     return false;
+                clearAllActionRuns();
+            }
             return true;
         }
-        for (int j = -1; j < repeatNumber; j++)
+        for (int j = -1; j < repeatNumber; j++) {
             if (!runTask(jobData))
                 return false;
+            clearAllActionRuns();
+        }
         return true;
     }
 
@@ -134,15 +138,24 @@ public class TaskRunController implements JobRunController<Boolean> {
             Node actionRunPaneGroup = fxmlLoader.load();
             JobRunController<Boolean> controller = fxmlLoader.getController();
             AppScene.addLog(LogLevel.TRACE, className, "Loaded Action Pane");
-            Platform.runLater(() -> mainTaskRunVBox.getChildren().add(actionRunPaneGroup));
 
             JobRunStructure jobRunStructure = new JobRunStructure(currentRunStructure.getDisplayParentController(), this, controller, actionName);
             controller.setJobRunStructure(jobRunStructure);
-            currentRunStructure.addSubJobRunStructure(jobRunStructure);
+            addActionRun(actionRunPaneGroup, jobRunStructure);
             return controller;
         } catch (IOException e) {
             AppScene.addLog(LogLevel.ERROR, className, "Error loading action run pane: " + e.getMessage());
             throw new RuntimeException(e);
         }
+    }
+
+    private void addActionRun(Node actionRunPaneGroup, JobRunStructure actionRunStructure) {
+        Platform.runLater(() -> mainTaskRunVBox.getChildren().add(actionRunPaneGroup));
+        currentRunStructure.addSubJobRunStructure(actionRunStructure);
+    }
+
+    private void clearAllActionRuns() {
+        Platform.runLater(() -> mainTaskRunVBox.getChildren().clear());
+        currentRunStructure.removeAllSubJobRunStructure();
     }
 }

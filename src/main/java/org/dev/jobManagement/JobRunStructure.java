@@ -48,4 +48,9 @@ public class JobRunStructure {
     private void addToSideContent(Node hBoxLabel, Node content) {
         Platform.runLater(() -> sideContent.getChildren().addAll(hBoxLabel, content));
     }
+
+    public void removeAllSubJobRunStructure() {
+        subJobRunStructures.clear();
+        Platform.runLater(() -> sideContent.getChildren().clear());
+    }
 }
