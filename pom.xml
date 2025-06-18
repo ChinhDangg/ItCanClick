@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
+            <version>1.18.38</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -68,7 +68,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.30</version> <!-- Match your Lombok version -->
+                            <version>1.18.38</version> <!-- Match your Lombok version -->
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
